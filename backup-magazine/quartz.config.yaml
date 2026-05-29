@@ -1,45 +1,69 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: Quartz 5
+  pageTitle: HenryWu's Blog
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
   analytics:
     provider: plausible
-  locale: en-US
-  baseUrl: quartz.jzhao.xyz
+  locale: zh-CN
+  baseUrl: joeyredfield.github.io/notes-blog
   ignorePatterns:
     - private
     - templates
     - .obsidian
+    - ai应用开发/**
+    - "AI Harness（驾驭层）知识手册.md"
+    - "llm-from-scratch/README.md"
+    - "设计模式/README.md"
+    - "llm-from-scratch/MAC使用PyCharm启动Jupyter出现ImportError Using SOCKS proxy和ERROR Missing dependencies for SOCKS support.等情况的解决方法.md"
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Fraunces
-      body: Inter
-      code: IBM Plex Mono
+      title:
+        name: Newsreader
+        weights:
+          - 600
+          - 700
+      header:
+        name: Newsreader
+        weights:
+          - 600
+          - 700
+      body:
+        name: Noto Sans SC
+        weights:
+          - 400
+          - 500
+          - 700
+        includeItalic: false
+      code:
+        name: JetBrains Mono
+        weights:
+          - 400
+          - 600
     colors:
       lightMode:
-        light: "#faf7f2"
-        lightgray: "#ebe4d4"
-        gray: "#a89e8e"
-        darkgray: "#3d3a36"
-        dark: "#1a1815"
-        secondary: "#c15f3c"
-        tertiary: "#876953"
-        highlight: rgba(193, 95, 60, 0.10)
-        textHighlight: "#f5d9b988"
+        light: "#f6f2e8"
+        lightgray: "#ded4c1"
+        gray: "#95836b"
+        darkgray: "#3f3a32"
+        dark: "#171511"
+        secondary: "#0f6865"
+        tertiary: "#bd4d32"
+        highlight: rgba(189, 77, 50, 0.12)
+        textHighlight: "#f4d35e99"
       darkMode:
-        light: "#1f1c18"
-        lightgray: "#2c2823"
-        gray: "#7d756a"
-        darkgray: "#d8cfc0"
-        dark: "#f1e8d8"
-        secondary: "#e8a987"
-        tertiary: "#c4a98b"
-        highlight: rgba(232, 169, 135, 0.12)
-        textHighlight: "#9c733a55"
+        light: "#12110f"
+        lightgray: "#2d2921"
+        gray: "#8f8271"
+        darkgray: "#d8cebd"
+        dark: "#fff4df"
+        secondary: "#78c8bd"
+        tertiary: "#f08a62"
+        highlight: rgba(240, 138, 98, 0.16)
+        textHighlight: "#7a5a2399"
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
@@ -61,7 +85,17 @@ plugins:
   - source: github:quartz-community/obsidian-flavored-markdown
     enabled: true
     options:
+      comments: true
+      highlight: true
+      wikilinks: true
+      callouts: true
+      mermaid: true
+      parseTags: true
+      parseArrows: true
+      parseBlockReferences: true
       enableInHtmlEmbed: false
+      enableYouTubeEmbed: true
+      enableVideoEmbed: true
       enableCheckbox: true
     order: 30
   - source: github:quartz-community/github-flavored-markdown
@@ -90,7 +124,7 @@ plugins:
     enabled: false
     order: 85
   - source: github:quartz-community/hard-line-breaks
-    enabled: false
+    enabled: true
     order: 90
   - source: github:quartz-community/ox-hugo
     enabled: false
@@ -102,6 +136,23 @@ plugins:
     enabled: true
   - source: github:quartz-community/explicit-publish
     enabled: false
+  - source: github:quartz-community/unlisted-pages
+    enabled: true
+    options: {}
+    order: 45
+  - source: github:quartz-community/encrypted-pages
+    enabled: true
+    options:
+      iterations: 600000
+      passwordField: password
+      unlistWhenEncrypted: false
+      outputPath: static/encryptedContentIndex.json
+  - source: github:quartz-community/stacked-pages
+    enabled: false
+    layout:
+      position: afterBody
+      priority: 50
+      display: all
   - source: github:quartz-community/alias-redirects
     enabled: true
   - source: github:quartz-community/content-index
@@ -125,6 +176,8 @@ plugins:
     enabled: true
   - source: github:quartz-community/explorer
     enabled: true
+    options:
+      folderClickBehavior: collapse
     layout:
       position: left
       priority: 50
@@ -229,28 +282,20 @@ plugins:
       position: beforeBody
       priority: 15
       display: all
-  - source: github:quartz-community/unlisted-pages
-    enabled: true
-    options: {}
-    order: 45
-  - source: github:quartz-community/encrypted-pages
+  - source:
+      name: quartz-themes
+      repo: github:saberzero1/quartz-themes
+      subdir: plugin
+    enabled: false
+    options:
+      theme: default
+  - source: github:quartz-community/obsidian-plugin-excalidraw
     enabled: true
     options:
-      iterations: 600000
-      passwordField: password
-      unlistWhenEncrypted: false
-      outputPath: static/encryptedContentIndex.json
-    order: 900
-    layout:
-      position: body
-      priority: 100
-      display: all
-  - source: github:quartz-community/stacked-pages
-    enabled: false
-    layout:
-      position: afterBody
-      priority: 50
-      display: all
+      enableInteraction: true
+      darkMode: auto
+      exportPadding: 20
+    order: 50
 layout:
   groups:
     toolbar:

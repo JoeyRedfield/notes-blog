@@ -1,3 +1,877 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// Claude-inspired editorial theme.
+// Warm paper palette, calm rhythm, considered details.
+
+:root {
+  --page-max: 1480px;
+  --article-measure: 720px;
+  --paper: color-mix(in srgb, var(--light) 96%, white 4%);
+  --paper-raised: color-mix(in srgb, var(--light) 88%, white 12%);
+  --paper-sunken: color-mix(in srgb, var(--lightgray) 30%, var(--light));
+  --ink: var(--dark);
+  --ink-muted: color-mix(in srgb, var(--darkgray) 88%, var(--gray));
+  --hairline: color-mix(in srgb, var(--lightgray) 90%, var(--dark) 4%);
+  --rule: color-mix(in srgb, var(--secondary) 32%, var(--lightgray));
+  --accent: var(--secondary);
+  --accent-soft: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --shadow-near: 0 1px 0 color-mix(in srgb, var(--dark) 4%, transparent),
+    0 2px 8px color-mix(in srgb, var(--dark) 5%, transparent);
+  --shadow-far: 0 1px 0 color-mix(in srgb, var(--dark) 5%, transparent),
+    0 12px 36px color-mix(in srgb, var(--dark) 8%, transparent);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --chrome-h: 2.25rem;
+  --tracking-eyebrow: 0.14em;
+}
+
+:root[saved-theme="dark"] {
+  --paper: color-mix(in srgb, var(--light) 92%, black 8%);
+  --paper-raised: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+  --paper-sunken: color-mix(in srgb, var(--lightgray) 70%, var(--light));
+  --hairline: color-mix(in srgb, var(--lightgray) 85%, white 6%);
+  --rule: color-mix(in srgb, var(--secondary) 38%, var(--lightgray));
+  --accent-soft: color-mix(in srgb, var(--secondary) 20%, transparent);
+  --shadow-near: 0 1px 0 rgba(0, 0, 0, 0.25),
+    0 2px 10px rgba(0, 0, 0, 0.28);
+  --shadow-far: 0 1px 0 rgba(0, 0, 0, 0.3),
+    0 18px 44px rgba(0, 0, 0, 0.4);
+}
+// ── Page surface ────────────────────────────────────────────────
+html {
+  background: var(--paper);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+        1100px 520px at 78% -10%,
+        color-mix(in srgb, var(--secondary) 9%, transparent),
+        transparent 70%
+      ),
+    radial-gradient(
+        900px 480px at -10% 18%,
+        color-mix(in srgb, var(--tertiary) 7%, transparent),
+        transparent 65%
+      ),
+    var(--paper);
+  font-feature-settings: "ss01", "cv11", "kern";
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  color: var(--ink-muted);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--secondary) 28%, transparent);
+  color: var(--ink);
+}
+
+.page {
+  max-width: var(--page-max);
+  padding: 0 1.4rem;
+}
+
+.page > #quartz-body {
+  column-gap: 2.4rem;
+  row-gap: 0.5rem;
+}
+
+.page > #quartz-body .sidebar {
+  gap: 1.1rem;
+  padding-top: 3.2rem;
+  scrollbar-color: color-mix(in srgb, var(--gray) 50%, transparent) transparent;
+}
+// ── Page title (top-left brand) ─────────────────────────────────
+.page-title {
+  position: relative;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  font-family: "Fraunces", var(--headerFont);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 30;
+  font-weight: 500;
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.page-title a {
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.page-title a::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+  flex: 0 0 auto;
+  transition: transform 0.25s ease;
+}
+
+.page-title a:hover {
+  color: var(--accent);
+}
+
+.page-title a:hover::before {
+  transform: rotate(45deg) scale(1.05);
+}
+// ── Toolbar (search + dark/reader toggles) ──────────────────────
+.flex-component:has(.search) {
+  align-items: stretch;
+  padding: 0.3rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-near);
+}
+
+.search {
+  max-width: none;
+  min-width: 0;
+}
+
+.search > .search-button {
+  height: var(--chrome-h);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  padding: 0 0.95rem;
+  gap: 0.5rem;
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.search > .search-button:hover,
+.search > .search-button:focus-visible {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.search > .search-button > p {
+  color: inherit;
+  font-weight: 500;
+  margin: 0;
+}
+
+.search > .search-button svg .search-path {
+  stroke: currentColor;
+}
+.darkmode,
+.readermode {
+  width: var(--chrome-h);
+  height: var(--chrome-h);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.darkmode:hover,
+.readermode:hover,
+.darkmode:focus-visible,
+.readermode:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--ink);
+}
+
+.darkmode svg,
+.readermode svg {
+  left: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+}
+
+// ── Sidebar panels ──────────────────────────────────────────────
+.explorer,
+.graph,
+.toc,
+.backlinks,
+.note-properties {
+  border-radius: var(--radius-md);
+  background: transparent;
+  padding: 0.25rem 0;
+}
+
+button.desktop-explorer h2,
+button.toc-header h3,
+.graph > h3,
+.backlinks > h3 {
+  color: var(--gray);
+  font-family: var(--bodyFont);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.explorer-content {
+  margin-top: 0.55rem;
+}
+
+.explorer-content .folder-outer > ul {
+  border-left-color: var(--hairline);
+}
+
+.explorer-content ul li > a,
+.folder-container div > button span,
+.folder-container div > a,
+ul.toc-content.overflow > li > a,
+.backlinks > ul.overflow > li > a {
+  border-radius: 4px;
+  color: var(--ink-muted);
+  font-family: var(--bodyFont);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  overflow-wrap: normal;
+  padding: 0.18rem 0.4rem;
+  word-break: normal;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.explorer-content ul li > a:hover,
+.folder-container div > button:hover span,
+.folder-container div > a:hover,
+ul.toc-content.overflow > li > a:hover,
+.backlinks > ul.overflow > li > a:hover {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.folder-icon,
+.explorer .fold,
+button.toc-header .fold {
+  color: var(--gray);
+  transition: color 0.15s ease, transform 0.2s ease;
+}
+
+button.desktop-explorer:hover .fold,
+button.toc-header:hover .fold {
+  color: var(--accent);
+}
+
+.graph > .graph-outer {
+  height: 200px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(
+        circle at 50% 50%,
+        color-mix(in srgb, var(--accent) 4%, transparent),
+        transparent 70%
+      ),
+    var(--paper-sunken);
+}
+
+.graph > .graph-outer > .global-graph-icon {
+  color: var(--accent);
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-near);
+}
+// ── Article header & meta ──────────────────────────────────────
+.page > #quartz-body .page-header {
+  margin-top: 3.4rem;
+}
+
+.page-header .popover-hint {
+  max-width: var(--article-measure);
+  padding-bottom: 1.4rem;
+}
+
+.breadcrumb-container {
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-bottom: 0.6rem;
+}
+
+.breadcrumb-container a {
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.breadcrumb-container a:hover {
+  color: var(--accent);
+}
+
+.article-title {
+  margin-top: 0.25rem;
+  margin-bottom: 0.6rem;
+  color: var(--ink);
+  font-family: "Fraunces", var(--headerFont);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+  font-weight: 500;
+  font-size: 2.85rem;
+  letter-spacing: -0.022em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.content-meta {
+  color: var(--gray);
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.content-meta > * + *::before {
+  content: "·";
+  margin: 0 0.5rem;
+  color: color-mix(in srgb, var(--gray) 60%, transparent);
+}
+// ── Article body ────────────────────────────────────────────────
+.center > article {
+  max-width: var(--article-measure);
+  padding: 0.4rem 0 4rem;
+}
+
+article {
+  font-family: var(--bodyFont);
+  font-size: 1.0625rem;
+  color: var(--ink-muted);
+}
+
+article p,
+article li,
+article td {
+  line-height: 1.78;
+}
+
+article p {
+  margin: 1.05rem 0;
+}
+
+article p > strong,
+article li > strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.page article > h1,
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+  color: var(--ink);
+  font-family: "Fraunces", var(--headerFont);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 60;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+
+.page article > h1,
+article h1 {
+  margin-top: 2.6rem;
+  font-size: 2.05rem;
+  line-height: 1.14;
+}
+
+article h2 {
+  position: relative;
+  margin-top: 2.6rem;
+  padding-top: 1.4rem;
+  font-size: 1.55rem;
+  line-height: 1.28;
+  border-top: 1px solid var(--hairline);
+}
+
+article h3 {
+  margin-top: 2rem;
+  font-size: 1.22rem;
+  line-height: 1.35;
+}
+
+article h4 {
+  margin-top: 1.6rem;
+  font-size: 1.05rem;
+}
+// ── Links ──────────────────────────────────────────────────────
+a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+}
+
+a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+article a:not(.internal):not(.tag-link):not([role="anchor"]) {
+  text-decoration: underline;
+}
+
+a.internal {
+  background: linear-gradient(
+      180deg,
+      transparent calc(100% - 2px),
+      color-mix(in srgb, var(--accent) 38%, transparent) 0
+    );
+  border-radius: 0;
+  color: var(--ink);
+  padding: 0 0.05rem;
+  transition: background 0.2s ease, color 0.18s ease;
+}
+
+a.internal:hover {
+  background: linear-gradient(
+      180deg,
+      transparent 55%,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0
+    );
+  color: var(--accent);
+}
+
+a.internal.tag-link {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+a.internal.tag-link:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+// ── Callouts & blockquotes ─────────────────────────────────────
+.callout {
+  margin: 1.5rem 0;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--color);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color) 8%, transparent),
+      transparent 40%
+    ),
+    var(--paper-raised);
+  box-shadow: var(--shadow-near);
+}
+
+.callout > .callout-title {
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.05rem 0 0.55rem;
+  cursor: pointer;
+}
+
+.callout > .callout-title > .callout-title-inner > p {
+  margin: 0;
+  color: var(--color);
+  font-family: var(--bodyFont);
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+.callout > .callout-title .callout-icon,
+.callout > .callout-title .fold-callout-icon {
+  padding: 0;
+  color: var(--color);
+}
+
+.callout > .callout-content {
+  min-height: 0;
+}
+
+.callout > .callout-content > p {
+  margin: 0.4rem 0;
+}
+
+.callout.is-collapsed {
+  padding-bottom: 0.85rem;
+}
+
+.callout.is-collapsed > .callout-title {
+  padding-bottom: 0.1rem;
+}
+
+.callout.is-collapsed > .callout-content {
+  grid-auto-rows: 0fr;
+}
+
+.callout.is-collapsed > .callout-content > * {
+  height: 0;
+  min-height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+blockquote {
+  margin: 1.6rem 0;
+  padding: 0.4rem 0 0.4rem 1.4rem;
+  border-left: 2px solid var(--accent);
+  background: transparent;
+  font-family: "Fraunces", var(--bodyFont);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.08rem;
+  color: var(--ink);
+  line-height: 1.7;
+}
+// ── Code ───────────────────────────────────────────────────────
+code {
+  border: 1px solid var(--hairline);
+  background: var(--paper-sunken);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 0.08rem 0.32rem;
+  font-size: 0.88em;
+  font-feature-settings: "ss03", "zero";
+}
+
+pre,
+figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
+  border-color: var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--paper-sunken);
+}
+
+pre {
+  box-shadow: var(--shadow-near);
+}
+
+pre > code {
+  font-size: 0.86rem;
+  border: none;
+  background: transparent;
+  padding: 0.6rem 0;
+}
+
+pre > code > [data-line] {
+  padding-right: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
+  background: var(--paper-raised);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  padding: 0.25rem 0.7rem;
+}
+
+// ── Tables ─────────────────────────────────────────────────────
+table {
+  font-size: 0.95rem;
+}
+
+.table-container > table {
+  margin: 1.4rem 0;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--paper-raised);
+  overflow: hidden;
+  box-shadow: var(--shadow-near);
+}
+
+th {
+  background: var(--paper-sunken);
+  border-bottom: 1px solid var(--hairline);
+  color: var(--ink);
+  font-family: var(--bodyFont);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+}
+
+td {
+  padding: 0.55rem 0.9rem;
+}
+
+tr {
+  border-bottom-color: var(--hairline);
+}
+// ── Media, rules, footnotes ────────────────────────────────────
+img,
+video,
+audio,
+.external-embed.youtube,
+iframe.pdf {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-near);
+}
+
+hr {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hairline) 25%, var(--hairline) 75%, transparent);
+}
+
+.footnotes {
+  margin-top: 2.5rem;
+  border-top-color: var(--hairline);
+  font-size: 0.92rem;
+}
+
+footer {
+  max-width: var(--page-max);
+  margin-top: 3rem;
+  padding: 1.6rem 0;
+  border-top: 1px solid var(--hairline);
+  color: var(--gray);
+  font-size: 0.85rem;
+}
+
+footer ul {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+}
+
+footer a {
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+footer a:hover {
+  color: var(--accent);
+}
+
+// ── Search overlay ─────────────────────────────────────────────
+.search > .search-container {
+  background: color-mix(in srgb, var(--paper) 65%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.search > .search-container > .search-space > :not(.ghost-text):not(.tag-suggestions) {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-far);
+}
+
+.search > .search-container > .search-space > input {
+  min-height: 3.4rem;
+  font-family: "Fraunces", var(--headerFont);
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.search > .search-container > .search-space > input::placeholder {
+  color: var(--gray);
+}
+
+.search > .search-container > .search-space > .search-layout > div {
+  border-radius: var(--radius-md);
+}
+// ── Popover ────────────────────────────────────────────────────
+.popover {
+  border-color: var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-far);
+}
+
+// ── Reading progress accent ────────────────────────────────────
+.navigation-progress {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--tertiary));
+}
+
+// ── Folder & tag list pages ────────────────────────────────────
+.popover-hint h1.article-title + p {
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+.section-li {
+  border-bottom: 1px solid var(--hairline);
+  padding: 1rem 0;
+}
+
+.section-li:last-child {
+  border-bottom: none;
+}
+
+.section-li .section .meta {
+  color: var(--gray);
+  font-family: var(--bodyFont);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.section-li .section h3 {
+  margin: 0.25rem 0;
+  font-family: "Fraunces", var(--headerFont);
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.section-li .section h3 a {
+  color: var(--ink);
+  text-decoration: none;
+  background: none;
+  padding: 0;
+}
+
+.section-li .section h3 a:hover {
+  color: var(--accent);
+}
+
+.section-li .desc {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+// ── Note properties ────────────────────────────────────────────
+.note-properties {
+  font-size: 0.85rem;
+}
+
+.note-properties pre {
+  background: var(--paper-sunken);
+  border: 1px solid var(--hairline);
+  box-shadow: none;
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+@media all and not ($desktop) {
+  :root {
+    --article-measure: 100%;
+  }
+
+  .page {
+    padding: 0 1rem;
+  }
+
+  .page > #quartz-body {
+    column-gap: 1.4rem;
+  }
+
+  .page > #quartz-body .sidebar {
+    padding-top: 2rem;
+  }
+
+  .page > #quartz-body .sidebar.right {
+    gap: 1rem;
+  }
+}
+
+@media all and ($tablet) {
+  .article-title {
+    font-size: 2.35rem;
+  }
+}
+
+@media all and ($mobile) {
+  body {
+    font-size: 16px;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .page > #quartz-body {
+    padding: 0 1rem;
+  }
+
+  .page > #quartz-body .sidebar.left {
+    gap: 0.6rem;
+    align-items: stretch;
+    padding-top: 0.9rem;
+  }
+
+  .page-title {
+    flex: 1 1 auto;
+    padding-bottom: 0.4rem;
+    font-size: 1.2rem;
+  }
+
+  .flex-component:has(.search) {
+    flex: 0 0 auto;
+    box-shadow: none;
+    background: var(--paper-raised);
+  }
+
+  .search > .search-button {
+    width: var(--chrome-h);
+    padding: 0;
+    justify-content: center;
+  }
+
+  .search > .search-button > p {
+    display: none;
+  }
+  .explorer,
+  .graph,
+  .toc,
+  .backlinks {
+    padding: 0.4rem 0;
+  }
+
+  .explorer[aria-expanded="false"] > .explorer-content {
+    transform: translateX(-100vw);
+    visibility: hidden;
+  }
+
+  .explorer[aria-expanded="true"] > .explorer-content {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .page > #quartz-body .page-header {
+    margin-top: 1.4rem;
+  }
+
+  .article-title {
+    font-size: 1.95rem;
+  }
+
+  .page article > h1,
+  article h1 {
+    font-size: 1.65rem;
+  }
+
+  article h2 {
+    font-size: 1.32rem;
+    padding-top: 1rem;
+    margin-top: 2rem;
+  }
+
+  .center > article {
+    padding-bottom: 2.5rem;
+  }
+}
+

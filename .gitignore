@@ -12,7 +12,6 @@ replit.nix
 .quartz/
 quartz/cli/tui/dist/
 reports/
-content/ai应用开发/
 content/AI Harness（驾驭层）知识手册.md
 content/llm-from-scratch/README.md
 content/设计模式/README.md
