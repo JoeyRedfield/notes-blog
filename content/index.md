@@ -20,6 +20,7 @@ title: "HenryWu's Blog"
 - [[ai应用开发/ECC（Everything Claude Code）知识手册|ECC（Everything Claude Code）知识手册]]
 - [[ai应用开发/MemPalace 学习笔记|MemPalace 学习笔记]]
 - [[ai应用开发/Quartz GitHub Pages 博客发布工作流|Quartz GitHub Pages 博客发布工作流]]
+- [[ai应用开发/Quartz GitHub Pages 子路径跳转问题排查记录|Quartz GitHub Pages 子路径跳转问题排查记录]]
 
 ## llm-from-scratch
 

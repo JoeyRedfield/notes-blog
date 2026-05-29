@@ -20,6 +20,7 @@ tags: [index]
 - [[Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议]] — 结合 GPT-5.4 / GPT-5.5 与 DeepSeek V4 Pro 的实际分工建议
 - [[Claude Code CLI 新会话检查清单]] — 确认 MCP 与 hooks 是否在新会话里真正生效
 - [[Quartz GitHub Pages 博客发布工作流]] — 从 Obsidian notes 到 Quartz/GitHub Pages 的公开发布流程
+- [[Quartz GitHub Pages 子路径跳转问题排查记录]] — 记录 `/notes-blog` 丢失的根因、修复和验证方法
 - [[AI应用开发学习库.base]] — 学习库
 
 ## 自学记录
