@@ -106,3 +106,33 @@ test("syncPublicNotes copies only referenced attachments from global assets", as
     assert.deepEqual(result.missingAttachments, [])
   })
 })
+
+test("syncPublicNotes resolves short embeds from note-specific asset folders", async () => {
+  await withTempDir(async (root) => {
+    const vault = path.join(root, "vault")
+    const content = path.join(root, "content")
+    const reportPath = path.join(root, "reports", "sync.md")
+    await mkdir(path.join(vault, "gzhu", "assets", "GZHU-计算机-毕业论文与材料"), {
+      recursive: true,
+    })
+    await writeFile(path.join(vault, "gzhu", "GZHU-计算机-毕业论文与材料.md"), "![[image-4.png]]")
+    await writeFile(
+      path.join(vault, "gzhu", "assets", "GZHU-计算机-毕业论文与材料", "image-4.png"),
+      "png",
+    )
+
+    const result = await syncPublicNotes({
+      sourceVault: vault,
+      contentDir: content,
+      reportPath,
+      include: ["gzhu"],
+      exclude: ["assets"],
+      sensitiveTerms: [],
+    })
+
+    assert.deepEqual(result.copiedAttachments, [
+      "gzhu/assets/GZHU-计算机-毕业论文与材料/image-4.png",
+    ])
+    assert.deepEqual(result.missingAttachments, [])
+  })
+})

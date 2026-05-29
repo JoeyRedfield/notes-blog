@@ -26,8 +26,8 @@ tags:
 ## 目录关系
 
 ```text
-/Documents/notes   # 原始 Obsidian vault，不直接对外发布
-/Documents/quartz  # Quartz 博客仓库，发布到 GitHub Pages
+/Users/wuzhuoyi/Documents/notes   # 原始 Obsidian vault，不直接对外发布
+/Users/wuzhuoyi/Documents/quartz  # Quartz 博客仓库，发布到 GitHub Pages
 ```
 
 线上地址：
@@ -52,7 +52,7 @@ v5
 
 ### 1. 在 Obsidian 里写笔记
 
-正常在 `/Documents/notes` 里写，不需要改变原始 vault 结构。
+正常在 `/Users/wuzhuoyi/Documents/notes` 里写，不需要改变原始 vault 结构。
 
 只有被加入公开白名单的目录或文件，才会同步到博客仓库。
 
@@ -61,7 +61,7 @@ v5
 编辑 Quartz 仓库里的配置：
 
 ```text
-/Documents/quartz/publish.config.json
+/Users/wuzhuoyi/Documents/quartz/publish.config.json
 ```
 
 常用字段：
@@ -98,7 +98,7 @@ v5
 进入 Quartz 仓库：
 
 ```bash
-cd /Documents/quartz
+cd /Users/wuzhuoyi/Documents/quartz
 ```
 
 同步 notes 里的白名单内容：
@@ -116,7 +116,7 @@ npm run sync:notes
 同步脚本位置：
 
 ```text
-/Documents/quartz/scripts/sync-public-notes.mjs
+/Users/wuzhuoyi/Documents/quartz/scripts/sync-public-notes.mjs
 ```
 
 脚本会做这些事：
@@ -130,7 +130,7 @@ npm run sync:notes
 查看同步报告：
 
 ```text
-/Documents/quartz/reports/public-sync-report.md
+/Users/wuzhuoyi/Documents/quartz/reports/public-sync-report.md
 ```
 
 本地预览：

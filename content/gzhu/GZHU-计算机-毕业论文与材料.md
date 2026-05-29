@@ -12,7 +12,7 @@ password: chill-with-you
 
 入学须知：[2025级入学新生须知](https://mp.weixin.qq.com/s/R0zXk3TynhG_zIMz1ZbDEw)
 图书馆：[黄埔校区借阅大学城校区图书的流程](https://mp.weixin.qq.com/s/FT5dk5RoaKntnGJTLUdwOA)
-![[image-4.png|553]]
+![[image-4.png]]
 
 1. **在企业微信可以注册教育邮箱，然后申请有辨识度，容易记的英文邮箱（这对Google、163、qq也适用）**，可以去了解一下你要用的各个产品有没有教育邮箱的优惠，起码jetbrains全家桶，github copilot认证成功后是免费用的。
 2. **绿皮本可以每天都写点内容**，80页很快的，等到研三一次性写完会比较赶，毕竟到时候会有别的事情。
@@ -64,7 +64,7 @@ password: chill-with-you
 ![[f0b57a81feab88dbf31f01509ac0e647.png]]
 ### 目录
 除了图上的这些，还要注意缩进。
-![[fd9629c22c3ae5fbb954846938a73839.png|833]]
+![[fd9629c22c3ae5fbb954846938a73839.png]]
 
 ### 科研成果的参考写法（跟目录一样也不要带`.`）
 ![[8362f3220092da97dfb22da79f451c33.png]]

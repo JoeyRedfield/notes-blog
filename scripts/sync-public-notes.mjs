@@ -109,8 +109,11 @@ export function scanSensitiveTerms(markdown, sensitiveTerms) {
 
 async function findAttachment(sourceVault, markdownFile, reference) {
   const cleanedReference = reference.replace(/^<|>$/g, "")
+  const markdownDir = path.dirname(markdownFile)
+  const markdownBaseName = path.basename(markdownFile, path.extname(markdownFile))
   const candidates = [
-    path.resolve(path.dirname(markdownFile), cleanedReference),
+    path.resolve(markdownDir, cleanedReference),
+    path.resolve(markdownDir, "assets", markdownBaseName, cleanedReference),
     path.resolve(sourceVault, cleanedReference),
     path.resolve(sourceVault, "assets", cleanedReference),
     path.resolve(sourceVault, path.basename(cleanedReference)),
