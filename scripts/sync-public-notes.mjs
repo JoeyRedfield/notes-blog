@@ -191,6 +191,8 @@ function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sen
 async function writeIndex(config, copiedMarkdown) {
   const title = config.siteTitle ?? "HenryWu's Blog"
   const description = config.siteDescription ?? "公开技术笔记试水站。"
+  const intro = typeof config.siteIntro === "string" ? config.siteIntro.trim() : ""
+  const outro = typeof config.siteFooter === "string" ? config.siteFooter.trim() : ""
   const groups = new Map()
 
   for (const file of copiedMarkdown) {
@@ -210,6 +212,10 @@ async function writeIndex(config, copiedMarkdown) {
     "",
   ]
 
+  if (intro) {
+    lines.push(intro, "")
+  }
+
   for (const [group, files] of [...groups.entries()].sort()) {
     lines.push(`## ${group}`, "")
     for (const file of files.filter((item) => !item.toLowerCase().endsWith("/readme.md"))) {
@@ -217,6 +223,10 @@ async function writeIndex(config, copiedMarkdown) {
       lines.push(`- [[${file.replace(/\.md$/, "")}|${label}]]`)
     }
     lines.push("")
+  }
+
+  if (outro) {
+    lines.push(outro, "")
   }
 
   await writeFile(path.join(config.contentDir, "index.md"), `${lines.join("\n")}\n`)

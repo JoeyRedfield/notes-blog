@@ -4,7 +4,16 @@ title: "HenryWu's Blog"
 
 # HenryWu's Blog
 
-这里先放适合公开的笔记
+其实这是一个人机，里面全是乱写的笔记。
+
+## 联系我 / Contact
+
+> [!info] 找我聊聊
+> - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)
+> - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)
+> - **WeChat** — `***`（暂时不放上来了）
+>
+> ![WeChat QR|180](assets/wechat-qr.jpg)
 
 ## ai应用开发
 
