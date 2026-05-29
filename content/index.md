@@ -22,6 +22,10 @@ title: "HenryWu's Blog"
 - [[ai应用开发/Quartz GitHub Pages 博客发布工作流|Quartz GitHub Pages 博客发布工作流]]
 - [[ai应用开发/Quartz GitHub Pages 子路径跳转问题排查记录|Quartz GitHub Pages 子路径跳转问题排查记录]]
 
+## gzhu
+
+- [[gzhu/GZHU-计算机-毕业论文与材料|GZHU-计算机-毕业论文与材料]]
+
 ## llm-from-scratch
 
 - [[llm-from-scratch/GPT-Transformer里的残差网络|GPT-Transformer里的残差网络]]
