@@ -11,3 +11,9 @@ private/
 replit.nix
 .quartz/
 quartz/cli/tui/dist/
+reports/
+content/ai应用开发/
+content/AI Harness（驾驭层）知识手册.md
+content/llm-from-scratch/README.md
+content/设计模式/README.md
+content/llm-from-scratch/MAC使用PyCharm启动Jupyter出现ImportError Using SOCKS proxy和ERROR Missing dependencies for SOCKS support.等情况的解决方法.md

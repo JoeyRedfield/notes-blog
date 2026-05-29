@@ -1,0 +1,41 @@
+{
+  "sourceVault": "../notes",
+  "contentDir": "./content",
+  "reportPath": "./reports/public-sync-report.md",
+  "siteTitle": "HenryWu's Blog",
+  "siteDescription": "这里先放适合公开的技术学习笔记，原始 Obsidian vault 保持本地私有。",
+  "include": ["llm-from-scratch", "设计模式"],
+  "excludeFiles": [
+    "llm-from-scratch/README.md",
+    "llm-from-scratch/MAC使用PyCharm启动Jupyter出现ImportError Using SOCKS proxy和ERROR Missing dependencies for SOCKS support.等情况的解决方法.md"
+  ],
+  "exclude": [
+    ".git",
+    ".obsidian",
+    ".claude",
+    ".claudian",
+    "assets",
+    "个人信息",
+    "日记",
+    "入党相关",
+    "我的投机（投资",
+    "破解"
+  ],
+  "sensitiveTerms": [
+    "api_key",
+    "apikey",
+    "secret",
+    "token",
+    "password",
+    "密码",
+    "账号",
+    "身份证",
+    "手机号",
+    "电话",
+    "邮箱",
+    "代理",
+    "proxy",
+    "clash",
+    "DeepSeek"
+  ]
+}

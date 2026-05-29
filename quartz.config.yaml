@@ -12,6 +12,11 @@ configuration:
     - private
     - templates
     - .obsidian
+    - ai应用开发/**
+    - "AI Harness（驾驭层）知识手册.md"
+    - "llm-from-scratch/README.md"
+    - "设计模式/README.md"
+    - "llm-from-scratch/MAC使用PyCharm启动Jupyter出现ImportError Using SOCKS proxy和ERROR Missing dependencies for SOCKS support.等情况的解决方法.md"
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
