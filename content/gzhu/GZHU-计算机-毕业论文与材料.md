@@ -6,7 +6,9 @@ password: chill-with-you
 # 关于这个笔记
 
 > [!note]+ 
-> 更多是来时路，内容不是很多，经验仅供参考，以实际情况为准。
+> 写这篇文章的原因是因为[这个网站](https://welcome.acastu.com/)，我学到了很多关于GZHU的事情，可惜它已经停运了。
+我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，密码是`chill-with-you`，样式会比导出的PDF好点，应该也不会更新了。
+主要还是来时路，内容不是很多，经验仅供参考，希望各位不要再做重复工作。以实际情况为准。
 
 # 通用知识
 
@@ -120,7 +122,5 @@ password: chill-with-you
 如果是答辩现场老师让改题目，这时候如果你没带电脑，就得去打印店改好，然后拿上来签字，或者你自己有电脑现场改也行。
 
 # 写在最后
-写这篇文章的原因是因为[这个网站](https://welcome.acastu.com/)，我学到了很多关于GZHU的事情，可惜它已经停运了。
-我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，密码是`chill-with-you`，样式会比导出的PDF好点，应该也不会更新了。
 真的有不懂的事情，还是建议各位同学互相交流、讨论。
 ![[image-3.png]]
