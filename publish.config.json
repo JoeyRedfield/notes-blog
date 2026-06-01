@@ -5,7 +5,7 @@
   "siteTitle": "HenryWu's Blog",
   "siteDescription": "其实这是一个人机，里面全是乱写的笔记。",
   "siteIntro": "## 联系我 / Contact\n\n> [!info] 找我聊聊\n> - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)\n> - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)\n> - **WeChat** — `***`（暂时不放上来了）\n>\n> ![WeChat QR|180](assets/wechat-qr.jpg)",
-  "include": ["llm-from-scratch", "ai应用开发","gzhu","C++"],
+  "include": ["llm-from-scratch", "ai应用开发","gzhu"],
   "excludeFiles": [
     "llm-from-scratch/README.md",
     "llm-from-scratch/MAC使用PyCharm启动Jupyter出现ImportError Using SOCKS proxy和ERROR Missing dependencies for SOCKS support.等情况的解决方法.md"
