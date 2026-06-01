@@ -6,7 +6,8 @@ date: 2026-01-08
 type: Post
 category: LLM-from-scratch
 slug: LLM-from-scratch-04
-tags: []
+tags: [AI, LLM]
+created: 2026-06-01
 summary: 从头实现GPT模型进行文本生成
 status: Published
 ---

@@ -6,7 +6,8 @@ date: 2026-01-08
 type: Post
 category: LLM-from-scratch
 slug: llm-from-scratch-resnet
-tags: []
+tags: [AI, LLM]
+created: 2026-06-01
 summary: ""
 status: Published
 ---

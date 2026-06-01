@@ -345,3 +345,124 @@ Routines： 云端定时/API/GitHub → 完整 Claude Code 会话 → 云端可�
 - [GitHub Gist - Codex /goal slash command architecture](https://gist.github.com/patleeman/b1b5768393f9bf2f60865b1defeeb819)
 - [Yage.ai - Three Products, Three Companies: Coding Agent DNA Divergence](https://yage.ai/share/anthropic-coding-agents-dna-divergence-en-20260416.html)
 - [Codex CLI Automation: Workflow Patterns](https://smartscope.blog/en/generative-ai/chatgpt/codex-cli-automation-workflow-patterns/)
+
+---
+
+## 2026 年生态更新
+
+> 本章节记录 2026 年 4-5 月间 AI Agent 自动化领域的重大进展。截至 2026 年 6 月，定时任务/自动化已成为所有主流 AI 编码平台的标配能力。
+
+### 1. Claude Code Routines 正式发布（2026.04.14）
+
+2026 年 4 月 14 日，Anthropic 在 Claude Code 桌面版大改版中正式推出 **Routines**，定位为"云端常驻 Agent 模板"。关键变化：
+
+| 维度 | 此前的 `/schedule` CLI 命令 | Routines（正式版） |
+|------|--------------------------|-------------------|
+| 管理界面 | 仅 CLI `/schedule` | Web 控制台 `code.claude.com/docs/en/routines` |
+| 触发方式 | 仅定时 | **三种**：定时（cron）+ API（HTTP POST + Bearer Token）+ GitHub 事件 |
+| 配额 | 无独立配额概念 | Pro 5/天、Max 15/天、Team/Enterprise 25/天，可按量加购 |
+| 网络控制 | 无 | 可配置网络隔离级别 |
+| 环境变量 | 不支持 | 安全注入 API Key、Token 等密钥 |
+| 分支安全 | 无 | 默认仅可推送到 `claude/*` 前缀分支 |
+| 身份 | 无 | 以用户身份操作（commit、PR、Slack 消息均带用户凭证） |
+
+旧 `/schedule` 命令创建的任务**自动迁移**至 Routines 体系。
+
+> 来源：[Claude Code Docs - What's New Week 16](https://code.claude.com/docs/en/whats-new/2026-w16)、[InfoQ 中文报道](https://www.infoq.cn/article/pqiTGU8VMOZ1fOZh8H98)、[SiliconANGLE](https://siliconangle.com/2026/04/14/anthropics-claude-code-gets-automated-routines-desktop-makeover/)
+
+### 2. OpenAI Codex Automations 重大升级（2026.03-04）
+
+OpenAI Codex 在 2026 年 Q1-Q2 经历了一系列密集更新，自动化能力大幅增强：
+
+| 时间 | 更新 | 核心内容 |
+|------|------|---------|
+| **2026.03** (v26.312) | 自动化重构 | 可选本地/worktree 执行、自定义推理级别和模型、模板化创建 |
+| **2026.03** | **Triggers（事件触发器）** | GitHub Issue/PR 创建、CI 失败、@mention 时自动触发，无需人工干预 |
+| **2026.04** (v26.415) | **Thread Automations（线程自动化）** | 定时自唤醒、跨天跨周保留完整上下文、休眠后可断点续跑 |
+| **2026.04** | Computer Use (macOS) | 可直接操作 Mac 应用，`@computer` 能力全面开放 |
+| **2026.04** | 插件系统 + 应用内浏览器 | 90+ 插件、内存预览、产物查看器 |
+| **2026.05** | Codex for Chrome + 并行标签页 | 浏览器扩展，后台并行工作 |
+
+**关键变化**：Codex 从"桌面端 AI 定时器"演进为具备 **事件驱动 + 定时调度 + 跨天上下文延续 + 桌面操控** 的完整自动化平台。
+
+> 来源：[OpenAI Codex Changelog](https://developers.openai.com/codex/changelog?type=codex-app)、[GitHub Release v0.135.0](https://github.com/openai/codex/releases/tag/rust-v0.135.0)、[163 报道](https://www.163.com/dy/article/KQO8D93K051180F7.html)
+
+### 3. 新竞争者入场：2026 年新发布的 Agent 定时/自动化方案
+
+2026 年 4-5 月，多家厂商推出 AI Agent 定时调度能力，竞争格局从三足鼎立转向群雄逐鹿：
+
+#### 3.1 Google — Gemini Spark + Antigravity 2.0（2026.05 I/O 大会）
+
+| 产品 | 定位 | 核心能力 |
+|------|------|---------|
+| **Gemini Spark** | 7x24 云端后台 Agent | 基于 Gemini 3.5 Flash，Google Cloud 虚拟机常驻运行。三大核心模块：**Tasks**（任务分解执行）、**Skills**（可复用能力）、**Schedules**（定时/条件触发）。手机关机也能跑，支持多步骤自主决策。 |
+| **Antigravity 2.0** | 通用 Agent 工作平台 | 从 IDE 转型为通用 Agent 平台。新增 `/schedule` 命令（一次性 + 周期性调度）、**Managed Agents**（一次 API 请求即可在隔离 Linux 环境启动长驻 Agent）。 |
+
+> 来源：[IT之家 - Antigravity 2.0](https://www.ithome.com/0/952/535.htm)、[Gigazine - Gemini Spark](https://gigazine.net/gsc_news/en/20260520-google-gemini-spark)
+
+#### 3.2 OpenAI — ChatGPT Workspace Agents（2026.04）
+
+- **7x24 云端运行**，员工离线后持续执行复杂长周期工作流
+- 支持定时调度 + Slack 集成，可自动回复问题、链接文档、提交工单
+- 面向 Business / Enterprise / Edu 用户，2026 年 5 月 6 日后转为计费模式
+- 与 Codex 的定位差异：Workspace Agents 面向**非开发者团队工作流**，Codex 面向**开发者编码任务**
+
+> 来源：[IT之家 - ChatGPT Workspace Agents](https://www.ithome.com/0/942/362.htm)、[SiliconANGLE](https://siliconangle.com/2026/04/22/openai-subscribers-get-new-workspace-agents-automate-complex-tasks-across-teams/)
+
+#### 3.3 Notion — Custom Agents（2026.02 公测）
+
+- 在 Notion 工作区内**后台定时运行或按触发器自动执行**
+- 典型场景：自动 Q&A、任务分类派发、定期生成报表
+- 支持跨 Slack / 邮件 / 日历集成，按使用量计费（Notion Credits）
+
+> 来源：[IT Brief - Notion Custom Agents](https://itbrief.in/story/notion-unveils-custom-agents-to-automate-team-workflows)
+
+#### 3.4 Emergent — Wingman（2026.04）
+
+- **始终在线**的后台自主 Agent，支持**时间表 + 事件触发器**双模调度
+- 跨 Gmail / Outlook / Slack / CRM / GitHub / WhatsApp 执行任务
+- 区分低风险自动执行与高风险需确认动作
+
+> 来源：[IT Brief - Emergent Wingman](https://itbrief.in/story/emergent-launches-wingman-autonomous-ai-agent-for-work)
+
+#### 3.5 其他值得关注的发布
+
+| 厂商 | 工具 | 亮点 |
+|------|------|------|
+| **Automation Anywhere** | APA 平台 2026 增强版 | Context Intelligence Graph（4 亿+ 执行数据）、AI Evaluations、低代码 Agent 构建 |
+| **Productive 5.0** | AI Agents | 面向专业服务公司，自动处理资源分配、时间追踪、报表 |
+| **Freshworks** | Freddy AI Agent Studio | 无代码客服 Agent，覆盖工时外 47% IT 工单 |
+
+> 来源：[TMCnet - Automation Anywhere](https://www.tmcnet.com/usubmit/2026/05/19/10385176.htm)、[GlobeNewsWire - Productive 5.0](https://www.globenewswire.com/de/news-release/2026/05/12/3293312/0/en/productive-launches-5-0-with-ai-agents-that-free-teams-from-routine-work.html)、[IT Brief - Freshworks](https://itbrief.in/story/freshworks-launches-freddy-ai-agent-studio-for-service)
+
+### 4. 2026 年行业趋势总结
+
+1. **「始终在线」成为标配**：几乎所有新发布的 Agent 都支持 7x24 云端/后台运行，脱离人工实时交互
+2. **定时 + 触发器双模调度**：不再仅依赖 cron 式周期性任务，事件驱动触发（GitHub 事件、告警、CI 状态变化）成为第二引擎
+3. **从「个人助手」走向「团队 Agent」**：可共享、可协作、可跨工具集成，治理与权限控制成为差异化卖点
+4. **云端沙箱执行**：Google 和 OpenAI 均采用云虚拟机承载 Agent，确保隔离性和持久化状态
+5. **定价模式转向按用量**：从固定席位费转向基于 credits / token 的使用量计费
+6. **竞争格局从三足鼎立走向多极化**：2026 年初是 Anthropic（Routines）vs OpenAI（Codex）vs 自建，年中 Google（Gemini Spark）、Notion、Emergent 等均已入局
+
+### 5. 对本文原对比框架的影响
+
+| 原方案 | 2026 年 6 月状态 |
+|--------|:---:|
+| 传统 Cron | 仍是最简单可靠的选择，无变化 |
+| Codex Automations | 从"桌面 AI 定时器"大幅升级为"事件驱动 + 定时 + 跨天上下文 + 桌面操控"平台 |
+| Claude Code Routines | 从 Research Preview 正式发布，新增 Web 控制台、API/GitHub 触发、安全管控，可用性大幅提升 |
+| 自建（Cron + CC + 第三方模型） | 仍是 VPN/网络受限用户的唯一解，但新平台（Gemini Spark、Wingman）可能成为替代选项 |
+
+**新晋竞争者**：Gemini Spark 有望成为第一个**跨厂商覆盖**的云端 Agent 调度方案（不锁定特定 IDE）；Notion Custom Agents 将 Agent 自动化带入非开发者日常工作流。
+
+### 6. 进一步阅读（2026 更新）
+
+- [Claude Code Docs - What's New Week 16 (Routines Launch)](https://code.claude.com/docs/en/whats-new/2026-w16)
+- [Claude Code Routines 官方文档](https://code.claude.com/docs/en/routines)
+- [OpenAI Codex Changelog](https://developers.openai.com/codex/changelog?type=codex-app)
+- [GitHub - Codex Release v0.135.0](https://github.com/openai/codex/releases/tag/rust-v0.135.0)
+- [Gemini Spark 官方介绍](https://gigazine.net/gsc_news/en/20260520-google-gemini-spark)
+- [IT之家 - Antigravity 2.0 发布](https://www.ithome.com/0/952/535.htm)
+- [IT之家 - ChatGPT Workspace Agents](https://www.ithome.com/0/942/362.htm)
+- [dev.to - Codex April 2026 Update Review](https://dev.to/bean_bean/openai-codex-april-2026-update-review-computer-use-memory-90-plugins-is-the-hype-real-2hnp)
+- [BigHat Group - Codex Enterprise Automation](https://www.bighatgroup.com/blog/openai-codex-enterprise-ai-automation-april-2026/)

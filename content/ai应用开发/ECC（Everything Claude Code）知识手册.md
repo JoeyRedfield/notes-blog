@@ -297,3 +297,85 @@ ECC 在 README 中提到了相关的安全 CVE，这也是其内置安全扫描�
 - **BigHatGroup 独立分析**：[Everything Claude Code: The Agent Harness Your Team Is Missing](https://www.bighatgroup.com/blog/everything-claude-code-ai-agent-harness-guide/)
 - **DeepWiki**：[ECC on DeepWiki](https://deepwiki.com/affaan-m/everything-claude-code)
 - **ECC Tools GitHub App**：[GitHub Marketplace](https://github.com/marketplace/ecc-tools)
+
+---
+
+## 十六、2026 年最新数据核实
+
+> 核实日期：2026-06-01 | 数据来源：GitHub API、仓库 README.md、[ROSS Index Q1 2026](https://runacap.com/ross-index/q1-2026/)
+
+### 16.1 核心数据对比
+
+| 指标 | 原文数据（2026.05） | 核实数据（2026.06.01） | 变化 | 备注 |
+|------|-------------------|----------------------|:--:|------|
+| GitHub Stars | **190,000+** | **200,657** | +5.6% | GitHub API 实时数据，原文略有低估 |
+| Forks | **29,500+** | **30,790** | +4.4% | GitHub API 实时数据 |
+| 贡献者 | **170+** | **203** | +19% | 通过 GitHub API 分页头部获取 |
+| 智能体（Agent） | **60 个** | **63 个** | +3 | 仓库 `agents/` 目录最新统计 |
+| 技能（Skill） | **232 个** | **249 个** | +17 | 仓库 `skills/` 目录最新统计 |
+| 旧版命令 | **75 个** | **79 个** | +4 | README 标注为 "legacy command shims" |
+
+> 来源：GitHub API `GET /repos/affaan-m/ECC`（返回 `stargazers_count: 200657, forks_count: 30790`），贡献者数通过 API 分页 Link header 获取（203 页）。
+
+### 16.2 原文未提及的重要新信息
+
+以下信息在原文中未涉及，但在本次核实中发现：
+
+#### 16.2.1 ROSS Index Q1 2026 排名第一
+
+ECC Tools（`affaan-m/everything-claude-code`）在 **Runa Capital ROSS Index Q1 2026**（开源初创公司按 GitHub 星标增长排名）中位列 **第 1 名**：
+
+| 指标 | 数据 |
+|------|------|
+| 排名 | **#1** |
+| 期末星标 | 119.8K（截至 2026-03-31） |
+| 增长率 | **119.8 倍** |
+| 定位 | Agent harness 系统，含技能、智能体与安全扫描 |
+| 对比 | 第二名 World Monitor 仅 45.5K stars / 45.5x 增长，不到 ECC 的一半 |
+
+> 来源：[ROSS Index Q1 2026 - Runa Capital](https://runacap.com/ross-index/q1-2026/)
+
+#### 16.2.2 AgentShield 安全引擎
+
+ECC 生态中包含一个独立的安全组件 **AgentShield**（`affaan-m/agentshield`，2026 年 2 月 Cerebral Valley x Anthropic 黑客松构建），并非只是一个功能名称：
+
+| 指标 | 数据 |
+|------|------|
+| 独立仓库 | [github.com/affaan-m/agentshield](https://github.com/affaan-m/agentshield) |
+| 静态分析规则 | **102 条** |
+| 测试用例 | **1,282 项** |
+| 测试覆盖率 | **98%** |
+| 运行方式 | CLI (`npx ecc-agentshield scan`)、GitHub Action、ECC 插件、GitHub App |
+| 红蓝对抗 | `--opus` 模式运行 Red Team / Blue Team / Auditor 三代理管线 |
+| 检测范围 | 密钥检测、权限审计、Hook 注入、MCP 漏洞、零宽度字符注入 |
+
+> 来源：[AgentShield GitHub 仓库](https://github.com/affaan-m/agentshield)
+
+#### 16.2.3 当前版本状态
+
+原文记录的 v2.0.0-rc.1（2026 年 4 月）仍是当前最新版本。该版本引入了：
+- Dashboard GUI（基于 Tkinter）
+- Operator 工作流（运营自动化）
+- ECC 2.0 Alpha（Rust 控制层原型，`ecc2/` 目录）
+- 品牌营销与视频创作技能
+
+截至 2026-06-01，尚未发布更新的稳定版本。ECC 2.0 的 Rust 控制平面处于 alpha 阶段。
+
+> 来源：[GitHub Releases](https://github.com/affaan-m/ECC/releases)
+
+### 16.3 数据差异说明
+
+- **Stars 差异**：原文写的是 `190,000+`，而 GitHub API 返回 `200,657`。产生差异的原因是原文为 2026 年 5 月的估算值（README banner 当时标注为 "182K+"），而 README banner 更新滞后于实际星标增长。实际上截至 6 月 1 日已突破 20 万，原文数字偏保守。
+- **Forks 差异**：原文 `29,500+` vs 实际 `30,790`，同理为估算偏差。
+- **Agent / Skill / Command 数量**：ECC 是一个活跃开发中的项目，原文撰写后已有增量更新（Agent 60→63、Skill 232→249、Commands 75→79）。这些差异属于正常的版本迭代。
+- **原文质量评价**：原文的核心架构描述（四层架构、三种上下文模式、安装方式、DeepSeek 兼容性分析）依然准确。本次核实主要补充了 ROSS Index 排名和 AgentShield 详情这两个原文遗漏的重要信息。
+
+### 16.4 核实来源汇总
+
+| 来源 | URL |
+|------|-----|
+| GitHub API | `https://api.github.com/repos/affaan-m/ECC` |
+| 仓库 README | [github.com/affaan-m/ECC](https://github.com/affaan-m/ECC) |
+| ROSS Index Q1 2026 | [runacap.com/ross-index/q1-2026/](https://runacap.com/ross-index/q1-2026/) |
+| AgentShield 仓库 | [github.com/affaan-m/agentshield](https://github.com/affaan-m/agentshield) |
+| GitHub Releases | [github.com/affaan-m/ECC/releases](https://github.com/affaan-m/ECC/releases) |

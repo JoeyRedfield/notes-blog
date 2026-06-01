@@ -253,3 +253,188 @@ npx skills add planning-with-files -y -g
 - 用 **memory-intake / memory-audit / memory-evolution** 建立长期记忆体系
 - 用 **skill-creator** 封装自己的专属工作流
 - 用 **writing-plans + executing-plans** 实现复杂项目的全流程管控
+
+---
+
+## 2026 年上半年重大进展
+
+> 本章节基于 2026 年 6 月最新数据整理，反映 Skills 和 MCP 生态在过去半年的关键变化。
+
+### 一、MCP 捐赠给 Linux Foundation：从业界标准到中立基础设施
+
+**时间线**：
+
+| 时间 | 事件 |
+|------|------|
+| 2024.11 | Anthropic 开源 MCP（MIT 许可证） |
+| 2025.04 | OpenAI 全产品线接入 MCP |
+| 2025.07 | Microsoft Copilot Studio 集成 MCP |
+| **2025.12** | **Anthropic 将 MCP 捐赠给 Linux Foundation 下属的 Agentic AI Foundation（AAIF）** |
+
+**AAIF 创始成员**：Anthropic、Block、OpenAI 三方联合发起，铂金级支持者包括 Google、Microsoft、AWS、Cloudflare、Bloomberg。
+
+**战略意义**：
+- 消除供应商锁定顾虑——MCP 在 Linux Foundation 中立治理下，竞争对手也能放心贡献
+- 触发网络效应——OpenAI、Google、Microsoft 全部接入后，任何 MCP Server 对所有平台自动可用
+- 遵循 Kubernetes、Node.js、PyTorch 同等的中立治理模式
+
+> 来源：[ITPro 报道](https://www.itpro.com/software/open-source/anthropic-says-mcp-will-stay-open-neutral-and-community-driven-after-donating-project-to-linux-foundation)、[CIO Dive 分析](https://www.ciodive.com/news/big-tech-develop-open-standards-agentic-ai/807608/)、[IT Brief](https://itbrief.co.nz/story/anthropic-donates-mcp-to-new-agentic-ai-foundation)
+
+### 二、MCP 生态增长数据（截至 2026 年 5 月）
+
+| 指标 | 数据 | 来源 |
+|------|------|------|
+| 月 SDK 下载量（Python + TypeScript） | ~9700 万 | [dev.to](https://dev.to/raxxostudios/mcp-hit-97-million-downloads-the-protocol-war-is-over-before-it-started-3ekh) |
+| 活跃公共 MCP Server | 10,000 ~ 13,000+ | [dev.to](https://dev.to/grahamduescn/mcp-in-2026-the-numbers-behind-the-ecosystem-explosion-3j72) |
+| 注册工具总数 | 177,000+ | 同上 |
+| AAIF 成员组织 | ~150 家 | 同上 |
+| Smithery 注册表 Server 数 | 7,000+ | 同上 |
+| 企业 AI 团队（50+ 人）使用 MCP 生产 | 78%（Q1 2026） | [AgentModeAI](https://agentmodeai.com/mcp-enterprise-agent-tooling/) |
+| CTO 将 MCP 设为默认集成标准 | 67% | 同上 |
+
+**增长轨迹**：从 2024.11 月均 10 万下载 → 2025.03 OpenAI 接入后 2200 万 → 2025.12 捐赠时已是大规模生态 → 2026.03 达到 9700 万/月。
+
+> 来源：[MCP in 2026: The numbers behind the ecosystem explosion](https://dev.to/grahamduescn/mcp-in-2026-the-numbers-behind-the-ecosystem-explosion-3j72)、[MCP Hit 97 Million Downloads](https://dev.to/raxxostudios/mcp-hit-97-million-downloads-the-protocol-war-is-over-before-it-started-3ekh)
+
+### 三、Agent Skills 开放标准：从 Claude Code 专属到行业通用
+
+**2025 年 12 月 18 日**，Anthropic 将 Agent Skills 正式作为开放标准发布，上线规范站点 [agentskills.io](https://agentskills.io)，提供开源 SDK 和正式规范文档。
+
+**Skills 与 MCP 的分工**：
+- **MCP**（连接层）：定义"模型能访问什么"——工具、API、数据源
+- **Skills**（能力层）：定义"模型该怎么做"——可复用的领域知识、标准操作流程
+
+**48 小时内采纳 Skills 标准的公司/工具**：
+
+| 公司/工具 | 采纳方式 |
+|-----------|---------|
+| **Microsoft** | VS Code 和 GitHub Copilot 直接集成 |
+| **OpenAI** | ChatGPT 和 Codex CLI 采用几乎相同架构 |
+| **Cursor** | 原生支持 |
+| **Goose** | 原生支持 |
+| **Amp** | 原生支持 |
+| **OpenCode** | 原生支持 |
+| **Atlassian、Figma、Canva、Stripe、Notion、Zapier、Box、Browserbase** | 首批企业级 Skills 合作伙伴 |
+
+> 来源：[VentureBeat 报道](https://venturebeat.com/ai/anthropic-launches-enterprise-agent-skills-and-opens-the-standard)、[Unite.AI 分析](https://www.unite.ai/anthropic-opens-agent-skills-standard-continuing-its-pattern-of-building-industry-infrastructure/)、[byteiota](https://byteiota.com/agent-skills-standard-microsoft-openai-adopt-in-48-hours/)
+
+**Gartner 预测**：到 2026 年，75% 的 AI 项目将聚焦于可组合的 Skills 而非单体 Agent。
+
+### 四、Claude Code 的四大/五大扩展体系
+
+Claude Code 目前支持完整的扩展生态，可分为五个层次：
+
+| 层次 | 扩展类型 | 配置文件 | 核心作用 |
+|------|----------|----------|----------|
+| 基础层 | **CLAUDE.md** | 项目根目录 | 始终加载的项目约定和背景知识 |
+| 连接层 | **MCP Server** | `.mcp.json` 或 `~/.claude.json` | 连接外部工具/API，为 Claude 增加可调用的工具 |
+| 能力层 | **Skill** | `.claude/skills/` 或 `~/.claude/skills/` | 按需加载的专家指令和斜杠命令 |
+| 隔离层 | **Custom Agent** | `.claude/agents/` 或 `~/.claude/agents/` | 独立上下文窗口运行专用任务，可限制工具/模型 |
+| 自动化层 | **Hook** | `.claude/settings.json` | 生命周期事件自动执行 Shell 命令（保证执行） |
+| 分发层 | **Plugin** | `.claude-plugin/plugin.json` | 打包以上所有组件，用于团队共享和分发 |
+
+**关键区别**：
+
+- **MCP**：消耗大量上下文（5 个 Server、58 个工具可能占用 55,000+ token），Anthropic 的 Tool Search 功能可减少约 85% 开销
+- **Skill**：启动时仅占 30-50 token/Skill（渐进式披露），安装 100+ Skill 几乎不增加上下文负担
+- **Custom Agent**：在独立上下文窗口运行，输出量大、需限制工具权限、任务自包含时最佳；也可选更便宜的模型（如 Haiku）降低成本
+- **Hook**：**保证执行**——PreToolUse 可拦截危险命令（`exit 2`），PostToolUse 可自动格式化代码，Stop 事件可发送通知
+- **CLAUDE.md vs Skill**：CLAUDE.md 始终加载（适合项目约定），Skill 按需加载（适合特定工作流）
+
+> 来源：[Morph Blog](https://www.morphllm.com/claude-code-extensions)、[DeepWiki](https://deepwiki.com/anthropics/claude-code/3.6-plugin-system)
+
+### 五、渐进式披露（Progressive Disclosure）：三级 token 效率机制
+
+Agent Skills 的核心创新在于**三级渐进披露机制**，解决了上下文窗口的瓶颈问题：
+
+| 层级 | 加载时机 | 加载内容 | Token 消耗 |
+|------|----------|----------|:---:|
+| **一级（元数据）** | Agent 启动时 | SKILL.md 的 YAML frontmatter（`name` + `description`） | 约 50-100 token/Skill |
+| **二级（指令）** | 任务匹配到 Skill 时 | SKILL.md 正文（流程、检查清单、工作流步骤） | 约 500-5000 token |
+| **三级（资源）** | 执行中按需读取 | `references/`、`scripts/`、`assets/` 中的文件 | 变量（可能很大） |
+
+**效率数据**（基于 SkillReducer 论文和社区实测）：
+
+| 指标 | 数据 |
+|------|------|
+| 平均 token 消耗降低 | 48%-65% |
+| 上下文窗口有效利用率 | 从 ~40% 提升至 85%+ |
+| 有效 token 比例 | 从 35% 提升至 78% |
+| 单会话可支持的 Skill 数 | 从 ~20 个提升至 200+ 个 |
+| 内存占用减少 | 62% |
+| 响应延迟降低 | 41% |
+
+**核心设计原则**：
+1. **描述中编码触发条件**——一级元数据的 `description` 字段必须说清"何时使用"，而非仅说"做什么"
+2. **SKILL.md 保持精简**——只保留核心流程，分类法、长示例、模板放入 `references/`
+3. **链接代替内联**——用 Markdown 链接引用资源文件，Agent 按需读取
+4. **独立的上下文环境**——每个 Skill 有独立上下文，防止跨 Skill 污染
+
+> 来源：[SkillReducer 论文 (arXiv:2603.29919)](https://arxiv.org/html/2603.29919v1)、[Skywork 分析](https://skywork.ai/blog/claude-skills-progressive-disclosure-ultimate-guide-2/)
+
+### 六、OpenClaw 社区生态：Skills 民主化的另一极
+
+与 Anthropic 主导的 Agent Skills 标准并行，社区驱动的 **OpenClaw**（原名 Clawdbot/MoltBot）在 2026 年形成了另一极庞大的 Skills 生态：
+
+| 指标 | 数据（截至 2026 年 3 月） |
+|------|------|
+| ClawHub 公共注册表 Skill 总数 | 18,140+ |
+| GitHub Stars | 250,829+ |
+| Fork 数 | 49,900+ |
+| 日均新增 Skill | 40-60 个 |
+| 用户规模 | 220 万+ |
+| 精选库过滤后保留 | 5,490+ 高质量 Skill |
+
+**注册表架构**：
+- **ClawHub**：官方公共技能市场，基于 Convex + React + 向量搜索，支持自然语言发现技能
+- **awesome-openclaw-skills**：社区维护的 GitHub 精选库，过滤掉垃圾/加密货币/重复/恶意技能
+
+**技能分类覆盖（前 10）**：
+
+| 分类 | Skill 数 |
+|------|:---:|
+| AI & LLMs | 287 |
+| 搜索与研究 | 253 |
+| DevOps & 云 | 212 |
+| Web 前端 | 202 |
+| 营销与销售 | 143 |
+| 浏览器自动化 | 139 |
+| 生产力与任务 | 135 |
+| 编码智能体 | 133 |
+| 通讯 | 132 |
+| CLI 工具 | 129 |
+
+**安全挑战**：约 11%-20% 的注册表 Skill 包含恶意代码（ClawHavoc 攻击事件），衍生出 NanoClaw（Docker 隔离执行）和 OpenClaw Security Auditor（OSA）等安全工具，ClawHub 已接入 VirusTotal 扫描。
+
+> 来源：[阿里云开发者](https://developer.aliyun.com/article/1713117)、[Skywork](https://skywork.ai/skypage/en/clawhub-openclaw-skill-registry/2038573559848898560)
+
+### 七、Skills as Natural Language Programming：自然语言编程新范式
+
+2026 年，Skills 的兴起催生了"**自然语言编程**"（Natural Language Programming）这一新范式：
+
+**核心论点**：
+- **Skills = 新的编程语言**：Skills 定义了"语法"，Agent 作为"执行器/编译器"
+- **从写 Prompt 到写 Skill**：将一次性提示词工程化为可复用、可组合、可版本化的 Skill 模块
+- **自进化系统**：Agent 执行完任务后评估自身表现，自动更新 SKILL.md——在计算历史上首次实现无需人类干预的自我改进
+
+**学术研究支撑**：
+
+- 2026 年 5 月《A Comprehensive Survey on Agent Skills》(arXiv) 提出四阶段生命周期：表示→获取→检索→进化
+- 2026 年 4 月《Scaling Coding Agents via Atomic Skills》(arXiv) 将软件工程抽象为五种原子 Skill（代码定位、编辑、单测生成、问题复现、代码审查），联合强化学习训练后平均提升 18.7%
+
+**行业影响**：
+
+| 指标 | 数据 |
+|------|------|
+| 传统算法工程师需求下降 | 37% |
+| Agent/AI 工程师职位增长 | 215% |
+| Gartner 预测 2027 年非专业人员完成开发 | 75% |
+| 新兴角色 | Prompt 逻辑架构师、Agent UX 设计师、AI 伦理合规官 |
+
+**未解决的核心挑战**：
+- 跨会话记忆：多 Agent 并发会话无法轻松共享记忆
+- 多项目协调：Agent 难以理解跨项目依赖
+- Skill 供应链安全："Skill 注入攻击"和兼容性标准仍需行业方案
+- 长周期状态管理：多轮长任务工作流仍存在连续性问题
+
+> 来源：[Tencent Cloud 开发者](https://cloud.tencent.com.cn/developer/article/2624428)、[Baidu 开发者](https://developer.baidu.com/article/detail.html?id=7300002)、[arXiv:2605.07358](https://arxiv.org/abs/2605.07358v1)、[arXiv:2604.05013](https://arxiv.org/html/2604.05013v1)

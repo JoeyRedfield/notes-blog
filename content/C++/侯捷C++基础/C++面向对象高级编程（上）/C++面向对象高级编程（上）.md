@@ -1,6 +1,8 @@
 ---
-
+tags: [C++]
+created: 2026-06-01
 ---
+
 # 头文件与类的声明
 
 延申文件名`extension file name`不一定是.h或.cpp，也可能是.hpp或其它甚至无延伸名。

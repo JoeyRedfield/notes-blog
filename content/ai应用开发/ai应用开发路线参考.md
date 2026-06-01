@@ -7,6 +7,8 @@ source: video
 status: active
 privacy: normal
 updated: 2026-05-21
+tags: [AI]
+created: 2026-06-01
 ---
 
 https://www.bilibili.com/video/BV1AYSXBLEQb/?spm_id_from=333.1391.0.0&vd_source=0cafd28c011c5492e6d7e39f1fd256d9

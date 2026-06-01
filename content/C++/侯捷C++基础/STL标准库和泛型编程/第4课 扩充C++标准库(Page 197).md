@@ -1,6 +1,8 @@
 ---
-
+tags: [C++]
+created: 2026-06-01
 ---
+
 # 一个万用的hash function
 
 ![[Untitled 744.png]]

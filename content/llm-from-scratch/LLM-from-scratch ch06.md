@@ -6,7 +6,8 @@ date: 2026-01-08
 type: Post
 category: LLM-from-scratch
 slug: LLM-from-scratch-06
-tags: []
+tags: [AI, LLM]
+created: 2026-06-01
 summary: （略）分类微调
 status: Published
 ---

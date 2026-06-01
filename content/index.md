@@ -60,9 +60,11 @@ title: "HenryWu's Blog"
 - [[C++/C++ Primer/第8章 IO库|第8章 IO库]]
 - [[C++/C++ Primer/第9章 顺序容器|第9章 顺序容器]]
 - [[C++/C++ Primer/C++ Primer|C++ Primer]]
+- [[C++/C++26 新标准|C++26 新标准]]
 
 ## ai应用开发
 
+- [[ai应用开发/技术面试的终结与人才评估的未来|技术面试的终结与人才评估的未来]]
 - [[ai应用开发/项目目录里 Codex 计划 + Claude Code CLI 开发工作流模板|项目目录里 Codex 计划 + Claude Code CLI 开发工作流模板]]
 - [[ai应用开发/AI Agent 自动化任务方案对比|AI Agent 自动化任务方案对比]]
 - [[ai应用开发/AI Harness（驾驭层）知识手册|AI Harness（驾驭层）知识手册]]
@@ -73,6 +75,7 @@ title: "HenryWu's Blog"
 - [[ai应用开发/Claude Code Skills 与 MCP 精华笔记|Claude Code Skills 与 MCP 精华笔记]]
 - [[ai应用开发/Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议|Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议]]
 - [[ai应用开发/ECC（Everything Claude Code）知识手册|ECC（Everything Claude Code）知识手册]]
+- [[ai应用开发/MarkItDown 文档转 Markdown 工具|MarkItDown 文档转 Markdown 工具]]
 - [[ai应用开发/MemPalace 学习笔记|MemPalace 学习笔记]]
 - [[ai应用开发/Quartz GitHub Pages 博客发布工作流|Quartz GitHub Pages 博客发布工作流]]
 - [[ai应用开发/Quartz GitHub Pages 子路径跳转问题排查记录|Quartz GitHub Pages 子路径跳转问题排查记录]]

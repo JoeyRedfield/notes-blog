@@ -6,7 +6,8 @@ date: 2025-12-19
 type: Post
 category: LLM-from-scratch
 slug: llm-from-scratch-a9
-tags: []
+tags: [AI, LLM]
+created: 2026-06-01
 summary: ""
 status: Published
 ---

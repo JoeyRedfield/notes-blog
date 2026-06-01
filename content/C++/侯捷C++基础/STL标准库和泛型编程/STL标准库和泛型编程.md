@@ -1,6 +1,8 @@
 ---
-
+tags: [C++]
+created: 2026-06-01
 ---
+
 > 所谓Generic Programming (GP, 泛型编程) , 就是使用template (模板) 为主要工具来编写程序. 注意GP与OOP的根本差异以及templates的意义与运用. 
 
 [[第1课 简单了解和使用C++标准库]]

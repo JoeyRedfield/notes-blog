@@ -6,7 +6,8 @@ date: 2026-01-10
 type: Post
 category: LLM-from-scratch
 slug: LLM-from-scratch-07
-tags: []
+tags: [AI, LLM]
+created: 2026-06-01
 summary: （略）指令微调
 status: Published
 ---

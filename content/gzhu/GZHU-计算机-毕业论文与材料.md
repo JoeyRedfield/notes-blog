@@ -1,5 +1,7 @@
 ---
 password: chill-with-you
+tags: [学业]
+created: 2026-06-01
 ---
 
 
@@ -7,9 +9,10 @@ password: chill-with-you
 
 > [!note]+ 
 > 写这篇文章的原因是因为[这个网站](https://welcome.acastu.com/)，我学到了很多关于GZHU的事情，可惜它已经停运了。
-我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，密码是`chill-with-you`，样式会比导出的PDF好点，应该也不会更新了。
+我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，密码是`chill-with-you`，样式会比导出的PDF好点。
 主要还是来时路，内容不是很多，经验仅供参考，希望各位不要再做重复工作。以实际情况为准。
 
+~~应该不会更新了。~~结果还是更新了一点点内容，不过应该问题不大。
 # 通用知识
 
 入学须知：[2025级入学新生须知](https://mp.weixin.qq.com/s/R0zXk3TynhG_zIMz1ZbDEw)
@@ -34,7 +37,7 @@ password: chill-with-you
 
 接入设置服务器地址：[**https://vpn2.gzhu.edu.cn**](https://vpn2.gzhu.edu.cn/)
 
-# 研三大论文
+# 大论文、材料相关
 ## 格式和查重
 
 现在[GitHub](https://github.com/Ian-Jhon/GZHU_Thesis_Latex_Template)有学位论文模版，latex调格式比较省心。以后估计可以把格式文件给到Claude、codex让**ai调整你的latex或者word**了。
@@ -50,6 +53,10 @@ password: chill-with-you
 - 中英文摘要写创新点时同上，中文是`提出了…; 提出了…`开头没有逗号的一句话写创新点，英文用`We present, We develop, We implement`开头；
 
 预答辩的时间看自己组的要求，**有些老师会要求在2026寒假就要交初稿，有些老师则是2026年3月27日前交初稿**，但最好还是提前写，提前改，后面事情多了压力会小一些。
+## 开题、中期报告、中期考核
+中期报告是吴老师说毕业材料里面要交的，而中期考核是跟开题一起做的。
+关于开题的奇偶页如下，假如你审核表的题目跟最后一页刚好是正反面，你修改题目的话就要重新盖章了：
+![[03cacd3c3e43b1ecb35d46f5dfe8a26c.jpg]]
 
 ## 盲审
 这个格式上一般不会有什么问题，重点是匿掉信息，第一次跟交完大论文之后的盲审要求有点区别，具体要看群通知。
@@ -122,5 +129,5 @@ password: chill-with-you
 如果是答辩现场老师让改题目，这时候如果你没带电脑，就得去打印店改好，然后拿上来签字，或者你自己有电脑现场改也行。
 
 # 写在最后
-真的有不懂的事情，还是建议各位同学互相交流、讨论。
+真的有不懂的事情，还是建议各位同学互相交流、讨论。反正是在学校的事情总会有解决办法的。
 ![[image-3.png]]
