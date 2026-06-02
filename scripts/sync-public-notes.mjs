@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises"
+import { copyFile, mkdir, readFile, readdir, rmdir, stat, unlink, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -146,7 +146,7 @@ async function findAttachment(sourceVault, markdownFile, reference) {
   return null
 }
 
-function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sensitiveWarnings, skipped }) {
+function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sensitiveWarnings, skipped, removed }) {
   const lines = [
     "# Public Notes Sync Report",
     "",
@@ -159,6 +159,7 @@ function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sen
     `- Missing attachments: ${missingAttachments.length}`,
     `- Sensitive warnings: ${sensitiveWarnings.length}`,
     `- Skipped inputs: ${skipped.length}`,
+    `- Stale files removed: ${removed.length}`,
     "",
     "## Copied Markdown",
     "",
@@ -182,6 +183,10 @@ function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sen
         )
       : ["- None"]),
     "",
+    "## Stale Files Removed",
+    "",
+    ...(removed.length ? removed.map((file) => `- ${file}`) : ["- None"]),
+    "",
     "## Skipped",
     "",
     ...(skipped.length ? skipped.map((item) => `- ${item}`) : ["- None"]),
@@ -189,6 +194,59 @@ function makeReport({ copiedMarkdown, copiedAttachments, missingAttachments, sen
   ]
 
   return `${lines.join("\n")}\n`
+}
+
+async function cleanupStaleContent(contentDir, expectedFiles) {
+  const removed = []
+
+  async function collectExisting(dir, base) {
+    const results = []
+    try {
+      const entries = await readdir(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name)
+        const relative = path.relative(base, fullPath)
+        if (entry.isDirectory()) {
+          results.push(...(await collectExisting(fullPath, base)))
+        } else if (entry.isFile()) {
+          results.push(relative)
+        }
+      }
+    } catch {
+      // contentDir doesn't exist yet — nothing to clean
+    }
+    return results
+  }
+
+  const existing = await collectExisting(contentDir, contentDir)
+  const expected = new Set(expectedFiles.map(toPosix))
+
+  for (const file of existing) {
+    if (!expected.has(toPosix(file))) {
+      await unlink(path.join(contentDir, file))
+      removed.push(toPosix(file))
+    }
+  }
+
+  // Clean up empty directories (bottom-up by depth)
+  for (const file of removed) {
+    let dir = path.dirname(path.join(contentDir, file))
+    while (dir !== contentDir) {
+      try {
+        const entries = await readdir(dir)
+        if (entries.length === 0) {
+          await rmdir(dir)
+        } else {
+          break
+        }
+      } catch {
+        break
+      }
+      dir = path.dirname(dir)
+    }
+  }
+
+  return removed
 }
 
 async function writeIndex(config, copiedMarkdown) {
@@ -282,12 +340,20 @@ export async function syncPublicNotes(config) {
     }
   }
 
+  const uniqueAttachments = [...new Set(copiedAttachments)]
+  const removed = await cleanupStaleContent(config.contentDir, [
+    ...copiedMarkdown,
+    ...uniqueAttachments,
+    "index.md",
+  ])
+
   const report = makeReport({
     copiedMarkdown,
     copiedAttachments: [...new Set(copiedAttachments)].sort(),
     missingAttachments,
     sensitiveWarnings,
     skipped,
+    removed,
   })
 
   await mkdir(path.dirname(config.reportPath), { recursive: true })
@@ -300,6 +366,7 @@ export async function syncPublicNotes(config) {
     missingAttachments,
     sensitiveWarnings,
     skipped,
+    removed,
   }
 }
 
@@ -323,6 +390,7 @@ async function main() {
   console.log(`Copied ${result.copiedAttachments.length} attachments.`)
   console.log(`Missing attachments: ${result.missingAttachments.length}.`)
   console.log(`Sensitive warnings: ${result.sensitiveWarnings.length}.`)
+  console.log(`Removed ${result.removed.length} stale files.`)
   console.log(`Report: ${config.reportPath}`)
 }
 

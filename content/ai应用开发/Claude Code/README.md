@@ -14,6 +14,7 @@ Claude Code CLI 的配置、技巧与深度源码分析。
 - [[Claude Code/Claude Code 切换 API、Resume 与缓存命中学习笔记]] — API 切换、Session Resume 机制与 Prompt Caching 缓存命中策略
 - [[Claude Code/Claude Code CLI 新会话检查清单]] — 确认 MCP 与 hooks 是否在新会话里真正生效
 - [[Claude Code/Claude Code 源码未文档化功能挖掘]] — Hook 响应字段、Skill/Agent 隐藏 frontmatter、YOLO Classifier、自学习回路等源码级功能
+- [[Claude Code/把一本书做成 AI Skill 方法论]] — 六步把一本书变成可调用的 AI skill：从纯文本提取到召回测试的完整流程与 Prompt 模板
 
 ## 相关笔记
 

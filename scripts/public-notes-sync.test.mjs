@@ -107,6 +107,36 @@ test("syncPublicNotes copies only referenced attachments from global assets", as
   })
 })
 
+test("syncPublicNotes removes stale content not in current include list", async () => {
+  await withTempDir(async (root) => {
+    const vault = path.join(root, "vault")
+    const content = path.join(root, "content")
+    const reportPath = path.join(root, "reports", "sync.md")
+    await mkdir(path.join(vault, "keep"), { recursive: true })
+    await mkdir(path.join(vault, "drop"), { recursive: true })
+    await writeFile(path.join(vault, "keep", "note.md"), "keep")
+    await writeFile(path.join(vault, "drop", "old.md"), "drop")
+
+    // Pre-populate content with stale files
+    await mkdir(path.join(content, "keep"), { recursive: true })
+    await mkdir(path.join(content, "drop"), { recursive: true })
+    await writeFile(path.join(content, "keep", "note.md"), "keep")
+    await writeFile(path.join(content, "drop", "old.md"), "old content")
+
+    const result = await syncPublicNotes({
+      sourceVault: vault,
+      contentDir: content,
+      reportPath,
+      include: ["keep"],
+      exclude: [],
+      sensitiveTerms: [],
+    })
+
+    assert.deepEqual(result.removed, ["drop/old.md"])
+    assert.deepEqual(result.copiedMarkdown.includes("keep/note.md"), true)
+  })
+})
+
 test("syncPublicNotes resolves short embeds from note-specific asset folders", async () => {
   await withTempDir(async (root) => {
     const vault = path.join(root, "vault")

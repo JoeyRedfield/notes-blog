@@ -17,6 +17,7 @@ title: "HenryWu's Blog"
 
 ## ai应用开发
 
+- [[ai应用开发/2026年学编程路线与Agentic Engineering|2026年学编程路线与Agentic Engineering]]
 - [[ai应用开发/工具与发布/MarkItDown 文档转 Markdown 工具|MarkItDown 文档转 Markdown 工具]]
 - [[ai应用开发/工具与发布/MemPalace 学习笔记|MemPalace 学习笔记]]
 - [[ai应用开发/工具与发布/Quartz GitHub Pages 博客发布工作流|Quartz GitHub Pages 博客发布工作流]]
@@ -31,7 +32,9 @@ title: "HenryWu's Blog"
 - [[ai应用开发/Agent与自动化/AI Harness（驾驭层）知识手册|AI Harness（驾驭层）知识手册]]
 - [[ai应用开发/Agent与自动化/AI时代软件开发职业方向|AI时代软件开发职业方向]]
 - [[ai应用开发/Agent与自动化/Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议|Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议]]
+- [[ai应用开发/Agent与自动化/Harness Engineering——人类掌舵 Agent 执行|Harness Engineering——人类掌舵 Agent 执行]]
 - [[ai应用开发/ai应用开发路线参考|ai应用开发路线参考]]
+- [[ai应用开发/Claude Code/把一本书做成 AI Skill 方法论|把一本书做成 AI Skill 方法论]]
 - [[ai应用开发/Claude Code/Claude Code 接入 DeepSeek 完整配置|Claude Code 接入 DeepSeek 完整配置]]
 - [[ai应用开发/Claude Code/Claude Code 切换 API、Resume 与缓存命中学习笔记|Claude Code 切换 API、Resume 与缓存命中学习笔记]]
 - [[ai应用开发/Claude Code/Claude Code 源码未文档化功能挖掘|Claude Code 源码未文档化功能挖掘]]

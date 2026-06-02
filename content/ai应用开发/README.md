@@ -21,6 +21,7 @@ tags: [index]
 - [[Claude Code/Claude Code 切换 API、Resume 与缓存命中学习笔记]] — API 切换、Session Resume 机制与 Prompt Caching 缓存命中策略实践笔记
 - [[Claude Code/Claude Code CLI 新会话检查清单]] — 确认 MCP 与 hooks 是否在新会话里真正生效
 - [[Claude Code/Claude Code 源码未文档化功能挖掘]] — 源码级未文档化功能：Hook 响应字段、Skill/Agent 隐藏 frontmatter、YOLO Classifier、自学习回路
+- [[Claude Code/把一本书做成 AI Skill 方法论]] — 六步把一本书变成可调用的 AI skill：纯文本提取→结构映射→台账提炼→skill 生成→召回测试，附 Prompt 模板
 
 ### Agent 与自动化
 
@@ -30,6 +31,7 @@ tags: [index]
 - [[Agent与自动化/Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议]] — 结合 GPT-5.4 / GPT-5.5 与 DeepSeek V4 Pro 的实际分工建议
 - [[Agent与自动化/上海十五五规划-AI智能体政策解读]] — 上海"十五五"服务业规划首次将多模态 AI 智能体列为重点方向
 - [[Agent与自动化/AI时代软件开发职业方向]] — AI 时代软件开发程序员的两个务实方向：AI Agent 应用开发 + AI 赋能后端
+- [[Agent与自动化/Harness Engineering——人类掌舵 Agent 执行]] — Ryan Lopopolo (OpenAI) 演讲：Code is free，如何构建 Agent 驾驭层让 AI 完成完整软件工程
 
 ### 工具与发布
 
@@ -40,6 +42,7 @@ tags: [index]
 
 ### 观点与趋势
 
+- [[2026年学编程路线与Agentic Engineering]] — Tina Huang 2026 年编程学习路线：从 Vibe Coding 到 Agentic Engineering 的范式演进
 - [[技术面试的终结与人才评估的未来]] — Steve Yegge 论技术面试为何消亡：Campfire 模型、可携带成就记录、AI 如何加速变革
 
 ### AI 伦理与人权

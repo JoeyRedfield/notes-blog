@@ -438,3 +438,33 @@ Agent Skills 的核心创新在于**三级渐进披露机制**，解决了上下
 - 长周期状态管理：多轮长任务工作流仍存在连续性问题
 
 > 来源：[Tencent Cloud 开发者](https://cloud.tencent.com.cn/developer/article/2624428)、[Baidu 开发者](https://developer.baidu.com/article/detail.html?id=7300002)、[arXiv:2605.07358](https://arxiv.org/abs/2605.07358v1)、[arXiv:2604.05013](https://arxiv.org/html/2604.05013v1)
+
+### 八、Skill 触发匹配机制：语义匹配与冲突解决
+
+#### 基本原理
+
+Skill 的触发**不是关键词匹配，而是语义匹配**。Claude Code 会将用户消息与所有已安装 Skill 的 `description` 字段做语义相似度计算，取**最高分**的 Skill 触发。
+
+这意味着：
+- **中英文都行**：中文消息同样能触发 Skill（如 `obsidian-vault` 的 description 写的是 "User wants to find, create, or organize notes in Obsidian"，中文"帮我找一篇笔记"一样能匹配）
+- **意图比措辞重要**：不需要记住精确的触发词，只要意图对就能匹配
+
+#### 多 Skill 冲突问题
+
+当安装了较多 Skill 且语义域重叠时，可能出现匹配偏差。常见的容易冲突组合：
+
+| 用户说的话 | 可能匹配 | 哪个更合适？ |
+|-----------|---------|-------------|
+| "帮我改一下这篇文章" | `khazix-writer`（写作）vs `edit-article`（编辑） | 看意图是续写还是润色 |
+| "帮我规划一下这个功能" | `brainstorming` vs `writing-plans` | 前者偏创意发散，后者偏实施计划 |
+| "创建一个 Obsidian 笔记" | `obsidian-vault` vs `obsidian-markdown` | vault 管查找/创建，markdown 管语法格式 |
+
+#### 解决方式
+
+1. **显式指定**：用 `/skill-name` 直接调用目标 Skill，跳过语义匹配。如 `/edit-article` 或直接说"用 edit-article 的 skill 帮我改"
+2. **精简安装**：不建议把语义域高度重叠的 Skill 都装上，用哪个装哪个，减少干扰
+3. **检查 description**：安装前看 Skill 的 description 字段是否与已有 Skill 有明确边界
+
+#### 与渐进式披露的关系
+
+这里的匹配机制是第五节渐进式披露的**前序步骤**：先做语义匹配确定哪个 Skill 命中 → 然后才是渐进式披露的三级加载（元数据 → 正文 → 资源文件）。匹配发生在"一级加载"之前，决定了哪个 Skill 的正文会被展开。
