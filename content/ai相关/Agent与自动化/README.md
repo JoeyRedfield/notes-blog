@@ -15,6 +15,7 @@ AI Agent 工程化、自动化任务方案与政策跟踪。
 - [[上海十五五规划-AI智能体政策解读]] — 上海"十五五"服务业规划首次将多模态 AI 智能体列为重点方向
 - [[AI时代软件开发职业方向]] — AI 时代软件开发程序员的两个务实方向：AI Agent 应用开发 + AI 赋能后端
 - [[Agentic Engineering 实战技巧集（2026年6月）]] — @mvanhorn 的 22 个 Agentic Engineering 实战技巧：CE plan 工作流、Skills 编写、笔记即知识库、Claude+Codex 双引擎等
+- [[Claude Code Dynamic Workflows 动态工作流]] — Claude Code 动态工作流：六大编排模式（扇出综合、对抗验证、锦标赛等）、三大失败模式与典型用例
 
 ## 相关笔记
 

@@ -15,6 +15,7 @@ Claude Code CLI 的配置、技巧与深度源码分析。
 - [[Claude Code CLI 新会话检查清单]] — 确认 MCP 与 hooks 是否在新会话里真正生效
 - [[Claude Code 源码未文档化功能挖掘]] — Hook 响应字段、Skill/Agent 隐藏 frontmatter、YOLO Classifier、自学习回路等源码级功能
 - [[把一本书做成 AI Skill 方法论]] — 六步把一本书变成可调用的 AI skill：从纯文本提取到召回测试的完整流程与 Prompt 模板
+- [[Claude Code 记忆系统——与 CLAUDE.md 的区别及构建方法]] — 跨会话持久化记忆系统的结构、四种类型、与 CLAUDE.md 的边界划分、三步构建策略
 
 ## 相关笔记
 
