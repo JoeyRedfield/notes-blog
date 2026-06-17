@@ -39,6 +39,7 @@ tags: [index]
 - [[Agent与自动化/Harness Engineering——人类掌舵 Agent 执行]] — Ryan Lopopolo (OpenAI) 演讲：Code is free，如何构建 Agent 驾驭层让 AI 完成完整软件工程
 - [[Agent与自动化/Agentic Engineering 实战技巧集（2026年6月）]] — @mvanhorn 的 22 个 Agentic Engineering 实战技巧：CE plan 工作流、Skills 编写、笔记即知识库、Claude+Codex 双引擎等
 - [[Agent与自动化/Claude Code Dynamic Workflows 动态工作流]] — CLI 动态工作流机制：Claude 自编 JS 编排脚本、六大 Agent 协调模式（扇出/对抗/锦标赛等）、对抗三大失败模式
+- [[Agent与自动化/Loop Engineering]] — Addy Osmani：从 prompt engineering 到 loop engineering 的范式转变，五大构建块 + 状态记忆的完整自主循环设计
 
 ### AI 编码实践
 
@@ -58,10 +59,18 @@ tags: [index]
 
 ### 观点与趋势
 
+- [[Agentic Coding 与专业知识的持久回报]] — Anthropic 官方研究：40 万次会话分析，领域专长 > 编程背景决定 AI 编码成功率
 - [[2026年学编程路线与Agentic Engineering]] — Tina Huang 2026 年编程学习路线：从 Vibe Coding 到 Agentic Engineering 的范式演进
 - [[技术面试的终结与人才评估的未来]] — Steve Yegge 论技术面试为何消亡：Campfire 模型、可携带成就记录、AI 如何加速变革
 - [[AI原生工程团队运作实践]] — Fiona Fung 演讲：Claude Code 团队在 AI 原生时代如何重写规划、审查、团队构成等工程规范
 - [[斯坦福法学院研究：AI法律推理超越教授]] — 斯坦福法学院盲评研究：AI 合同法答疑 75% 胜率、危害标记率仅 3.5%（低关联）
+- [[2026年技术求职路线图与AI技能选择——Meta工程师视角]] — Jason Ku（Meta 工程师）2026 年技术求职路线图：就业市场分析、三阶段策略、三个高价值 AI 项目方向
+
+### learn-agent 系列
+
+来自 [LienJack/learn-agent](https://github.com/LienJack/learn-agent) 的系统化技术博客，覆盖 AI Agent、Claude Code 源码解析、Agent 设计范式、Build Harness 教程和 Learn LLM。
+
+- [[learn-agent/README|learn-agent 索引]] — 全部 100+ 篇文章的完整索引
 
 ### AI 伦理与人权
 

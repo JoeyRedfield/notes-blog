@@ -16,6 +16,7 @@ AI Agent 工程化、自动化任务方案与政策跟踪。
 - [[AI时代软件开发职业方向]] — AI 时代软件开发程序员的两个务实方向：AI Agent 应用开发 + AI 赋能后端
 - [[Agentic Engineering 实战技巧集（2026年6月）]] — @mvanhorn 的 22 个 Agentic Engineering 实战技巧：CE plan 工作流、Skills 编写、笔记即知识库、Claude+Codex 双引擎等
 - [[Claude Code Dynamic Workflows 动态工作流]] — Claude Code 动态工作流：六大编排模式（扇出综合、对抗验证、锦标赛等）、三大失败模式与典型用例
+- [[Loop Engineering]] — Addy Osmani：Loop Engineering 范式转变，五大构建块（Automations/Worktrees/Skills/Connectors/Sub-agents）+ 状态记忆，Codex 与 Claude Code 对照
 
 ## 相关笔记
 
