@@ -48,7 +48,7 @@ Tina 推荐 Python 作为入门语言（适合 AI Agent 和数据方向），Web
 
 这是软件工程的**核心能力**。用 AI agent 时，你需要能构思最终产品应该长什么样，基于需求做出设计决策。例如：要存海量数据且多人同时查询 → 选什么数据库？怎么设计 UI 支持并发访问？
 
-> 个人关联：系统设计是用户正在提升的方向，与入职后制造业软件开发直接相关。
+> 个人关联：系统设计是当前重点提升方向，与业务系统开发场景直接相关。
 
 ### 3. 版本控制与 GitHub
 
@@ -63,7 +63,7 @@ Tina 将这个话题独立成章的原因：**安全与隐私是 AI coding agent
 
 不需要学得很深，但必须知道。偏执狂才能成为好工程师。
 
-> 个人关联：制造业软件（WMS/MES）涉及生产数据，安全隐私意识尤为关键。使用 Claude Code 写代码时也要主动考虑安全边界。
+> 个人关联：涉及生产、库存、订单等业务数据的系统，对安全与隐私边界要求更高。使用 Claude Code 写代码时也要主动考虑安全边界。
 
 ### 5. 微服务与容器化（可选但推荐）
 
@@ -109,7 +109,7 @@ Tina 推荐 Warp + Oz（Warp 是视频赞助商）：
 >
 > ### 语言选择建议
 >
-> Tina 推荐 Python（AI/数据方向）或 JavaScript（Web 开发方向）。用户主力是 Java，Python 正在系统学习计划中（见 [[个人技术栈和情况简介]]），语言选择方面不需要调整。
+> Tina 推荐 Python（AI/数据方向）或 JavaScript（Web 开发方向）。如果当前主力仍是 Java、同时在补 Python，这个建议更多是帮助校准优先级，而不是要求立刻切换主语言。
 >
 > ### 学习时间线
 >
@@ -199,7 +199,7 @@ Based on my answer, you will:
 这个 prompt 的框架可以直接用在你自己的场景中：
 
 - **如果给自己定制**：目标选 "build AI agents" → 语言 Python → 五大主题中 Topic 5（容器化）保留。Tina 内置的语言映射会把 AI agent 导向 Python，与你的 Python 学习计划方向一致
-- **如果给新人定制**：在格力入职后，如果带新同事入门，可以用这个 prompt 快速生成一份个性化的 Java 后端学习计划（把 prompt 中的语言映射表扩展一行 `Java → enterprise backend, manufacturing software, WMS/MES systems`）
+- **如果给团队新人定制**：面对企业后端或行业业务系统场景，可以把语言映射表扩展一行 `Java → enterprise backend, domain-heavy business systems`
 - **prompt 本身的参考价值**：这个 prompt 的设计水平不错——结构清晰、约束精确、有兜底。可以作为写"定制化方案类 prompt"的参考模板
 
 ## 相关笔记

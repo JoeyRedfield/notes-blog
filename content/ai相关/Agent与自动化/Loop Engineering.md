@@ -112,11 +112,11 @@ loop 里最有用的结构设计：**写代码的人和检查代码的人不能�
 | Sub-agents | 理解 maker-checker 分离、fan-out 模式（[[Agent与自动化/Claude Code Dynamic Workflows 动态工作流]]） |
 | State | LLM Wiki 的 `log.md`、`index.md` 就是 state 机制 |
 
-**当前阶段**：你处于从"手动 prompt agent"到"设计 loop"的过渡期。你已经在用 skills 和 `/goal`，但尚未构建一个真正的自主 loop（自动化调度 + worktree 隔离 + sub-agent 审查 + 状态跟踪的完整闭环）。
+**当前阶段**：处于从"手动 prompt agent"到"设计 loop"的过渡期。已经在用 skills 和 `/goal`，但尚未构建一个真正的自主 loop（自动化调度 + worktree 隔离 + sub-agent 审查 + 状态跟踪的完整闭环）。
 
-**入职后可能的 loop 场景**：
+**可能的 loop 场景**：
 - 每天早上自动 triage CI 失败和最近 commits，写摘要到笔记库
-- WMS/WCS 代码库的定期代码质量扫描 → 自动开 issue
+- 业务系统代码库的定期代码质量扫描 → 自动开 issue
 - 数据库 migration 脚本的自动审查（对照项目 skills 中的规范）
 
 **关键提醒**：loop 越强，越需要保持三角循环（你设计 → AI 执行 → 你审查）的纪律。Loop 不是让你退出循环，而是让你的审查精力从"每步都盯"升级为"盯关键决策点"。

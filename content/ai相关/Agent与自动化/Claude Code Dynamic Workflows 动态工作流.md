@@ -164,9 +164,9 @@ Claude 在构建工作流时，会组合使用以下模式：
 > - [Claude Code Glossary - Agentic Harness](https://code.claude.com/docs/en/glossary#agentic-harness)
 > - [Jarred Sumner 用工作流将 Bun 从 Zig 重写为 Rust 的 X 线程](https://x.com/jarredsumner/status/2060050578026189172)
 
-## 与你的工作关联
+## 与当前工作流的关联
 
-- 你已经掌握了 [[三角循环——AI编码核心概念内化记录|三角循环（我设计→AI 执行→我审查）]]，动态工作流是这个模式的**规模化版本**——从一个人审查一个 AI 的输出，升级为多个 AI 互相审查
+- 已经掌握了 [[三角循环——AI编码核心概念内化记录|三角循环（我设计→AI 执行→我审查）]]，动态工作流是这个模式的**规模化版本**——从一个人审查一个 AI 的输出，升级为多个 AI 互相审查
 - [[AI Harness（驾驭层）知识手册|AI Harness]] 中讨论的"驾驭层"概念，动态工作流正是 Claude Code 层面的具体实现——Claude 自己生成 harness 来协调多 Agent
-- 在 [[inbound-order-实战记录|入库单实战]] 中，你手动执行了"拆分 Issues → 逐个实现"的流程，动态工作流可以自动化这个过程
-- 入职后处理复杂业务需求时，可以考虑用工作流做**大规模代码变更的拆分和并行执行**
+- 在 [[inbound-order-实战记录|入库单实战]] 中，手动执行了"拆分 Issues → 逐个实现"的流程，动态工作流可以自动化这个过程
+- 处理复杂业务需求时，可以考虑用工作流做**大规模代码变更的拆分和并行执行**

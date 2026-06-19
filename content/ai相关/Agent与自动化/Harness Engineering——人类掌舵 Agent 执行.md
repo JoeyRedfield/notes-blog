@@ -108,7 +108,7 @@ Ryan **不使用** plan mode。他认为如果你不读 plan 就批准，等于�
 
 ## 五、对个人开发者的启示
 
-结合你的工作模式（Claude Code 主力 + AI 驱动开发），可以实践的点：
+结合当前工作模式（Claude Code 主力 + AI 驱动开发），可以实践的点：
 
 1. **把你反复在 code review 中提的意见写下来**——放进 CLAUDE.md 或项目文档
 2. **为你的项目建一个 reviewer skill**——在提交前让另一个 Agent 以特定视角审查代码

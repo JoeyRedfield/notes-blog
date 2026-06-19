@@ -10,9 +10,9 @@ tags:
 
 # Claude Code CLI 新会话检查清单
 
-> 适用场景：你已经给 Claude Code CLI 接好了 `MemPalace MCP` 和 `MemPalace hooks`，现在想确认新开的会话是否真的生效。
+> 适用场景：已经给 Claude Code CLI 接好了 `MemPalace MCP` 和 `MemPalace hooks`，现在想确认新开的会话是否真的生效。
 
-## 一、先确认你是新会话
+## 一、先确认这是新会话
 
 MemPalace hooks 改完以后，**要新开一个 Claude Code CLI 会话** 才会生效。
 
@@ -144,4 +144,3 @@ cat ~/.mempalace/hook_state/hook.log
 ## 九、一句话版本
 
 > 新开 Claude 会话后，先看 `claude mcp list`，再让它实际用一次 MemPalace，最后查 `~/.mempalace/hook_state/hook.log`。
-

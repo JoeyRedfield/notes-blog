@@ -75,11 +75,11 @@ raw: "[[raw/Every Agentic Engineering Hack I Know (June 2026)]]"
 现在我只想要一个 plan，说明你将如何阅读这本书、挖掘转录内容、产出一份好文档。
 ```
 
-### 1.6 对你的实际价值
+### 1.6 对当前工作流的实际价值
 
-- 你已经深度使用 Claude Code，但可能还没有建立"先 plan 后 work"的肌肉记忆
-- 你入职后面对不熟悉的业务系统（WMS/MES），用 `/ce-plan` 先让 agent 理解代码库再动手改，比直接改安全得多
-- Plan 文件是你跨 session 的检查点——上下文炸了，新 session 指向 plan 就能继续
+- 已经深度使用 Claude Code，但可能还没有建立"先 plan 后 work"的肌肉记忆
+- 面对不熟悉的业务系统（如 WMS/MES 一类领域系统）时，用 `/ce-plan` 先让 agent 理解代码库再动手改，比直接改安全得多
+- Plan 文件是跨 session 的检查点——上下文炸了，新 session 指向 plan 就能继续
 - Compound Engineering 插件安装：`/plugin marketplace add EveryInc/compound-engineering-plugin`
 
 ---
@@ -137,9 +137,9 @@ raw: "[[raw/Every Agentic Engineering Hack I Know (June 2026)]]"
 
 安全措施：白名单机制，只有指定地址能触发，DKIM/SPF 验证失败的邮件直接丢弃。
 
-### 4.2 对你的场景
+### 4.2 对此类场景的价值
 
-入职后如果公司配台式机，这个方案让你在外出/开会时用手机远程操控办公室电脑上的 agent 执行任务。
+如果工作环境有固定办公机器，这个方案让你在外出或开会时用手机远程操控办公室电脑上的 agent 执行任务。
 
 ---
 
@@ -201,9 +201,9 @@ raw: "[[raw/Every Agentic Engineering Hack I Know (June 2026)]]"
 
 两个 $200 计划并排使用 = 完整的第二引擎。大量并行构建推给 Codex，Claude 专注规划和品味把关。有朋友反过来用也一样有效。
 
-### 6.3 对你的参考
+### 6.3 对当前工具分工的参考
 
-你已经在用 Codex 辅助，这个分工模式可以直接参考。不过你需要评估两个 $200/月的成本是否合理——目前你可能更适合 Claude Code 主力 + Codex 辅助的模式。
+如果当前已经在用 Codex 辅助，这个分工模式可以直接参考。不过仍需要评估两个 $200/月的成本是否合理——很多场景下更适合 Claude Code 主力 + Codex 辅助的模式。
 
 ---
 
@@ -298,28 +298,28 @@ Agent 会：
 | 工具 | 类型 | 说明 |
 |------|------|------|
 | [Bear](https://bear.app/) | 笔记工具 | 作者主力，有 CLI，十年笔记 agent 可读写 |
-| [Obsidian](https://obsidian.md/) | 笔记工具 | **你正在用的！**作者说"不用但我听说很好，插件生态深" |
+| [Obsidian](https://obsidian.md/) | 笔记工具 | 插件生态深，适合做可链接知识库 |
 | [gbrain](https://github.com/garrytan/gbrain) | Agent 记忆 | Garry Tan 的作品，跨机器同步 agent 记忆 |
 | [supermemory](https://supermemory.ai/) | Agent 记忆层 | 专业 agent 记忆工具，作者正在评估 |
 
-### 11.3 与你现有的架构的对应关系
+### 11.3 与现有 LLM Wiki 架构的对应关系
 
-你已经在做这件事了，而且做得比文章中描述的更系统：
+现有做法已经覆盖了这篇文章强调的关键点，而且结构更系统：
 
-| 文章中的概念 | 你的 LLM Wiki 架构对应 |
+| 文章中的概念 | 当前 LLM Wiki 架构对应 |
 |-------------|----------------------|
 | "把笔记指向 agent" | `CLAUDE.md` 定义了完整的三层 ingest 流程 |
-| "每多放一点东西，agent 就更聪明" | 每次 ingest 都在扩充 wiki，让 agent 更了解你的知识结构 |
+| "每多放一点东西，agent 就更聪明" | 每次 ingest 都在扩充 wiki，让 agent 更了解知识结构 |
 | "决策记录" | `raw/` → wiki 笔记的摄入流程 |
 | "复利式上下文" | `index.md` + wikilink 交叉引用就是这个效果 |
-| Bear CLI（作者） | Obsidian（你）+ MemPalace 记忆系统 |
+| Bear CLI（作者） | Obsidian + MemPalace 记忆系统 |
 
 ### 11.4 还可以加强的方向
 
-- **更充分地利用 `private/个人信息/`**：让 agent 在做计划时主动参考你的技术栈和职业方向
-- **会议转录接入**：入职后如果有会议录音/转录，可以走 ingest 流程进入知识库
+- **更充分地利用 `private/个人信息/`**：让 agent 在做计划时按需参考技术栈和长期方向
+- **会议转录接入**：如果后续有会议录音或转录，可以走 ingest 流程进入知识库
 - **项目笔记积累**：每做一个项目（苍穹外卖、天机学堂），把踩坑经验写回知识库，后续 agent 能引用
-- **Skills 沉淀**：你总结的工作流模板（如 `日记模板`、`CLAUDE.md` 中的操作规范）本质就是 skill
+- **Skills 沉淀**：现有总结出的工作流模板（如 `日记模板`、`CLAUDE.md` 中的操作规范）本质就是 skill
 
 ---
 

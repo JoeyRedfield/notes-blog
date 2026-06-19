@@ -45,7 +45,7 @@ tags: [index]
 
 - [[AI编码实践/AI编码全流程工作流——Matt Pocock 工作坊]] — Matt Pocock 2 小时工作坊：从需求到部署的完整 AI 编码六阶段流程（Grill Me → PRD → Kanban → AFK TDD → QA）
 - [[AI编码实践/软件基础在AI时代更重要——Matt Pocock]] — Matt Pocock 演讲：AI 时代软件基础更重要、五大失败模式与经典解药
-- [[AI编码实践/AI编码能力提升路线]] — 基于当前技术背景梳理的六大 AI 编码提升方向
+- [[AI编码实践/AI编码能力提升路线]] — 基于当前背景梳理的六大 AI 编码提升方向
 - [[AI编码实践/三角循环——AI编码核心概念内化记录]] — 交互式 Review 学习记录：五大知识点内化过程与自我检验结果
 - [[AI编码实践/inbound-order-PRD]] — 入库单管理系统 PRD：完整需求文档与设计决策
 - [[AI编码实践/inbound-order-实战记录]] — AI 编码全流程实战：从 Grill Me → PRD → Issues → TDD 完整走通入库单管理系统
