@@ -3,6 +3,7 @@ tags: [ai, research]
 created: 2026-06-03
 source: "https://law.stanford.edu/press/ai-outperforms-law-professors-in-stanford-law-study/"
 raw: "[[raw/AI Outperforms Law Professors in Stanford Law Study]]"
+source_type: official-mechanism
 ---
 
 # 斯坦福法学院研究：AI 法律推理超越教授

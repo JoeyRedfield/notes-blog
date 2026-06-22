@@ -1,6 +1,7 @@
 ---
 tags: [ai-coding, learning-record, review]
 created: 2026-06-03
+source_type: experimental-observation
 ---
 
 # 三角循环——AI 编码核心概念内化记录

@@ -2,6 +2,7 @@
 tags: [ai-coding, practice-record, tdd]
 created: 2026-06-03
 project: inbound-order
+source_type: experimental-observation
 ---
 
 # 入库单管理系统——AI 编码全流程实战记录

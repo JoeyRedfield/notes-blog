@@ -7,6 +7,7 @@ created: 2026-06-02
 source: https://www.youtube.com/watch?v=am_oeAoUhew
 speaker: Ryan Lopopolo (OpenAI)
 raw: "[[Harness Engineering How to Build Software When Humans Steer, Agents Execute — Ryan Lopopolo, OpenAI]]"
+source_type: community-snapshot
 ---
 
 # Harness Engineering：人类掌舵，Agent 执行

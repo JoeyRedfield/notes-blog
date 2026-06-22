@@ -6,11 +6,25 @@ tags:
 created: 2026-06-02
 source: "[[How To Learn To Code In 2026]]"
 raw: "[[How To Learn To Code In 2026]]"
+source_type: community-snapshot
 ---
 
 # 2026 年学编程路线与 Agentic Engineering
 
 > 来源：Tina Huang（前 Meta 数据科学家）YouTube 视频 [[How To Learn To Code In 2026]]，2026 年 3 月发布。
+
+> [!note]
+> 本页回答的是：**如果要补齐 Agentic Engineering 能力，学习顺序应该怎么排。**
+>
+> 它不负责展开：
+> - 2026 年求职市场该怎么应对
+> - AI 团队内部怎么改流程
+> - 为什么“领域知识比纯编码吞吐更重要”的研究证据
+>
+> 对应延伸阅读：
+> - [[2026年技术求职路线图与AI技能选择——Meta工程师视角]]：求职与作品集策略
+> - [[AI原生工程团队运作实践]]：团队流程与组织结构变化
+> - [[Agentic Coding 与专业知识的持久回报]]：官方研究证据页
 
 ## 核心概念：从 Vibe Coding 到 Agentic Engineering
 

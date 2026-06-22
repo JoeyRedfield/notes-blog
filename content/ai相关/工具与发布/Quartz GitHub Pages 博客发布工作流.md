@@ -5,9 +5,22 @@ tags:
   - quartz
   - github-pages
   - obsidian
+source_type: third-party-integration
 ---
 
 # Quartz GitHub Pages 博客发布工作流
+
+> [!note]
+> 本页是 **发布工作流页**，回答的是“从 Obsidian vault 到 Quartz / GitHub Pages，日常怎么发布”。
+>
+> 它不负责：
+> - 解释 Quartz 每个底层配置项的原理
+> - 记录某次具体故障的完整排查链路
+> - 作为 MarkItDown 的能力说明文档
+>
+> 建议搭配阅读：
+> - [[Quartz GitHub Pages 子路径跳转问题排查记录]]：遇到具体路径故障时再看
+> - [[MarkItDown 文档转 Markdown 工具]]：需要先把外部文档转成 Markdown 时再看
 
 ## 目标
 

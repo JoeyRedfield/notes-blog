@@ -7,6 +7,7 @@ tags:
   - "harness"
   - "ai-engineering"
   - "知识手册"
+source_type: official-mechanism
 ---
 
 # AI Harness（驾驭层）知识手册

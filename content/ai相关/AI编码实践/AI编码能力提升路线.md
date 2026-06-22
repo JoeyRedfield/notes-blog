@@ -1,6 +1,7 @@
 ---
 tags: [ai-coding, skill-improvement, career]
 created: 2026-06-03
+source_type: experimental-observation
 ---
 
 # AI 编码能力提升路线

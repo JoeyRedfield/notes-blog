@@ -3,6 +3,7 @@ tags: [prd, ai-coding, practice]
 created: 2026-06-03
 project: inbound-order
 status: ready-for-agent
+source_type: experimental-observation
 ---
 
 # PRD：入库单管理系统（inbound-order）

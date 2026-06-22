@@ -5,17 +5,43 @@ author:
   - "[[蝎子莱莱爱打怪]]"
 published: 2026-03-23
 created: 2026-05-23
+updated: 2026-06-22
 description: "32 个 Skills + 8 个 MCP 的精华梳理，含核心概念、分类速查、关键命令和推荐安装顺序。"
 tags:
   - "clippings"
   - "claude-code"
   - "skills"
   - "mcp"
+source_type: community-snapshot
 ---
 
 # Claude Code Skills 与 MCP 精华笔记
 
 > 原文：[[别再裸用 Claude Code 了！32 个亲测Skills + 8 个 MCP，开发效率直接拉满！]]
+
+> [!warning]
+> 这篇笔记保留了较多**社区生态快照**信息，不应被当成 Claude Code 官方手册直接照抄。
+> 我在 `2026-06-22` 做了第一轮修正，重点区分：
+> - **Claude Code 官方事实**
+> - **第三方技能市场 / 社区安装器 / 生态统计**
+>
+> 尤其要注意：
+> - `npx skills add ...` 不是 Claude Code 官方内置的唯一技能机制
+> - Claude Code 官方文档当前强调的是 **bundled skills** 与 filesystem-based **custom skills**
+> - MCP 生态数据、下载量、Server 数都属于时间快照
+
+## 先看官方对齐版结论
+
+根据 Claude Code 官方文档，截至 `2026-06-22` 可以先记住三点：
+
+1. **Claude Code 自带 bundled skills。** 官方文档明确列出 `/code-review`、`/batch`、`/debug`、`/loop`、`/claude-api` 等 bundled skills，可在每个 session 里直接使用。
+2. **Claude Code 的自定义 skills 是 filesystem-based。** 官方文档当前强调通过 `.claude/skills/` 中的 `SKILL.md` 目录结构来创建和共享 skills。
+3. **Claude Code 只支持 Custom Skills。** Anthropic 平台/API 还存在预置 Agent Skills 与 Skills API；但在 Claude Code 里，官方文档当前明确写的是“supports only Custom Skills”。
+
+因此，这页后文更适合被理解为：
+
+> **“2026 年上半年围绕 Claude Code、Skills、MCP 的社区生态与实操入口整理”**，
+> 而不是“Claude Code 官方唯一正确的安装与使用方式”。
 
 ---
 
@@ -25,16 +51,28 @@ tags:
 |------|--------|-----|
 | 本质 | 封装的提示词 / 标准化工作流 | 本地运行的工具 / API 服务 |
 | 一句话 | 让 AI **更聪明**（懂怎么干） | 让 AI **更能干**（真能去干） |
-| 安装方式 | `npx skills add <名称> -y -g` | 编辑 `~/.claude/mcp.json` |
+| 常见安装/接入方式 | 社区安装器、项目内 `.claude/skills/`、插件/仓库分发 | 编辑 `~/.claude/mcp.json` / 项目 `.mcp.json` |
 | 运行位置 | 大模型内部 | 本地独立进程 |
 | 访问外部 | 不支持 | 支持（文件系统、浏览器、API） |
 | 额外依赖 | 仅需 Node 环境 | 部分需要 API Key |
 
-**要点**：Skills 和 MCP 是互补关系，搭配使用才能最大化 Claude Code 能力。大多数能力会自动触发，无需手动调用。
+**要点**：Skills 和 MCP 是互补关系，搭配使用才能最大化 Claude Code 能力。
+但要区分：
+
+- **官方 Claude Code Skills 机制**：bundled skills + `.claude/skills/` 自定义 skills
+- **社区技能市场 / 安装器**：例如文中提到的 `npx skills ...` 一类工具链
 
 ---
 
 ## 二、关键命令
+
+> [!note]
+> 下面这组 `npx skills ...` 命令来自社区技能生态，不是 Claude Code 官方文档中的唯一入口。
+> 如果你要按 Claude Code 官方机制新增 project skills，更稳定的做法是直接维护：
+>
+> ```text
+> .claude/skills/<skill-name>/SKILL.md
+> ```
 
 ```bash
 # Skills
@@ -257,6 +295,10 @@ npx skills add planning-with-files -y -g
 ---
 
 ## 2026 年上半年重大进展
+
+> [!warning]
+> 本节的数据和时间线都是**时点快照**。
+> 例如 MCP 月下载量、活跃 Server 数、AAIF 成员数、企业使用率，都应在复用前重新核对来源。
 
 > 本章节基于 2026 年 6 月最新数据整理，反映 Skills 和 MCP 生态在过去半年的关键变化。
 

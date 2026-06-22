@@ -1,31 +1,47 @@
 ---
 tags: [claude-code]
 created: 2026-06-03
+updated: 2026-06-22
+source_type: official-mechanism
 ---
 
 # Claude Code 记忆系统——与 CLAUDE.md 的区别及构建方法
 
+> [!note]
+> 这页已在 `2026-06-22` 对齐 Claude Code 官方 memory 文档。
+> 当前官方术语更准确的说法是：
+> - `CLAUDE.md files`
+> - `auto memory`
+>
+> 两者都是“跨会话知识层”，但职责完全不同。
+
 ## 什么是记忆系统
 
-Claude Code 内置了一个**跨会话持久化记忆系统**，让 AI 在多次对话之间记住关于用户和项目的信息。每次新会话启动时，记忆文件会自动加载到上下文中。
+Claude Code 当前有两套互补的跨会话知识机制：
+
+1. **`CLAUDE.md` 文件**：你写给 Claude 的持久说明
+2. **auto memory**：Claude 根据你的纠正、偏好和项目经验自动积累的记忆
+
+官方文档明确说明：**两者都会在每次对话开始时加载**，但都只是 context，不是强制执行配置。
 
 ### 三部分构成
 
 | 部分 | 位置 | 说明 |
 |------|------|------|
-| 记忆文件 | `~/.claude/projects/<project-hash>/memory/*.md` | 每条记忆一个独立 .md 文件，带 YAML frontmatter |
-| 索引 | 同目录 `MEMORY.md` | 列出所有记忆的指针索引，自动加载 |
+| auto memory 目录 | `~/.claude/projects/<project>/memory/` | 每个仓库一套，worktree 共享，机器本地 |
+| 索引入口 | 同目录 `MEMORY.md` | auto memory 的入口页，启动时只加载前 200 行或 25KB |
+| 主题文件 | `debugging.md`、`patterns.md` 等 | 详细记忆按主题拆分，启动时不全量加载，按需读取 |
 | 全局记忆 | `~/.claude/CLAUDE.md` | 跨所有项目生效的个人全局配置 |
 
 ## 与 CLAUDE.md 的区别
 
-| 维度 | 记忆系统 | CLAUDE.md |
+| 维度 | auto memory | CLAUDE.md |
 |------|----------|-----------|
-| **位置** | `~/.claude/projects/.../memory/`，本机私有 | 项目根目录，随 git 提交 |
-| **受众** | 只有自己（Claude Code） | 所有在这个项目工作的 AI 和人类 |
-| **内容** | 个人偏好、跨会话决策背景、外部参考 | 项目规范、目录结构、工作流、红线规则 |
-| **生命周期** | 随个人使用演进 | 随项目演进，被 git 版本管理 |
-| **共享性** | 纯个人，不应提交到 git | 团队共享（推送到远程） |
+| **位置** | `~/.claude/projects/.../memory/`，本机私有 | 用户级 `~/.claude/CLAUDE.md` 或项目级 `./CLAUDE.md` / `./.claude/CLAUDE.md` |
+| **谁写** | Claude 自动写，也可手工改 | 你手工写 |
+| **内容** | Learnings and patterns：偏好、调试经验、构建命令、Claude 自己发现的习惯 | Instructions and rules：规范、流程、架构约定、红线 |
+| **作用域** | 每个仓库一套，worktree 共享 | 可按用户级、项目级、组织级分层 |
+| **共享性** | 机器本地，不随 git 自动共享 | 项目级可随 git 共享；用户级只属于自己 |
 
 ### 判例
 
@@ -38,6 +54,9 @@ Claude Code 内置了一个**跨会话持久化记忆系统**，让 AI 在多次
 - **放记忆**：意义不大，这不是个人偏好。
 
 ## 四种记忆类型
+
+> [!note]
+> 下面这四类是这篇笔记为了便于理解而做的**实用分类**，不是 Claude Code 官方文档里的固定 schema。
 
 | 类型 | 用途 | 示例 |
 |------|------|------|
@@ -62,3 +81,16 @@ Claude Code 内置了一个**跨会话持久化记忆系统**，让 AI 在多次
 3. **定期清理**：每次跑 `/neat-freak` 顺带审查——过期事实改掉、重复的合并、没复用价值的删掉
 
 关键原则：**不用刻意回顾，碰到了就记。**记忆系统价值在于日积月累，不是一次性大扫除。
+
+## 当前官方补充要点
+
+- auto memory 默认开启，需要 Claude Code `v2.1.59+`
+- 可以通过 `/memory` 开关 auto memory，也可以用 `autoMemoryEnabled` 配置项关闭
+- 也可以用环境变量 `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` 关闭
+- 官方建议 `CLAUDE.md` 目标控制在 **200 行以内**，因为过长会降低遵循度
+
+如果你要排查“Claude 没按规则来”，官方建议先做三件事：
+
+1. 用 `/memory` 确认相关 `CLAUDE.md` / auto memory 是否真的加载
+2. 检查是否有冲突规则
+3. 把模糊表述改成更具体、可执行的规则

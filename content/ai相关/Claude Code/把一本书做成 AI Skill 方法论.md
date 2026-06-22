@@ -7,6 +7,7 @@ tags:
 created: 2026-06-02
 source: https://x.com/AYi_AInotes/status/2061419197154857286
 raw: "[[把一本书做成 AI skill，挂闲鱼 ¥19.9、小红书 ¥99~199——保姆级教程，全部开源直接抄！]]"
+source_type: community-snapshot
 ---
 
 # 把一本书做成 AI Skill 方法论

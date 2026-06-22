@@ -6,16 +6,43 @@ tags:
   - agents
   - deep-dive
 created: 2026-06-01
+updated: 2026-06-22
 raw: "[[I Read the Claude Code Source Code. Here's Everything You Can Configure That the Docs Don't Tell You.]]"
+source_type: experimental-observation
 ---
 
 # Claude Code 源码未文档化功能挖掘
 
 > 来源：André Figueira，2026.04.02，基于 `@anthropic-ai/claude-code@2.1.87` 源码分析。未文档化功能可能随版本变动。
 
+> [!warning]
+> 这篇笔记最容易过时，因为它依赖**具体源码版本**。
+> 我已在 `2026-06-22` 做了第一轮降噪，当前应这样理解：
+>
+> - **仍可保留**：基于源码读到的扩展点、设计思路、工程启发
+> - **需要谨慎**：凡是官方文档后来已经公开的能力，就不该再继续称为“未文档化”
+>
+> 这页不是官方 reference，只是“基于 `2.1.87` 的源码侧观察记录”。
+
+## 先做版本边界
+
+这页里的每个结论，都至少要先过两个判断：
+
+1. 它是不是只对 `@anthropic-ai/claude-code@2.1.87` 成立
+2. 它后来是否已经进入官方文档
+
+如果第二条成立，那么更准确的说法应从：
+
+> “未文档化功能”
+
+改成：
+
+> “当时先在源码里发现，后来进入官方文档的功能”
+
 ## 一、Hook 响应字段
 
-文档只说 hook 通过 stdin 收 JSON、exit code 2 可阻断操作。**源码揭示 hook 可通过 stdout 返回 JSON，包含事件特定字段来实时修改 Claude Code 行为**。
+这部分在你最初写笔记时确实偏“源码发现”；但截至 `2026-06-22`，Claude Code 官方 hooks reference 已经公开了 JSON 输入/输出、`updatedInput`、`permissionDecision`、异步 hooks 等能力。
+所以这节现在更适合作为**机制摘要 + 用法示例**，而不是“纯未文档化功能”。
 
 ### PreToolUse 可返回
 
@@ -67,6 +94,19 @@ fi
 
 ## 二、Hook 生命周期控制（三个未文档化字段）
 
+这部分要降级成“需要核对官方 hooks 文档的高级特性”。
+
+截至 `2026-06-22`：
+
+- `async` / `asyncRewake` 已经进入官方 hooks reference
+- 异步 hooks 的限制（只能 `type: "command"`、不能阻塞、输出延后等）官方也已写明
+
+所以这里仍有价值的部分，主要是：
+
+- 它们在工程上怎么用
+- 哪些模式适合 `async`
+- 哪些安全策略适合 `asyncRewake`
+
 | 字段 | 作用 | 适用场景 |
 |------|------|----------|
 | `once: true` | 执行一次后自动移除 | 首次会话初始化（如复制 `.env.example`） |
@@ -89,6 +129,20 @@ exit 0    # 安全：继续
 ---
 
 ## 三、Skill 未文档化 Frontmatter
+
+这节要比旧版更谨慎。
+
+截至 `2026-06-22`，Claude Code 官方已经明确写到：
+
+- skills 支持 frontmatter
+- skills 和 slash commands 都可用 `context: fork`
+- skills 支持 `agent` 字段
+- frontmatter `effort` 会覆盖 session level，但不覆盖环境变量
+
+因此，这节里真正更偏“源码观察”的部分，已经不再是 `agent`、`effort` 这些字段本身，而是：
+
+- 它们在实际组合时会怎样影响缓存和执行策略
+- 某些字段在特定版本里有没有额外行为
 
 | 字段 | 作用 | 示例 |
 |------|------|------|
@@ -113,7 +167,11 @@ exit 0    # 安全：继续
 | `criticalSystemReminder_EXPERIMENTAL` | 每轮对话重新注入的系统提醒，**压缩后仍保留** |
 | `requiredMcpServers` | 指定必须配置的 MCP Server，不满足则 Agent 不出现 |
 
-**`memory` 是最重要的未文档化字段**——Agent 可以跨会话积累经验。审阅者记住过去的发现，代码导航员记住项目结构，越用越聪明。
+> [!note]
+> 这节应保留“实验性/版本性”标签。
+> 尤其像 `memory`、`omitClaudeMd`、`criticalSystemReminder_EXPERIMENTAL` 这类字段，如果官方 sub-agents 文档未明确写出，就不要把它们当成长期稳定能力来依赖。
+
+**`memory` 是这节里最值得关注的字段之一**——它提示了“agent 持久化经验”这条方向；但仍应视为版本相关观察，而不是通用保证。
 
 **`criticalSystemReminder_EXPERIMENTAL` 具有 EXPERIMENTAL 标签，随时可能移除，不要在其上构建关键基础设施。**
 
@@ -142,6 +200,19 @@ Classifier 读取这些英文描述来理解环境上下文，直接影响对模
 ---
 
 ## 六、自学习回路
+
+这节需要明显降温。
+
+截至 `2026-06-22`，Claude Code 官方 memory 文档已经明确公开的是 **auto memory**。
+但本节里的 `autoDreamEnabled`、Dream 合并周期、触发阈值等，更接近：
+
+- 早期源码观察
+- 社区对未完全公开机制的推断
+
+所以这节的正确定位应改成：
+
+> “关于 auto memory 后续合并/整理机制的源码与社区观察”，
+> 而不是“Claude Code 官方已经稳定公开的能力清单”。
 
 两个 settings.json 字段激活 Claude Code 的自我改进系统：
 
@@ -209,7 +280,12 @@ mcp__slack__post_message # 特定 MCP 工具
 3. **Dream 合并系统**——无需模型重训练的从经验中学习
 4. **YOLO Classifier**——用自然语言描述环境来做安全决策
 
-这些不是隐藏彩蛋，而是持久化、自学习、自治 AI 开发环境的脚手架，已经在 npm 包里可用。
+这四层里，到了今天最稳的不是“这些名字是否完全没变”，而是它们代表的设计方向：
+
+- prompt 之外的 deterministic control
+- 持久化知识层
+- 会话之外的整理/压缩
+- 语义化权限与环境建模
 
 ## 相关笔记
 
@@ -284,3 +360,11 @@ fi
 - 覆盖 9 类安全命令：文件浏览（ls/cat/pwd）、Git 只读（status/log/diff/branch）、文本处理（find/wc/head/tail/grep）、系统信息（du/df/ps）等
 - 验证通过：`ls`/`git status` 自动批准，`git push`/`npm install` 正常走权限流程
 - 注册于 `~/.claude/settings.json` → PreToolUse hook，下次新会话生效
+
+## 现在如何使用这页
+
+更好的使用方式不是“把它当官方 reference”，而是：
+
+1. 先查官方 hooks / skills / memory 文档
+2. 再回来看这页里有哪些源码观察能帮你做更激进的工程设计
+3. 对 `EXPERIMENTAL`、未公开字段、版本绑定行为保持保守

@@ -5,6 +5,7 @@ tags:
   - legal-analysis
 raw: "[[Exposing the human rights costs of generative AI.pdf]]"
 created: 2026-06-01
+source_type: official-mechanism
 ---
 
 # 生成式 AI 与国际人权法——法律框架分析

@@ -5,9 +5,19 @@ tags:
   - quartz
   - github-pages
   - troubleshooting
+source_type: experimental-observation
 ---
 
 # Quartz GitHub Pages 子路径跳转问题排查记录
+
+> [!warning]
+> 本页是 **单一故障排查页**，记录的是 `/notes-blog` 子路径丢失这一类问题的根因、修复和验证。
+>
+> 它不等于通用发布文档。若你只是想知道日常怎么发布，先看：
+> - [[Quartz GitHub Pages 博客发布工作流]]
+>
+> 如果你要知道工具本身如何把外部文档转成 Markdown，则看：
+> - [[MarkItDown 文档转 Markdown 工具]]
 
 ## 问题现象
 

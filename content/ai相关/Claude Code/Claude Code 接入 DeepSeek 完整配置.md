@@ -1,13 +1,26 @@
 ---
 title: "Claude Code 接入 DeepSeek 完整配置"
 created: 2026-05-25
+updated: 2026-06-22
 tags:
   - "claude-code"
   - "deepseek"
   - "配置"
+source_type: third-party-integration
 ---
 
 # Claude Code 接入 DeepSeek 完整配置
+
+> [!warning]
+> 这篇配置笔记是**强时效页**。Claude Code、DeepSeek Anthropic 兼容层、模型命名和环境变量规则都可能变化。
+> 我已在 `2026-06-22` 按官方文档修过一轮，尤其修正了：
+> - `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_API_KEY` 的说明
+> - `ANTHROPIC_SMALL_FAST_MODEL` 已废弃的状态
+> - 这份配置应被理解为“可用模板”，不是永远不变的唯一正确答案
+>
+> 复用前请核对：
+> - Claude Code 官方环境变量文档
+> - DeepSeek 官方 Claude Code 接入文档
 
 > 配置文件路径：`~/.claude/settings.json`
 
@@ -17,13 +30,12 @@ tags:
     "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
     "ANTHROPIC_AUTH_TOKEN": "sk-你的DeepSeek-API-Key",
 
-    "ANTHROPIC_MODEL": "deepseek-v4-pro",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1M]",
+    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
     "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "deepseek-v4-pro",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1M]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
     "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": "deepseek-v4-pro",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
-    "ANTHROPIC_SMALL_FAST_MODEL": "deepseek-v4-flash",
 
     "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
     "CLAUDE_CODE_EFFORT_LEVEL": "max",
@@ -46,7 +58,17 @@ tags:
 | 变量 | 值 | 说明 |
 |------|----|------|
 | `ANTHROPIC_BASE_URL` | `https://api.deepseek.com/anthropic` | DeepSeek 的 Anthropic 兼容端点，**不要**在末尾加 `/v1` |
-| `ANTHROPIC_AUTH_TOKEN` | `sk-...` | DeepSeek API Key，**必须用 `AUTH_TOKEN`**，不要用 `API_KEY` |
+| `ANTHROPIC_AUTH_TOKEN` | `sk-...` | Claude Code 会把它作为 `Authorization: Bearer ...` 发送。DeepSeek 官方 Claude Code 接入文档当前使用这一种写法 |
+
+> [!note]
+> 这里要和旧版本认知区分开：
+> Claude Code 官方环境变量文档同时支持：
+> - `ANTHROPIC_API_KEY`：作为 `X-Api-Key` 发送
+> - `ANTHROPIC_AUTH_TOKEN`：作为 `Authorization: Bearer ...` 发送
+>
+> 但 **DeepSeek 官方的 Claude Code 接入文档当前明确示例使用 `ANTHROPIC_AUTH_TOKEN`**。
+> 所以对“Claude Code 直连 DeepSeek Anthropic 兼容端点”这个具体场景，本页保留 `AUTH_TOKEN` 方案作为默认推荐。
+> 旧版“必须用 AUTH_TOKEN，不能用 API_KEY”的绝对说法过强，现已修正。
 
 ### 模型路由（四个槽位都要设）
 
@@ -56,7 +78,9 @@ tags:
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | `deepseek-v4-pro[1M]` | Opus 级槽位（复杂推理） |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | `deepseek-v4-pro[1M]` | Sonnet 级槽位（标准编码） |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | `deepseek-v4-flash` | Haiku 级槽位（子 Agent、快速任务） |
-| `ANTHROPIC_SMALL_FAST_MODEL` | `deepseek-v4-flash` | 轻量任务（权限检查、简单查询） |
+
+> `ANTHROPIC_SMALL_FAST_MODEL` 在 Claude Code 官方环境变量文档中已标记为 **deprecated**。
+> 旧配置如果还带着它，通常问题不大，但新配置不建议再把它当主推荐项。
 
 > 以上四个槽位不全部显式设置，未设置的槽位会走默认值，导致部分请求模型不一致。
 
@@ -78,7 +102,7 @@ tags:
 | 变量 | 值 | 说明 |
 |------|----|------|
 | `CLAUDE_CODE_EFFORT_LEVEL` | `max` | 推理强度，详见下方 [Effort Level 与 DeepSeek 推理模式](Claude%20Code%20接入%20DeepSeek%20完整配置.md#effort-level-与-deepseek-推理模式) |
-| `API_TIMEOUT_MS` | `600000` | 超时时间（10 分钟），DeepSeek max effort 下推理较慢 |
+| `API_TIMEOUT_MS` | `600000` | 超时时间（10 分钟）。Claude Code 官方默认值当前也是 10 分钟，所以它更像显式声明，而不是必须额外设置 |
 | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | `1` | 禁用非必要的后台网络请求，减少开销 |
 
 ### settings.json 顶层字段
@@ -94,12 +118,15 @@ tags:
 
 ---
 
-## `[1M]` 后缀说明
+## `[1m]` / `[1M]` 后缀说明
 
 - `deepseek-v4-pro` — 上下文窗口为默认大小（~200K）
-- `deepseek-v4-pro[1M]` — 上下文窗口解锁为 100 万 tokens
+- `deepseek-v4-pro[1m]` — 上下文窗口解锁为 100 万 tokens
 - Claude Code CLI 会识别 `[1M]` 后缀并正确设置上下文预算，发送到 API 前会自动剥离后缀
 - Flash 通常不需要 `[1M]` 后缀，因为子 Agent 任务上下文较小
+
+DeepSeek 官方 Claude Code 接入文档当前示例使用的是小写 `[1m]`。
+本页跟随官方示例统一成小写写法。
 
 ---
 
@@ -163,11 +190,12 @@ DeepSeek 的 "Think Max" 和 "Think High" 是**两种不同的推理模式**，T
 
 | 坑 | 说明 |
 |----|------|
-| `ANTHROPIC_AUTH_TOKEN` vs `ANTHROPIC_API_KEY` | 必须用 `AUTH_TOKEN`，用 `API_KEY` 会 401；**不能同时设置两者** |
+| `ANTHROPIC_AUTH_TOKEN` vs `ANTHROPIC_API_KEY` | Claude Code 两种头都支持；但 DeepSeek 官方 Claude Code 集成示例当前用 `AUTH_TOKEN`。不要在不了解网关行为时同时混用两套凭证变量 |
 | Base URL 末尾加 `/v1` | 不要加，直接 `https://api.deepseek.com/anthropic` |
 | 模型名写错 | DeepSeek API 遇到不认识的模型名会**静默 fallback 到 v4-flash**，不报错 |
 | 四个模型槽位漏设 | 未设的槽位会走默认值，导致部分请求模型不一致 |
-| 不带 `[1M]` 后缀 | 上下文只有 ~200K |
+| 继续依赖 `ANTHROPIC_SMALL_FAST_MODEL` | 这个变量在 Claude Code 官方文档中已废弃，优先用 `ANTHROPIC_DEFAULT_HAIKU_MODEL` + `CLAUDE_CODE_SUBAGENT_MODEL` |
+| 不带 `[1m]` 后缀 | 上下文只有较小默认窗口，不是 1M |
 | 超时太短 | DeepSeek max effort 推理慢，默认 30 秒不够，建议 10 分钟 |
 | 图片任务发给 DeepSeek | DeepSeek 是纯文本模型，不支持视觉输入 |
 

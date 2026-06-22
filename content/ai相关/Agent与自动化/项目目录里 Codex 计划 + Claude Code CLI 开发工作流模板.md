@@ -7,6 +7,7 @@ tags:
   - "claude-code"
   - "mempalace"
   - "ai-agent"
+source_type: experimental-observation
 ---
 
 # 项目目录里 Codex 计划 + Claude Code CLI 开发工作流模板

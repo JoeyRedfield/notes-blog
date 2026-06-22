@@ -1,16 +1,37 @@
 ---
 title: "Claude Code CLI 新会话检查清单"
 created: 2026-05-26
+updated: 2026-06-22
 tags:
   - "claude-code"
   - "mcp"
   - "hooks"
   - "checklist"
+source_type: experimental-observation
 ---
 
 # Claude Code CLI 新会话检查清单
 
 > 适用场景：已经给 Claude Code CLI 接好了 `MemPalace MCP` 和 `MemPalace hooks`，现在想确认新开的会话是否真的生效。
+
+> [!warning]
+> 这页不是“Claude Code 通用官方排查流程”，而是你当前机器上的**本机环境检查单**。
+> 它依赖：
+>
+> - `MemPalace MCP`
+> - 你本地的 hooks 路径
+> - `~/.mempalace/` 下的日志目录
+>
+> 所以它的正确定位是：
+>
+> - 对你自己的机器：可直接执行
+> - 对别人或未来新环境：只能当排查思路模板，不能逐字照抄路径
+
+## 本页定位
+
+这页回答的不是“Claude Code 的 MCP / hooks 一般怎么排查”，而是：
+
+> **在你这台机器上，怎么最快确认 MemPalace 这套接入是否在新会话里真的活着。**
 
 ## 一、先确认这是新会话
 
@@ -54,6 +75,8 @@ mempalace: mempalace-mcp  - ✓ Connected
 
 ## 四、确认 hooks 配置文件还在
 
+> 这里检查的是你当前使用的本机配置文件，不代表所有 Claude Code 用户都应该用 `settings.local.json`。
+
 终端检查：
 
 ```bash
@@ -87,6 +110,8 @@ ls -l ~/.claude-plugin/mempalace-hooks/hooks/
 - 两个脚本都带可执行权限，比如 `-rwxr-xr-x`
 
 ## 六、最实用的 hooks 生效检查
+
+> 这里看的 `~/.mempalace/hook_state/hook.log` 也是你这套环境的私有路径。
 
 真正想看 hooks 有没有生效，最直接的是看日志：
 
@@ -144,3 +169,17 @@ cat ~/.mempalace/hook_state/hook.log
 ## 九、一句话版本
 
 > 新开 Claude 会话后，先看 `claude mcp list`，再让它实际用一次 MemPalace，最后查 `~/.mempalace/hook_state/hook.log`。
+
+## 如果以后要泛化成通用版
+
+这页要想变成“更通用的 Claude Code MCP / hooks 检查单”，至少要拆成两层：
+
+1. **通用层**
+   - `claude mcp list`
+   - 新会话验证
+   - 实际调用一次 MCP 工具
+   - 检查 hooks 是否被加载
+2. **本机层**
+   - MemPalace 专属路径
+   - 你自己的 shell 脚本位置
+   - `~/.mempalace/hook_state/hook.log` 这类私有日志

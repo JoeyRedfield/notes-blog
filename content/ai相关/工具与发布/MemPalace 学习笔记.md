@@ -8,6 +8,7 @@ tags:
   - "memory"
   - "rag"
   - "知识手册"
+source_type: third-party-integration
 ---
 
 # MemPalace 学习笔记
@@ -538,4 +539,3 @@ mempalace search "关键词"
 1. **AI Agent 的 memory layer 怎么设计**
 2. **本地优先 AI 工具怎么做工程防护**
 3. **一个 AI 项目如何从脚本进化成可复用基础设施**
-

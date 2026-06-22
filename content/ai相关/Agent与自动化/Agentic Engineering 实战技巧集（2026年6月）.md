@@ -4,6 +4,7 @@ created: 2026-06-03
 source: "https://x.com/mvanhorn/status/2061877533885473181"
 author: "[[@mvanhorn]]"
 raw: "[[raw/Every Agentic Engineering Hack I Know (June 2026)]]"
+source_type: community-snapshot
 ---
 
 # Agentic Engineering 实战技巧集（2026 年 6 月）

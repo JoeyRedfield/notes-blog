@@ -10,6 +10,7 @@ raw: "[[raw/Full Walkthrough Workflow for AI Coding — Matt Pocock]]"
 source: "https://www.youtube.com/watch?v=-QFHIoCo-Ko"
 author: "[[Matt Pocock]]"
 published: 2026-04-24
+source_type: community-snapshot
 ---
 
 # AI 编码全流程工作流 — Matt Pocock 工作坊

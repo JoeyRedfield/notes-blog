@@ -9,6 +9,7 @@ created: 2026-06-03
 raw: '[["Software Fundamentals Matter More Than Ever" — Matt Pocock]]'
 source: https://www.youtube.com/watch?v=v4F1gFy-hqg
 author: "[[Matt Pocock]]"
+source_type: community-snapshot
 ---
 
 # 软件基础在 AI 时代更重要 — Matt Pocock

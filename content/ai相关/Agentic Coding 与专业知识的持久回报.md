@@ -3,6 +3,7 @@ tags: [ai, claude-code, agentic-coding, research]
 created: 2026-06-17
 source: "https://www.anthropic.com/research/claude-code-expertise"
 raw: "[[raw/Agentic coding and persistent returns to expertise]]"
+source_type: official-mechanism
 ---
 
 # Agentic Coding 与专业知识的持久回报
@@ -10,6 +11,19 @@ raw: "[[raw/Agentic coding and persistent returns to expertise]]"
 Anthropic 官方研究报告（2026-06-16），基于 **~40 万次 Claude Code 交互会话**（2025 年 10 月至 2026 年 4 月，~23.5 万用户）的隐私保护分析，研究 Agentic Coding 的实际使用模式、人机协作分工和成功率的决定因素。
 
 > 核心结论：**决定 Agentic Coding 成败的不是编程背景，而是领域专业知识。** 从初学到中级的提升最大，中级到专家的边际收益递减。
+
+> [!note]
+> 本页在这一组相关笔记里承担的是**证据页**角色。
+>
+> 它不负责给出：
+> - 个人学习路线
+> - 当期求职动作
+> - 团队流程改造清单
+>
+> 但它为以下判断提供了数据背书：
+> - [[2026年学编程路线与AgenticEngineering|2026年学编程路线与Agentic Engineering]] 中“先补软件工程基础，再学 Agent 使用”
+> - [[2026年技术求职路线图与AI技能选择——Meta工程师视角]] 中“做真实项目比纯刷题更重要”
+> - [[AI时代软件开发职业方向]] 中“业务理解比额外卷语言更值钱”
 
 ## 一、分工模式：人定方向，AI 定执行
 

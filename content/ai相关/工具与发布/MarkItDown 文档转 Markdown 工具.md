@@ -4,11 +4,24 @@ category: tech
 status: done
 created: 2026-06-01
 source: https://github.com/microsoft/markitdown
+source_type: official-mechanism
 ---
 
 # MarkItDown：文档转 Markdown 工具
 
 微软开源的 Python 工具，将各种文件格式转换为 Markdown，专为 LLM 文本分析管线设计。
+
+> [!note]
+> 本页是 **工具机制 / 能力页**，回答的是“MarkItDown 是什么、支持什么、怎么调用”。
+>
+> 它不负责：
+> - 你自己的公开发布流程
+> - 某个 Quartz 部署故障的排查
+> - 某次本机转换失败的案例复盘
+>
+> 在这个目录里，它和下面两类页分工不同：
+> - [[Quartz GitHub Pages 博客发布工作流]]：发布工作流页
+> - [[Quartz GitHub Pages 子路径跳转问题排查记录]]：故障排查页
 
 ## 适用场景
 

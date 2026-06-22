@@ -2,6 +2,7 @@
 tags: [ai-coding, productivity, self-management]
 created: 2026-06-03
 raw: "[[raw/The solution might be cancelling my AI subscription]]"
+source_type: community-snapshot
 ---
 
 # AI 工具与注意力管理——从 ADHD 放大器到自律工具

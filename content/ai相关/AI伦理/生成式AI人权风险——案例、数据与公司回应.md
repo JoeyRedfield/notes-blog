@@ -5,6 +5,7 @@ tags:
   - case-studies
 raw: "[[Exposing the human rights costs of generative AI.pdf]]"
 created: 2026-06-01
+source_type: official-mechanism
 ---
 
 # 生成式 AI 人权风险——案例、数据与公司回应

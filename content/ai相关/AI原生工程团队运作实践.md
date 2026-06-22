@@ -2,11 +2,29 @@
 tags: [ai, engineering, org]
 created: 2026-06-03
 raw: "[[raw/Running an AI-native engineering org.md]]"
+source_type: community-snapshot
 ---
 
 # AI 原生工程团队运作实践
 
 > 来源：Fiona Fung（Anthropic Claude Code 工程总监）在 AI Engineer 大会的演讲，分享 Claude Code 团队在 Agentic Coding 成为默认工作方式后，流程、规范和团队结构发生的根本变化。
+
+> [!note]
+> 本页回答的是：**当团队已经把 Agentic Coding 变成默认工作方式后，组织流程应该怎么改。**
+>
+> 它不负责回答：
+> - 个人现在先学什么
+> - 当前求职市场该怎么应对
+> - 技术面试会不会消失
+>
+> 更适合作为以下页面的“团队层延伸”来读：
+> - [[2026年学编程路线与AgenticEngineering|2026年学编程路线与Agentic Engineering]]
+> - [[2026年技术求职路线图与AI技能选择——Meta工程师视角]]
+> - [[AI时代软件开发职业方向]]
+
+> [!warning]
+> 文中很多做法依赖 Claude Code 团队的高频 dogfooding、扁平组织和强产品文化。
+> 复用时更适合抽取原则，不适合把具体流程逐条硬搬到小团队或个人项目。
 
 ## 核心论点：瓶颈转移了
 

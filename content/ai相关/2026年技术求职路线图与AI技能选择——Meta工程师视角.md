@@ -6,11 +6,25 @@ tags:
 created: 2026-06-12
 source: "[[Don't waste 2026 learning the wrong tech skills (Meta Engineer's Take)]]"
 raw: "[[raw/Don't waste 2026 learning the wrong tech skills (Meta Engineer's Take)]]"
+source_type: community-snapshot
 ---
 
 # 2026 年技术求职路线图与 AI 技能选择——Meta 工程师视角
 
 > 来源：Jason Ku（Meta 工程师，15 年行业经验，曾在 Salesforce）YouTube 视频，2026 年 6 月发布。目标受众是 2026 年找不到工作的新毕业生，但其中关于 AI 工程技能和行业趋势的判断对已在职的开发者同样有参考价值。
+
+> [!warning]
+> 本页是**2026 年 6 月的求职市场快照**，更适合回答“当前阶段该把时间押在哪里”。
+>
+> 它不等于：
+> - 通用编程学习路线
+> - 长期不变的招聘规律
+> - 团队内部工作方式的完整指南
+>
+> 建议搭配阅读：
+> - [[2026年学编程路线与AgenticEngineering|2026年学编程路线与Agentic Engineering]]：学习顺序
+> - [[技术面试的终结与人才评估的未来]]：面试制度变迁判断
+> - [[Agentic Coding 与专业知识的持久回报]]：为什么领域知识会成为更强信号
 
 ## 一、2026 年就业市场现状
 

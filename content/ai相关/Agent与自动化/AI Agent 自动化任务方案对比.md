@@ -9,6 +9,7 @@ tags:
   - "claude-code"
   - "codex"
   - "知识手册"
+source_type: third-party-integration
 ---
 
 # AI Agent 自动化任务方案对比

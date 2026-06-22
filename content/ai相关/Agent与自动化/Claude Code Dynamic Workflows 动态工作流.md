@@ -3,6 +3,7 @@ tags: [ai, agent, claude-code]
 created: 2026-06-03
 source: "https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code"
 raw: "[[raw/A harness for every task dynamic workflows in Claude Code]]"
+source_type: official-mechanism
 ---
 
 # Claude Code Dynamic Workflows（动态工作流）

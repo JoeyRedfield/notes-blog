@@ -2,17 +2,34 @@
 title: "ECC（Everything Claude Code）知识手册"
 subtitle: "AI 编码 Agent 框架——是什么、怎么用、何时用"
 created: 2026-05-25
+updated: 2026-06-22
 tags:
   - "claude-code"
   - "ai-agent"
   - "ecc"
   - "开发工具"
   - "知识手册"
+source_type: community-snapshot
 ---
 
 # ECC（Everything Claude Code）知识手册
 
 > 系统梳理 ECC 的核心概念、架构、适用场景和使用决策，便于快速查阅和选型判断。
+
+> [!warning]
+> 这篇笔记既包含**相对稳定的框架定位**，也包含**强时效的项目数据和安装方式**。
+> 我已在 `2026-06-22` 做了第一轮修正。当前阅读方式应改成：
+>
+> - “ECC 是什么、适不适合我” → 相对稳定
+> - “现在有多少 stars / agents / skills、具体怎么安装、支持哪些 harness” → 时间快照，复用前要重新核对
+
+## 先看当前稳定结论
+
+截至 `2026-06-22`，更稳定的结论可以压成三条：
+
+1. **ECC 已经不该再只理解成“Claude Code 插件”。** 它更像一个跨 harness 的 agent harness / operator layer。
+2. **Claude Code 仍然是 ECC 的一等公民场景之一，但不是唯一目标。**
+3. **真正容易过时的是顶层数字、安装路径、功能数量和兼容矩阵。**
 
 ---
 
@@ -24,21 +41,20 @@ tags:
 
 ---
 
-## 二、核心数据
+## 二、核心数据（时间快照）
 
-| 指标 | 数据（截至 2026.05） |
+| 指标 | 数据（截至 2026.06.22 附近） |
 |------|---------------------|
-| GitHub Stars | **190,000+** |
-| Forks | **29,500+** |
-| 贡献者 | **170+** |
-| 智能体（Agent） | **60 个** |
-| 技能（Skill） | **232 个** |
-| 旧版命令 | **75 个** |
+| GitHub Stars | **211K+** |
+| Forks | **32K+** |
+| 贡献者 | **230+** |
+| 智能体 / 技能 / 命令数 | **不要信任本页旧数值，优先看仓库当前 README / 发布说明** |
 | 支持语言 | **12+** 语言生态 |
 | 许可证 | MIT |
 | 官网 | [ecc.tools](https://ecc.tools) |
 
-> 来源：GitHub API (`GET /repos/affaan-m/ECC`)、仓库 README.md
+> 来源：GitHub 仓库首页与官网快照。
+> 这里不再继续维护“精确 agent / skill / command 数”，因为这类数字变化过快，极易让知识页半过时。
 
 ---
 
@@ -84,7 +100,8 @@ ECC 设计为**跨框架通用**，并非仅限 Claude Code：
 - **Antigravity**
 - **Trae**
 
-> 来源：仓库 README.md、`.codex-plugin/`、`.cursor/`、`.opencode/` 目录
+> 来源：仓库 README、发布说明与仓库目录。
+> 这份列表本身也属于时间快照；这里更重要的是“ECC 是跨 harness 的”，而不是死记具体名单。
 
 ---
 
@@ -195,16 +212,26 @@ Plan（计划） → TDD（测试驱动） → Implement（实现） → Review�
 
 ## 十一、安装方式决策
 
+> [!warning]
+> 这一节最容易过时。
+> 尤其是 `/plugin marketplace add ...`、`/plugin install ...`、`install.sh --profile ...` 这些入口，后续版本很可能继续调整。
+
 | 方式 | 适用人群 | 注意事项 |
 |------|---------|---------|
-| **插件安装**（推荐） | 大多数用户 | `/plugin install ecc@ecc`，然后手动复制需要的 rules 目录 |
+| **插件安装**（推荐） | 大多数用户 | 以仓库当前 README / maintainer 讨论区给出的命令为准 |
 | **手动安装** | 需要精细控制 | `./install.sh --profile full`，不要和插件叠加 |
 | **最小安装** | 不需要 Hook 的用户 | `./install.sh --profile minimal`，仅安装规则和基础技能 |
 | **按需组件安装** | 不确定需要什么的用户 | 先用 `npx ecc consult "关键词"` 查询匹配组件 |
 
 **关键提醒**：绝对不要既用插件安装又用手动安装器——这是最常见的故障原因。
 
-> 来源：仓库 README.md "Pick one path only" 节
+截至 `2026-06-22`，我能核到的维护者建议安装路径，仍是先把 GitHub 仓库加入 Claude Code 的 plugin marketplace，再执行：
+
+```text
+/plugin install ecc@ecc
+```
+
+但这类命令本质上属于“当前发布面的操作说明”，复用前请以仓库 README 和 maintainer 讨论区最新说明为准。
 
 ---
 
@@ -249,19 +276,28 @@ Plan（计划） → TDD（测试驱动） → Implement（实现） → Review�
 
 ### 12.4 DeepSeek 接入关键配置
 
+> [!note]
+> 这段配置要与 [[Claude Code 接入 DeepSeek 完整配置]] 一起看。
+> 那一页已经在 `2026-06-22` 修正过：
+> - `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_API_KEY` 的边界
+> - `ANTHROPIC_SMALL_FAST_MODEL` 已废弃
+>
+> 因此这里保留这段更多是为了说明“ECC 不会阻止你接 DeepSeek”，而不是推荐你逐字照抄。
+
 ```bash
 export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
 export ANTHROPIC_AUTH_TOKEN="sk-你的密钥"   # 注意是 AUTH_TOKEN，不是 API_KEY
 export ANTHROPIC_MODEL="deepseek-v4-pro[1m]"  # [1m] 开启 1M 上下文
 export ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro"
 export ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro"
-export ANTHROPIC_SMALL_FAST_MODEL="deepseek-v4-flash"
 export CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-pro"
 export CLAUDE_CODE_EFFORT_LEVEL="max"
 export API_TIMEOUT_MS="600000"  # DeepSeek max effort 推理较慢
 ```
 
-> ⚠️ 认证字段必须用 `ANTHROPIC_AUTH_TOKEN`，不要用 `ANTHROPIC_API_KEY`，否则 401。不要同时设置两者（Auth conflict）。
+> 这里不再保留“必须用 `ANTHROPIC_AUTH_TOKEN`，否则 401”这种绝对说法。
+> Claude Code 官方支持 `ANTHROPIC_API_KEY` 与 `ANTHROPIC_AUTH_TOKEN` 两种头；但 DeepSeek 官方 Claude Code 接入示例当前默认使用 `ANTHROPIC_AUTH_TOKEN`。
+> 具体场景以 [[Claude Code 接入 DeepSeek 完整配置]] 中的修正版说明为准。
 
 > 来源：[阿里云 - DeepSeek V4-Pro 接入实战](https://developer.aliyun.com/article/1733999)、[腾讯云 - DeepSeek 接入 Claude Code](https://cloud.tencent.com/developer/article/2607797)
 
@@ -300,9 +336,13 @@ ECC 在 README 中提到了相关的安全 CVE，这也是其内置安全扫描�
 
 ---
 
-## 十六、2026 年最新数据核实
+## 十六、历史核实记录（保留作时间切片）
 
 > 核实日期：2026-06-01 | 数据来源：GitHub API、仓库 README.md、[ROSS Index Q1 2026](https://runacap.com/ross-index/q1-2026/)
+
+> [!note]
+> 本节保留的价值是“看这个项目增长有多快”，不是继续当作当前事实。
+> 如果只是想知道 ECC 现在怎么样，请优先看仓库首页和最近 release。
 
 ### 16.1 核心数据对比
 

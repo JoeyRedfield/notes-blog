@@ -1,6 +1,7 @@
 ---
 title: "Claude Code 切换 API、Resume 与缓存命中学习笔记"
 created: 2026-05-28
+updated: 2026-06-22
 tags:
   - "claude-code"
   - "deepseek"
@@ -9,9 +10,18 @@ tags:
   - "prompt-caching"
   - "中转站"
   - "学习笔记"
+source_type: experimental-observation
 ---
 
 # Claude Code 切换 API、Resume 与缓存命中学习笔记
+
+> [!warning]
+> 这篇笔记里混合了两类内容：
+> - **官方已明确说明的机制**
+> - **基于实际链路实验得出的经验判断**
+>
+> 我已在 `2026-06-22` 加上官方锚点。
+> 其中“跨后端切换后是否还能继承旧缓存”这件事，官方文档没有给出通用保证，因此仍应视为**实验性结论**，不要当成硬规则。
 
 > 适用场景：`2026-05-28` 这条真实链路是 `10:00` 在 `Claude Code` 中接入 `DeepSeek 官方 API`，`10:10` 退出 `Claude Code`，切到 `link` 中转站 API，再用 `resume` 恢复同一会话。
 
@@ -21,6 +31,22 @@ tags:
 > 3. 第一次恢复时，怎么判断缓存有没有命中
 
 ## 一、先说结论
+
+### 1.0 截至 2026-06-22，官方已明确的三件事
+
+根据 Claude Code 官方文档，目前可以确定：
+
+- **Session 会持续保存到本地 transcript 文件。** 官方 session 文档明确写到，sessions are saved continuously to local transcript files。
+- **`resume` / `continue` 恢复的是本地保存的会话。** 官方文档明确写到 Claude Code stores it locally as you work。
+- **Claude Code 会自动使用 prompt caching。** 官方 model config 文档明确写到 Claude Code automatically uses prompt caching。
+
+另外，官方 data usage 文档还明确写到：
+
+- 本地 transcript 默认保留 **30 天**
+- 位置在 `~/.claude/projects/`
+- 可通过 `cleanupPeriodDays` 调整
+
+下面 1.1 到 1.4 的判断，应放在这些官方事实之上理解。
 
 ### 1.1 `resume` 恢复的是本地 transcript，不是服务端会话状态
 
@@ -50,7 +76,7 @@ tags:
 ### 1.3 切 API 地址，不等于切会话；但很可能切了缓存世界
 
 - `ANTHROPIC_BASE_URL` 改的是“请求发到哪里”。
-- `resume` 时，会话仍然倾向于沿用保存 transcript 时的模型配置。
+- `resume` 时，本地 transcript 仍然在。
 - 但缓存通常属于具体后端或具体缓存域，不属于 `Claude Code` 本地。
 
 因此：
@@ -101,14 +127,14 @@ tags:
 
 ## 三、这次最值得记住的几个机制
 
-### 3.1 `resume` 后模型通常仍按原 session 的模型走
+### 3.1 关于“resume 后是否仍按原模型走”
 
-这点很关键。
+这点要比旧版本表述得更谨慎。
 
 如果 `10:00` 那个 session 用的是 `deepseek-v4-pro`，那么 `10:10` 切到 `link` 后再 `resume`：
 
-- `Claude Code` 仍会尝试延续这个 session 的模型身份
-- 但请求发向的是新的 `ANTHROPIC_BASE_URL`
+- 本地 transcript 会被续上
+- 但真正发请求时，仍会受到你当前启动时的 provider / model 配置影响
 
 结果会分成几种：
 
@@ -116,7 +142,17 @@ tags:
 - `link` 不支持这个模型 ID：可能报错
 - `link` 悄悄做了模型映射：能跑，但实际可能已经不是原来的模型
 
-### 3.2 DeepSeek 官方有自己的硬盘缓存
+### 3.2 Claude Code 自动用 prompt caching，但后端是否继承要分层看
+
+Claude Code 官方当前已明确：**Claude Code automatically uses prompt caching**。
+但这不等于“任何第三方后端切换后都能继承同一份缓存”。
+
+更稳妥的理解是：
+
+- Claude Code 侧：会自动启用缓存机制
+- 具体 provider / gateway 侧：是否命中、命中规则、usage 是否透传，仍由后端决定
+
+### 3.3 DeepSeek 官方有自己的硬盘缓存
 
 `DeepSeek` 官方文档明确说明：
 
@@ -129,7 +165,7 @@ tags:
 
 所以如果后端真的是 `DeepSeek 官方`，最权威的缓存命中指标是这两个字段。
 
-### 3.3 Anthropic 风格缓存指标和 DeepSeek 指标不是一套名字
+### 3.4 Anthropic 风格缓存指标和 DeepSeek 指标不是一套名字
 
 做实验时要分清楚。
 
@@ -140,7 +176,7 @@ tags:
 | DeepSeek 风格 | `prompt_cache_hit_tokens` | DeepSeek 硬盘缓存命中的 tokens |
 | DeepSeek 风格 | `prompt_cache_miss_tokens` | DeepSeek 硬盘缓存未命中的 tokens |
 
-### 3.4 `link` 如果不透传 usage，就只能间接推断
+### 3.5 `link` 如果不透传 usage，就只能间接推断
 
 这是实际使用里最容易踩坑的点。
 

@@ -1,6 +1,7 @@
 ---
 title: "Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议"
 created: 2026-05-26
+updated: 2026-06-22
 tags:
   - "codex"
   - "claude-code"
@@ -8,9 +9,51 @@ tags:
   - "openai"
   - "workflow"
   - "成本"
+source_type: experimental-observation
 ---
 
 # Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议
+
+> [!warning]
+> 这篇笔记原本带有较强的**时间快照属性**，其中“模型价格”“中转折扣”“默认模型分工”都可能很快变化。
+> 我已在 `2026-06-22` 按官方文档修过一轮，但这里的结论仍应理解为：
+> - **你的历史账单案例**
+> - **某一时间点的选型判断**
+>
+> 复用前请优先核对：
+> - OpenAI 官方价格页
+> - DeepSeek 官方价格页
+> - Claude Code / Codex 当时的官方能力说明
+
+## 0. 先修正两个容易过时的点
+
+### 0.1 这页里的“账单优势”是你的历史样本，不是平台常量
+
+原文里关于 `GPT-5.4` 的超低成本，来自你当时使用的中转平台账单。
+这可以作为**个人历史样本**保留，但不能再当成通用结论，因为：
+
+- 中转折扣可能随时变化
+- 你的账号折扣不代表别人也能拿到
+- 官方价格本身也可能调整
+
+### 0.2 截至 2026-06-22，我核到的官方价格快照
+
+OpenAI 官方定价页当前列出：
+
+- `GPT-5.5`：输入 `$5.00 / 1M`，缓存输入 `$0.50 / 1M`，输出 `$30.00 / 1M`
+- `GPT-5.4`：输入 `$2.50 / 1M`，缓存输入 `$0.25 / 1M`，输出 `$15.00 / 1M`
+- `GPT-5.4 mini`：输入 `$0.75 / 1M`，缓存输入 `$0.075 / 1M`，输出 `$4.50 / 1M`
+
+DeepSeek 官方价格页当前列出：
+
+- `deepseek-v4-pro`：缓存命中输入 `$0.003625 / 1M`，未命中输入 `$0.435 / 1M`，输出 `$0.87 / 1M`
+- `deepseek-v4-flash`：缓存命中输入 `$0.0028 / 1M`，未命中输入 `$0.14 / 1M`，输出 `$0.28 / 1M`
+
+因此，这页后文更应该被读成：
+
+> **在你当时那组账单条件下，为什么“Codex 写计划 + Claude Code CLI 写代码”是合理分工。**
+
+而不是“这些价格和折扣就是稳定事实”。
 
 > 适用场景：我当前的工作流是 `Codex` 通过中转 API 使用 `GPT-5.4 / GPT-5.5`，`Claude Code CLI` 通过 Anthropic 兼容端点接 `DeepSeek V4 Pro`，想判断“Codex 写计划、Claude 写代码”是否合适。
 
@@ -74,14 +117,14 @@ tags:
 
 这几个点叠在一起，对“持续编码实现”很友好。
 
-尤其是 DeepSeek 官方文档里明确写到，对 `Claude Code` 一类复杂 agent 请求，thinking 模式建议使用更高推理强度；在当前映射下，`max` 会走更强的推理模式。  
+尤其是 DeepSeek 官方文档里明确写到，对 `Claude Code` 一类复杂 agent 请求，thinking 模式建议使用更高推理强度；在当前映射下，`max` 会走更强的推理模式。
 来源：[DeepSeek Thinking Mode](https://api-docs.deepseek.com/guides/thinking_mode)
 
 所以从“编码体验”和“CLI 工具链适配”这件事上，`Claude Code CLI + DeepSeek V4 Pro` 是说得通的。
 
 ---
 
-## 四、从成本看：你当前这套为什么很能打
+## 四、从成本看：为什么这套分工在你的历史样本里成立
 
 ## 4.1 我这次能核实到什么
 
@@ -122,7 +165,7 @@ tags:
 
 > **在你当前这条中转链路下，用 `GPT-5.4` 写计划，成本压力几乎可以忽略。**
 
-### 4.3 OpenAI 官方价其实远高于你当前实付
+### 4.3 OpenAI 官方价明显高于你当时的中转实付
 
 OpenAI 官方当前价格如下：
 
@@ -132,19 +175,10 @@ OpenAI 官方当前价格如下：
 
 来源：[OpenAI API Pricing](https://openai.com/api/pricing/)
 
-按 2026-05-26 附近公开汇率粗算，`1 USD` 约等于 `6.79 CNY`：  
-来源：[Forbes USD/CNY Converter](https://www.forbes.com/advisor/money-transfer/currency-converter/usd-cny/)
+这里不再保留人民币换算表，因为汇率本身也是时间敏感信息。
+结论层面只需要记住：**你当时的中转实付显著低于 OpenAI 官方牌价。**
 
-大致折成人民币后：
-
-| 模型 | 输入 | 输出 |
-|---|---:|---:|
-| `GPT-5.4` | 约 `¥17/M` | 约 `¥102/M` |
-| `GPT-5.5` | 约 `¥34/M` | 约 `¥204/M` |
-
-所以你现在的中转实际成本，明显低于官方牌价。
-
-### 4.4 DeepSeek V4 Pro 官方价适合长时间编码
+### 4.4 DeepSeek V4 Pro 官方价仍然适合长时间编码
 
 DeepSeek 官方当前 `deepseek-v4-pro` 价格：
 
@@ -153,14 +187,6 @@ DeepSeek 官方当前 `deepseek-v4-pro` 价格：
 - Output：`$0.87/M`
 
 来源：[DeepSeek Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing)
-
-按同样汇率粗算：
-
-| 项目 | 美元 | 人民币约值 |
-|---|---:|---:|
-| 输入（命中缓存） | `$0.003625/M` | `¥0.025/M` |
-| 输入（未命中缓存） | `$0.435/M` | `¥2.95/M` |
-| 输出 | `$0.87/M` | `¥5.91/M` |
 
 这说明如果只看官方牌价，`DeepSeek V4 Pro` 作为长时间编码模型，成本是很有优势的。
 
@@ -233,7 +259,7 @@ DeepSeek 官方当前 `deepseek-v4-pro` 价格：
 
 ### 3. 任务依赖视觉理解
 
-当前 DeepSeek 路线主要是文本型工作流。  
+当前 DeepSeek 路线主要是文本型工作流。
 如果任务强依赖截图、图像、视觉分析，这条链路未必是最优选择。
 
 ---
