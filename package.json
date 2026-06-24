@@ -19,6 +19,7 @@
     "test": "tsx --test",
     "test:sync-notes": "tsx --test scripts/public-notes-sync.test.mjs",
     "sync:notes": "node scripts/sync-public-notes.mjs",
+    "publish:notes": "npm run sync:notes && npm run test:sync-notes && npx quartz build && npx quartz sync",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "install-plugins": "npx tsx ./quartz/plugins/loader/install-plugins.ts",
     "prebuild": "npm run install-plugins"
