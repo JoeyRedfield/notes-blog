@@ -64,6 +64,7 @@ title: "HenryWu's Blog"
 - [[ai相关/Claude Code/Claude Code 切换 API、Resume 与缓存命中学习笔记|Claude Code 切换 API、Resume 与缓存命中学习笔记]]
 - [[ai相关/Claude Code/Claude Code 源码未文档化功能挖掘|Claude Code 源码未文档化功能挖掘]]
 - [[ai相关/Claude Code/Claude Code CLI 新会话检查清单|Claude Code CLI 新会话检查清单]]
+- [[ai相关/Claude Code/Claude Code Skills 官方实践指南——Anthropic 内部经验|Claude Code Skills 官方实践指南——Anthropic 内部经验]]
 - [[ai相关/Claude Code/Claude Code Skills 与 MCP 精华笔记|Claude Code Skills 与 MCP 精华笔记]]
 - [[ai相关/Claude Code/ECC（Everything Claude Code）知识手册|ECC（Everything Claude Code）知识手册]]
 - [[ai相关/learn-agent/概念介绍/00.系列导读|00.系列导读]]

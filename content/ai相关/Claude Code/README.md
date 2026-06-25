@@ -25,6 +25,7 @@ Claude Code CLI 的配置、技巧、生态快照与源码分析。
 
 ## 内容索引
 
+- [[Claude Code Skills 官方实践指南——Anthropic 内部经验]] — 官方博客：九大 skill 分类框架、八条制作技巧、分发度量方法；Anthropic 内部数百个 skills 的经验总结
 - [[Claude Code Skills 与 MCP 精华笔记]] — 社区生态快照：Skills/MCP 的概念、常见安装方式与 2026 年上半年生态变化；不是纯官方手册
 - [[ECC（Everything Claude Code）知识手册]] — ECC 项目全面知识：是什么、怎么用、何时用；其中 stars、数量、兼容矩阵属于时间快照
 - [[Claude Code 接入 DeepSeek 完整配置]] — 强时效配置页：`settings.json` 模板、模型路由、环境变量与第三方兼容接入注意事项

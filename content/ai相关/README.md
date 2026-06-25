@@ -43,6 +43,7 @@ tags: [index]
 
 ### Claude Code
 
+- [[Claude Code/Claude Code Skills 官方实践指南——Anthropic 内部经验]] — `[官方机制]` Anthropic 内部数百个 skills 的九大分类框架、制作技巧与分发管理
 - [[Claude Code/Claude Code Skills 与 MCP 精华笔记]] — `[社区快照]` Skills/MCP 概念、生态和常见安装方式
 - [[Claude Code/ECC（Everything Claude Code）知识手册]] — `[社区快照]` ECC 项目全面知识：是什么、怎么用、何时用
 - [[Claude Code/Claude Code 接入 DeepSeek 完整配置]] — `[第三方接入]` settings.json 模板、模型路由与兼容接入说明
