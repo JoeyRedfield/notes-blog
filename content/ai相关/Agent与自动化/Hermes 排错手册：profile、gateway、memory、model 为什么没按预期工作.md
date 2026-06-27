@@ -540,5 +540,5 @@ grep -i "failed to send\|error" ~/.hermes/logs/gateway.log | tail -20
 
 - [[Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系]]
 - [[Hermes 实操入门：profile、gateway、memory 怎么搭]]
-- [[ai相关/learn-agent/概念介绍/05.OpenClaw、Hermes和Harness关系|OpenClaw、Hermes 和 Harness：它们到底是什么关系]]
+- [[lienjack/AI/1.概念介绍/05.OpenClaw、Hermes和Harness关系|OpenClaw、Hermes 和 Harness：它们到底是什么关系]]
 - [[Agent与自动化/AI Agent 自动化任务方案对比|AI Agent 自动化任务方案对比]]

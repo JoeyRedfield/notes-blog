@@ -105,7 +105,7 @@ tags: [index]
 
 来自 [LienJack/learn-agent](https://github.com/LienJack/learn-agent) 的系统化技术博客，覆盖 AI Agent、Claude Code 源码解析、Agent 设计范式、Build Harness 教程和 Learn LLM。
 
-- [[learn-agent/README|learn-agent 索引]] — 全部 100+ 篇文章的完整索引
+- [[lienjack/README|learn-agent 索引]] — 已同步到 `lienjack/` 目录的完整入口
 
 ### AI 伦理与人权
 
