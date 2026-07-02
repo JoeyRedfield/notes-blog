@@ -24,6 +24,12 @@ npx quartz build --serve
 # 仅构建（输出到 public/）
 npx quartz build
 
+# 刷新霞鹜文楷字体子集（内容大更新或发布前执行）
+npm run font:subset
+
+# 完整发布 notes 内容到 GitHub Pages
+npm run publish:notes
+
 # 同步上游 quartz 框架更新
 git fetch upstream && git merge upstream/main
 ```
@@ -34,6 +40,7 @@ git fetch upstream && git merge upstream/main
 - `quartz.config.default.yaml` — 上游默认配置参考，不要改
 - `content/` — 发布的笔记内容
 - `public/` — 构建产物
+- `quartz/static/fonts/LXGWWenKai-Regular.subset.woff2` — 当前内容语料生成的霞鹜文楷字体子集
 
 ## 配置要点
 
@@ -48,3 +55,6 @@ git fetch upstream && git merge upstream/main
 - 修改 `quartz.config.yaml` 前先确认影响范围
 - 更新 quartz 框架版本（`git merge upstream/main`）后运行 `npm install` 并本地预览验证
 - 内容同步由 notes 侧驱动，不在 quartz 侧直接编辑 `content/` 中的笔记正文
+- 内容大更新后必须刷新字体子集：先同步 `content/`，再运行 `npm run font:subset`，然后运行 `npm run test:font-subset` 和 `npx quartz build`
+- `npm run publish:notes` 已包含 `sync:notes`、`font:subset`、同步测试、字体子集测试、构建和 Quartz 同步发布
+- 字体子集脚本依赖本机 `python3 -m fontTools.subset`；如果环境缺少 fontTools，先安装后再发布
