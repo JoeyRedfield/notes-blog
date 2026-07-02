@@ -1,0 +1,37 @@
+{
+  "name": "reading-enhancements",
+  "version": "0.1.0",
+  "description": "Reading experience enhancements for this Quartz site.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "reading-enhancements",
+    "displayName": "Reading Enhancements",
+    "description": "Adds image loading hints, a back-to-top control, and image lightbox behavior.",
+    "category": [
+      "transformer",
+      "component"
+    ],
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 65,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "ReadingEnhancements": {
+        "displayName": "Reading Enhancements",
+        "description": "Back-to-top and lightbox controls.",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 20
+      }
+    }
+  }
+}

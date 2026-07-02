@@ -6,9 +6,12 @@ title: "HenryWu's Blog"
 
 其实这是一个人机，里面全是乱写的笔记。
 
+阅读提示：如果页面字体看着偏小或偏大，可以直接用浏览器缩放；macOS 按 `Command (⌘)` + `+` 放大、`Command (⌘)` + `-` 缩小、`Command (⌘)` + `0` 还原，Windows/Linux 按 `Ctrl` + `+`、`Ctrl` + `-`、`Ctrl` + `0`。
+
 ## 联系我 / Contact
 
 > [!info] 找我聊聊
+>
 > - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)
 > - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)
 > - **WeChat** — `***`（暂时不放上来了）
@@ -379,4 +382,3 @@ title: "HenryWu's Blog"
 - [[llm-from-scratch/LLM-from-scratch ch05|LLM-from-scratch ch05]]
 - [[llm-from-scratch/LLM-from-scratch ch06|LLM-from-scratch ch06]]
 - [[llm-from-scratch/LLM-from-scratch ch07|LLM-from-scratch ch07]]
-

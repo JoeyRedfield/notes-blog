@@ -3,6 +3,16 @@
 // Claude-inspired editorial theme.
 // Warm paper palette, calm rhythm, considered details.
 
+@font-face {
+  font-family: "LXGW WenKai";
+  src:
+    url("static/fonts/LXGWWenKai-Regular.woff2") format("woff2"),
+    url("static/fonts/LXGWWenKai-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --page-max: 1480px;
   --article-measure: 720px;
@@ -15,15 +25,30 @@
   --rule: color-mix(in srgb, var(--secondary) 32%, var(--lightgray));
   --accent: var(--secondary);
   --accent-soft: color-mix(in srgb, var(--secondary) 14%, transparent);
-  --shadow-near: 0 1px 0 color-mix(in srgb, var(--dark) 4%, transparent),
+  --shadow-near:
+    0 1px 0 color-mix(in srgb, var(--dark) 4%, transparent),
     0 2px 8px color-mix(in srgb, var(--dark) 5%, transparent);
-  --shadow-far: 0 1px 0 color-mix(in srgb, var(--dark) 5%, transparent),
+  --shadow-far:
+    0 1px 0 color-mix(in srgb, var(--dark) 5%, transparent),
     0 12px 36px color-mix(in srgb, var(--dark) 8%, transparent);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --chrome-h: 2.25rem;
-  --tracking-eyebrow: 0.14em;
+  --tracking-eyebrow: 0.08em;
+  --font-wenkai:
+    "LXGW WenKai", "霞鹜文楷", "LXGWWenKai-Regular", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC",
+    "Source Han Sans SC", "WenQuanYi Micro Hei", sans-serif;
+  --font-sans-cjk: var(--font-wenkai);
+  --font-serif-cjk: var(--font-wenkai);
+  --font-mono-cjk:
+    "IBM Plex Mono", "SFMono-Regular", "Cascadia Mono", "Noto Sans Mono CJK SC", "LXGW WenKai",
+    "Microsoft YaHei UI", monospace;
+  --bodyFont: var(--font-sans-cjk);
+  --headerFont: var(--font-serif-cjk);
+  --titleFont: var(--font-serif-cjk);
+  --codeFont: var(--font-mono-cjk);
 }
 
 :root[saved-theme="dark"] {
@@ -33,35 +58,46 @@
   --hairline: color-mix(in srgb, var(--lightgray) 85%, white 6%);
   --rule: color-mix(in srgb, var(--secondary) 38%, var(--lightgray));
   --accent-soft: color-mix(in srgb, var(--secondary) 20%, transparent);
-  --shadow-near: 0 1px 0 rgba(0, 0, 0, 0.25),
-    0 2px 10px rgba(0, 0, 0, 0.28);
-  --shadow-far: 0 1px 0 rgba(0, 0, 0, 0.3),
-    0 18px 44px rgba(0, 0, 0, 0.4);
+  --shadow-near: 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.28);
+  --shadow-far: 0 1px 0 rgba(0, 0, 0, 0.3), 0 18px 44px rgba(0, 0, 0, 0.4);
 }
 // ── Page surface ────────────────────────────────────────────────
 html {
   background: var(--paper);
+  width: auto;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
+  width: auto;
+  max-width: 100%;
   min-height: 100vh;
   background:
     radial-gradient(
-        1100px 520px at 78% -10%,
-        color-mix(in srgb, var(--secondary) 9%, transparent),
-        transparent 70%
-      ),
+      1100px 520px at 78% -10%,
+      color-mix(in srgb, var(--secondary) 9%, transparent),
+      transparent 70%
+    ),
     radial-gradient(
-        900px 480px at -10% 18%,
-        color-mix(in srgb, var(--tertiary) 7%, transparent),
-        transparent 65%
-      ),
+      900px 480px at -10% 18%,
+      color-mix(in srgb, var(--tertiary) 7%, transparent),
+      transparent 65%
+    ),
     var(--paper);
   font-feature-settings: "ss01", "cv11", "kern";
   font-kerning: normal;
   text-rendering: optimizeLegibility;
   color: var(--ink-muted);
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
+}
+
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 ::selection {
@@ -70,11 +106,14 @@ body {
 }
 
 .page {
+  width: auto;
   max-width: var(--page-max);
   padding: 0 1.4rem;
 }
 
 .page > #quartz-body {
+  width: auto;
+  max-width: 100%;
   column-gap: 2.4rem;
   row-gap: 0.5rem;
 }
@@ -89,12 +128,15 @@ body {
   position: relative;
   margin: 0;
   padding-bottom: 0.4rem;
-  font-family: "Fraunces", var(--headerFont);
+  font-family: var(--titleFont);
   font-optical-sizing: auto;
-  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 30;
+  font-variation-settings:
+    "SOFT" 50,
+    "WONK" 0,
+    "opsz" 30;
   font-weight: 500;
   font-size: 1.55rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   line-height: 1.05;
 }
 
@@ -257,11 +299,24 @@ ul.toc-content.overflow > li > a:hover,
   color: var(--ink);
 }
 
+ul.toc-content.overflow > li > a.in-view {
+  opacity: 0.72;
+}
+
+ul.toc-content.overflow > li > a.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+  opacity: 1;
+}
+
 .folder-icon,
 .explorer .fold,
 button.toc-header .fold {
   color: var(--gray);
-  transition: color 0.15s ease, transform 0.2s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.2s ease;
 }
 
 button.desktop-explorer:hover .fold,
@@ -275,10 +330,10 @@ button.toc-header:hover .fold {
   border-radius: var(--radius-md);
   background:
     radial-gradient(
-        circle at 50% 50%,
-        color-mix(in srgb, var(--accent) 4%, transparent),
-        transparent 70%
-      ),
+      circle at 50% 50%,
+      color-mix(in srgb, var(--accent) 4%, transparent),
+      transparent 70%
+    ),
     var(--paper-sunken);
 }
 
@@ -318,12 +373,15 @@ button.toc-header:hover .fold {
   margin-top: 0.25rem;
   margin-bottom: 0.6rem;
   color: var(--ink);
-  font-family: "Fraunces", var(--headerFont);
+  font-family: var(--titleFont);
   font-optical-sizing: auto;
-  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+  font-variation-settings:
+    "SOFT" 50,
+    "WONK" 0,
+    "opsz" 144;
   font-weight: 500;
   font-size: 2.85rem;
-  letter-spacing: -0.022em;
+  letter-spacing: 0;
   line-height: 1.04;
   text-wrap: balance;
 }
@@ -350,12 +408,20 @@ article {
   font-family: var(--bodyFont);
   font-size: 1.0625rem;
   color: var(--ink-muted);
+  font-variant-east-asian: normal;
+  line-break: strict;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 article p,
 article li,
 article td {
-  line-height: 1.78;
+  line-height: 1.82;
+}
+
+article li {
+  line-height: 1.76;
 }
 
 article p {
@@ -376,11 +442,15 @@ article h4,
 article h5,
 article h6 {
   color: var(--ink);
-  font-family: "Fraunces", var(--headerFont);
+  font-family: var(--headerFont);
   font-optical-sizing: auto;
-  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 60;
+  font-variation-settings:
+    "SOFT" 50,
+    "WONK" 0,
+    "opsz" 60;
   font-weight: 500;
-  letter-spacing: -0.012em;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
 
 .page article > h1,
@@ -415,7 +485,9 @@ a {
   text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
-  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+  transition:
+    color 0.18s ease,
+    text-decoration-color 0.18s ease;
 }
 
 a:hover {
@@ -429,22 +501,24 @@ article a:not(.internal):not(.tag-link):not([role="anchor"]) {
 
 a.internal {
   background: linear-gradient(
-      180deg,
-      transparent calc(100% - 2px),
-      color-mix(in srgb, var(--accent) 38%, transparent) 0
-    );
+    180deg,
+    transparent calc(100% - 2px),
+    color-mix(in srgb, var(--accent) 38%, transparent) 0
+  );
   border-radius: 0;
   color: var(--ink);
   padding: 0 0.05rem;
-  transition: background 0.2s ease, color 0.18s ease;
+  transition:
+    background 0.2s ease,
+    color 0.18s ease;
 }
 
 a.internal:hover {
   background: linear-gradient(
-      180deg,
-      transparent 55%,
-      color-mix(in srgb, var(--accent) 22%, transparent) 0
-    );
+    180deg,
+    transparent 55%,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0
+  );
   color: var(--accent);
 }
 
@@ -468,11 +542,7 @@ a.internal.tag-link:hover {
   border-left: 3px solid var(--color);
   border-radius: var(--radius-md);
   background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--color) 8%, transparent),
-      transparent 40%
-    ),
+    linear-gradient(90deg, color-mix(in srgb, var(--color) 8%, transparent), transparent 40%),
     var(--paper-raised);
   box-shadow: var(--shadow-near);
 }
@@ -535,8 +605,8 @@ blockquote {
   padding: 0.4rem 0 0.4rem 1.4rem;
   border-left: 2px solid var(--accent);
   background: transparent;
-  font-family: "Fraunces", var(--bodyFont);
-  font-style: italic;
+  font-family: var(--headerFont);
+  font-style: normal;
   font-weight: 400;
   font-size: 1.08rem;
   color: var(--ink);
@@ -574,6 +644,31 @@ pre > code {
 pre > code > [data-line] {
   padding-right: 0.75rem;
   padding-left: 0.5rem;
+}
+
+.clipboard-button {
+  background: color-mix(in srgb, var(--paper-raised) 92%, transparent);
+  border-color: var(--hairline);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  box-shadow: var(--shadow-near);
+}
+
+.clipboard-button > svg {
+  fill: currentColor;
+  filter: none;
+}
+
+.clipboard-button:hover,
+.clipboard-button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 2px;
+}
+
+pre:focus-within > .clipboard-button {
+  opacity: 1;
 }
 
 figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
@@ -629,7 +724,13 @@ iframe.pdf {
 
 hr {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--hairline) 25%, var(--hairline) 75%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hairline) 25%,
+    var(--hairline) 75%,
+    transparent
+  );
 }
 
 .footnotes {
@@ -680,10 +781,10 @@ footer a:hover {
 
 .search > .search-container > .search-space > input {
   min-height: 3.4rem;
-  font-family: "Fraunces", var(--headerFont);
+  font-family: var(--titleFont);
   font-weight: 400;
   font-size: 1.25rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   color: var(--ink);
 }
 
@@ -733,7 +834,7 @@ footer a:hover {
 
 .section-li .section h3 {
   margin: 0.25rem 0;
-  font-family: "Fraunces", var(--headerFont);
+  font-family: var(--headerFont);
   font-weight: 500;
   font-size: 1.25rem;
 }
@@ -823,6 +924,16 @@ footer a:hover {
 }
 
 @media all and ($mobile) {
+  html,
+  body,
+  #quartz-root,
+  #quartz-body {
+    width: -webkit-fill-available;
+    max-width: -webkit-fill-available;
+    box-sizing: border-box;
+    overflow-x: clip;
+  }
+
   body {
     font-size: 16px;
   }
@@ -870,7 +981,7 @@ footer a:hover {
   }
 
   .explorer[aria-expanded="false"] > .explorer-content {
-    transform: translateX(-100vw);
+    transform: translateX(-100dvw);
     visibility: hidden;
   }
 

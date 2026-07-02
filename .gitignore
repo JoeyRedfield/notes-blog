@@ -3,6 +3,8 @@
 node_modules
 public
 prof
+output/
+.playwright-cli/
 tsconfig.tsbuildinfo
 .obsidian
 .quartz-cache

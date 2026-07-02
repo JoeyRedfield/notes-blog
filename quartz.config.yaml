@@ -13,8 +13,8 @@ configuration:
     - templates
     - .obsidian
   theme:
-    fontOrigin: googleFonts
-    cdnCaching: true
+    fontOrigin: local
+    cdnCaching: false
     typography:
       header: Fraunces
       body: Inter
@@ -72,7 +72,8 @@ plugins:
     order: 50
     layout:
       position: right
-      priority: 30
+      priority: 10
+      condition: has-toc
   - source: github:quartz-community/crawl-links
     enabled: true
     options:
@@ -132,7 +133,7 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 10
+      priority: 50
   - source: github:quartz-community/search
     enabled: true
     layout:
@@ -145,7 +146,8 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 50
+      priority: 30
+      condition: has-backlinks
   - source: github:quartz-community/article-title
     enabled: true
     layout:
@@ -244,6 +246,13 @@ plugins:
     layout:
       position: body
       priority: 100
+      display: all
+  - source: ./custom-plugins/reading-enhancements
+    enabled: true
+    order: 850
+    layout:
+      position: afterBody
+      priority: 20
       display: all
   - source: github:quartz-community/stacked-pages
     enabled: false
