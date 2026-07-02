@@ -2,6 +2,13 @@ import { h } from "preact"
 
 export const readingEnhancementsScript = `
 const setupReadingEnhancements = () => {
+  const root = document.documentElement;
+  if (root.dataset.readingEnhancementsBound === "true") return;
+  root.dataset.readingEnhancementsBound = "true";
+  window.addCleanup(() => {
+    delete root.dataset.readingEnhancementsBound;
+  });
+
   const backToTopButtons = Array.from(document.getElementsByClassName("back-to-top"));
   const updateBackToTop = () => {
     const isVisible = window.scrollY > Math.max(480, window.innerHeight * 0.65);
@@ -12,9 +19,13 @@ const setupReadingEnhancements = () => {
   };
 
   for (const button of backToTopButtons) {
+    button.dataset.readingEnhancementsBound = "true";
     const onClick = () => window.scrollTo({ top: 0, behavior: "smooth" });
     button.addEventListener("click", onClick);
-    window.addCleanup(() => button.removeEventListener("click", onClick));
+    window.addCleanup(() => {
+      button.removeEventListener("click", onClick);
+      delete button.dataset.readingEnhancementsBound;
+    });
   }
 
   window.addEventListener("scroll", updateBackToTop, { passive: true });
@@ -56,7 +67,7 @@ const setupReadingEnhancements = () => {
   if (!(image instanceof HTMLImageElement) || !caption || !closeButton) return;
 
   const closeLightbox = () => {
-    dialog.close();
+    if (dialog.open) dialog.close();
     image.removeAttribute("src");
     image.removeAttribute("alt");
     caption.textContent = "";
@@ -68,17 +79,23 @@ const setupReadingEnhancements = () => {
 
   const onCloseClick = () => closeLightbox();
 
+  dialog.dataset.readingEnhancementsBound = "true";
+  closeButton.dataset.readingEnhancementsBound = "true";
   dialog.addEventListener("click", onDialogClick);
   closeButton.addEventListener("click", onCloseClick);
   window.addCleanup(() => {
     dialog.removeEventListener("click", onDialogClick);
     closeButton.removeEventListener("click", onCloseClick);
+    delete dialog.dataset.readingEnhancementsBound;
+    delete closeButton.dataset.readingEnhancementsBound;
   });
 
   const articleImages = Array.from(document.querySelectorAll("article img"))
     .filter((img) => !img.closest("a") && !img.closest(".image-lightbox"));
 
   for (const img of articleImages) {
+    if (img.dataset.readingEnhancementsBound === "true") continue;
+    img.dataset.readingEnhancementsBound = "true";
     img.classList.add("is-lightboxable");
     img.setAttribute("tabindex", "0");
     img.setAttribute("role", "button");
@@ -87,7 +104,7 @@ const setupReadingEnhancements = () => {
       image.src = img.currentSrc || img.src;
       image.alt = img.alt || "";
       caption.textContent = img.alt || img.getAttribute("title") || "";
-      dialog.showModal();
+      if (!dialog.open) dialog.showModal();
     };
 
     const onKeydown = (event) => {
@@ -102,6 +119,7 @@ const setupReadingEnhancements = () => {
     window.addCleanup(() => {
       img.removeEventListener("click", openLightbox);
       img.removeEventListener("keydown", onKeydown);
+      delete img.dataset.readingEnhancementsBound;
     });
   }
 };
@@ -226,12 +244,21 @@ article img.is-lightboxable:focus-visible {
 @media (max-width: 800px) {
   .back-to-top {
     right: 0.85rem;
-    bottom: 0.85rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1.15rem);
   }
 
   .image-lightbox {
-    width: 96vw;
-    max-width: 96vw;
+    width: calc(100vw - 1.25rem);
+    max-width: calc(100vw - 1.25rem);
+    max-height: calc(100dvh - 1.25rem);
+  }
+
+  .image-lightbox-inner {
+    padding: 0.7rem;
+  }
+
+  .image-lightbox img {
+    max-height: calc(100dvh - 5.5rem);
   }
 }
 `

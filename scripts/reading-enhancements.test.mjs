@@ -72,4 +72,7 @@ test("renders the reading enhancement controls and ships SPA-aware script hooks"
   assert.match(readingEnhancementsScript, /scrollTo/)
   assert.match(readingEnhancementsScript, /is-active/)
   assert.match(readingEnhancementsScript, /data-for/)
+  assert.match(readingEnhancementsScript, /readingEnhancementsBound/)
+  assert.match(readingEnhancementsScript, /dataset\.readingEnhancementsBound === "true"/)
+  assert.match(readingEnhancementsScript, /delete root\.dataset\.readingEnhancementsBound/)
 })

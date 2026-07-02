@@ -4,6 +4,14 @@
 // Warm paper palette, calm rhythm, considered details.
 
 @font-face {
+  font-family: "LXGW WenKai Subset";
+  src: url("static/fonts/LXGWWenKai-Regular.subset.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "LXGW WenKai";
   src:
     url("static/fonts/LXGWWenKai-Regular.woff2") format("woff2"),
@@ -37,8 +45,8 @@
   --chrome-h: 2.25rem;
   --tracking-eyebrow: 0.08em;
   --font-wenkai:
-    "LXGW WenKai", "霞鹜文楷", "LXGWWenKai-Regular", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC",
+    "LXGW WenKai Subset", "LXGW WenKai", "霞鹜文楷", "LXGWWenKai-Regular", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC",
     "Source Han Sans SC", "WenQuanYi Micro Hei", sans-serif;
   --font-sans-cjk: var(--font-wenkai);
   --font-serif-cjk: var(--font-wenkai);
@@ -1010,6 +1018,6 @@ footer a:hover {
   }
 
   .center > article {
-    padding-bottom: 2.5rem;
+    padding-bottom: 4.25rem;
   }
 }

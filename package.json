@@ -18,6 +18,7 @@
     "format": "npx prettier . --write",
     "test": "tsx --test",
     "test:sync-notes": "tsx --test scripts/public-notes-sync.test.mjs",
+    "font:subset": "node scripts/subset-lxgw-font.mjs",
     "sync:notes": "node scripts/sync-public-notes.mjs",
     "publish:notes": "npm run sync:notes && npm run test:sync-notes && npx quartz build && npx quartz sync",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
