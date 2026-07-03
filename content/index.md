@@ -15,8 +15,6 @@ title: "HenryWu's Blog"
 > - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)
 > - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)
 > - **WeChat** — `***`（暂时不放上来了）
->
-> ![WeChat QR|180](assets/wechat-qr.jpg)
 
 ## ai相关
 

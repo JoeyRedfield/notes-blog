@@ -1,8 +1,9 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
 import test from "node:test"
 import assert from "node:assert/strict"
+import { fileURLToPath } from "node:url"
 
 import {
   findMarkdownFiles,
@@ -54,7 +55,10 @@ test("findMarkdownFiles skips exact relative files from excludeFiles", async () 
 
     const files = await findMarkdownFiles(vault, ["公开"], [], ["公开/skip.md"])
 
-    assert.deepEqual(files.map((file) => path.relative(vault, file)), [path.join("公开", "keep.md")])
+    assert.deepEqual(
+      files.map((file) => path.relative(vault, file)),
+      [path.join("公开", "keep.md")],
+    )
   })
 })
 
@@ -71,6 +75,26 @@ test("getReferencedAttachments extracts Obsidian embeds and markdown images", ()
     "assets/diagram.jpg",
     "images/pic.webp",
   ])
+})
+
+test("siteIntro does not reference missing local images", async () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+  const configPath = path.join(repoRoot, "publish.config.json")
+  const config = JSON.parse(await readFile(configPath, "utf8"))
+  const contentDir = path.resolve(repoRoot, config.contentDir ?? "content")
+  const refs = getReferencedAttachments(config.siteIntro ?? "")
+  const localRefs = refs.filter((ref) => !/^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(ref))
+  const missing = []
+
+  for (const ref of localRefs) {
+    try {
+      await access(path.resolve(contentDir, ref))
+    } catch {
+      missing.push(ref)
+    }
+  }
+
+  assert.deepEqual(missing, [])
 })
 
 test("scanSensitiveTerms reports configured keywords with line numbers", () => {
