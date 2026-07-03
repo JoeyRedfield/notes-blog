@@ -689,7 +689,18 @@ figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
 
 // ── Tables ─────────────────────────────────────────────────────
 table {
+  width: 100%;
+  max-width: 100%;
   font-size: 0.95rem;
+  table-layout: fixed;
+}
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-color: color-mix(in srgb, var(--accent) 38%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 .table-container > table {
@@ -699,6 +710,19 @@ table {
   background: var(--paper-raised);
   overflow: hidden;
   box-shadow: var(--shadow-near);
+}
+
+.table-container > table th,
+.table-container > table td {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.table-container > table th code,
+.table-container > table td code {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 th {
@@ -988,14 +1012,18 @@ footer a:hover {
     padding: 0.4rem 0;
   }
 
+  .explorer.collapsed > .explorer-content,
   .explorer[aria-expanded="false"] > .explorer-content {
-    transform: translateX(-100dvw);
+    transform: translateX(calc(-100dvw - 1rem));
     visibility: hidden;
+    pointer-events: none;
   }
 
+  .explorer:not(.collapsed) > .explorer-content,
   .explorer[aria-expanded="true"] > .explorer-content {
     transform: translateX(0);
     visibility: visible;
+    pointer-events: auto;
   }
 
   .page > #quartz-body .page-header {
