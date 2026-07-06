@@ -141,3 +141,49 @@ test("custom styles include accessible motion and focus affordances", () => {
   assert.doesNotMatch(css, /font-variation-settings/)
   assert.doesNotMatch(css, /font-optical-sizing/)
 })
+
+test("custom styles include print-friendly reading output", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /@media print/)
+  assert.match(css, /\.sidebar,[\s\S]*\.search,[\s\S]*\.darkmode,[\s\S]*\.readermode/)
+  assert.match(css, /\.back-to-top,[\s\S]*\.skip-to-content,[\s\S]*\.breadcrumb-container,[\s\S]*footer/)
+  assert.match(css, /display: none !important/)
+  assert.match(css, /article a\[href\^="http"\]::after[\s\S]*content: " \(" attr\(href\) "\)"/)
+  assert.match(css, /article a\.external\[href\^="http"\]:not\(:has\(> img\)\)::after/)
+  assert.match(css, /article a\.external:not\(\[href\^="http"\]\):not\(:has\(> img\)\)::after[\s\S]*display: none !important/)
+  assert.match(css, /pre,[\s\S]*pre > code[\s\S]*white-space: pre-wrap/)
+})
+
+test("custom styles improve code block scanning without covering controls", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /pre\s*{[\s\S]*max-height: 32rem/)
+  assert.match(css, /pre\s*{[\s\S]*overflow: auto/)
+  assert.match(css, /pre\[data-language\]:not\(\[data-language=""\]\)::before/)
+  assert.match(css, /content: attr\(data-language\)/)
+  assert.match(css, /pre > \.clipboard-button\s*{[\s\S]*top: 0\.55rem/)
+  assert.match(css, /pre > \.clipboard-button\s*{[\s\S]*right: 0\.55rem/)
+})
+
+test("custom styles expose heading anchors and external links intentionally", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /article h1\[id\] > a\[role="anchor"\],[\s\S]*article h6\[id\] > a\[role="anchor"\]/)
+  assert.match(css, /content: "#"/)
+  assert.match(css, /article h1\[id\] > a\[role="anchor"\] > svg,[\s\S]*article h6\[id\] > a\[role="anchor"\] > svg[\s\S]*display: none/)
+  assert.match(css, /opacity: 0/)
+  assert.match(css, /article h1\[id\]:hover > a\[role="anchor"\],[\s\S]*article h6\[id\]:hover > a\[role="anchor"\]/)
+  assert.match(css, /article a\.external:not\(:has\(> img\)\)::after/)
+  assert.match(css, /content: "↗"/)
+  assert.match(css, /article a\.external \.external-icon[\s\S]*display: none/)
+})
+
+test("custom styles make table headers sticky when the scroll container supports it", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /\.table-container\s*{[\s\S]*overflow: auto/)
+  assert.match(css, /\.table-container th\s*{[\s\S]*position: sticky/)
+  assert.match(css, /\.table-container th\s*{[\s\S]*top: 0/)
+  assert.match(css, /\.table-container th\s*{[\s\S]*z-index: 1/)
+})

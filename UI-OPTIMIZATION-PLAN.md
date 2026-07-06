@@ -115,28 +115,28 @@
 
 ## Phase 3 — 阅读体验细化
 
-- [ ] **3.1 打印样式**
+- [x] **3.1 打印样式**
   - 文件：`quartz/styles/custom.scss` 末尾新增 `@media print` 一节。
   - 做法：隐藏侧栏（`.sidebar`）、搜索、darkmode/readermode、graph、返回顶部、页脚导航、面包屑；正文放开 `max-width`；链接后打印 URL（`article a[href^="http"]::after { content: " (" attr(href) ")"; }`）；代码块允许换行避免截断；背景渐变去掉（省墨）。
   - 验证：Chrome 打印预览查看长文章，1 页内无侧栏残留、代码不溢出。
 
-- [ ] **3.2 代码块体验**
+- [x] **3.2 代码块体验**
   - 文件：`quartz/styles/custom.scss`。
   - 做法：
     - 长代码块（>40 行）目前一屏占满——给 `pre` 加 `max-height: 32rem; overflow-y: auto`，配现有细滚动条样式。
     - 显示语言标签：syntax-highlighting 插件输出 `data-language` 属性（先 `npx quartz build` 后在 `public/` 里 grep 确认属性名），用 `pre::before { content: attr(data-language); }` 在右上角显示小标签，样式对齐现有 eyebrow 风格（`--tracking-eyebrow`、`--gray`）。
   - 验证：找一篇含长代码块的文章，确认可滚动、语言标签显示、复制按钮不与标签重叠。
 
-- [ ] **3.3 标题锚点可发现性**
+- [x] **3.3 标题锚点可发现性**
   - 现状：确认 hover 标题时是否有锚点链接标识（Quartz 默认有 `[role="anchor"]` 处理，custom.scss 第 506 行有涉及但无可见样式）。
   - 做法：`article h1-h6:hover a[role="anchor"]` 显示 `#` 或链接图标，颜色 `--gray`，hover 变 `--accent`；默认 `opacity: 0`。
   - 验证：hover 各级标题出现锚点标识，点击后 URL 带 fragment 且能复制。
 
-- [ ] **3.4 外部链接标识**
+- [x] **3.4 外部链接标识**
   - 做法：`article a:not(.internal):not([role="anchor"])::after` 加一个小的"↗"（用伪元素而非图标字体，`font-size: 0.75em`），排除图片链接（`a:has(> img)` 不加）。
   - 验证：外链有标识、内链没有、图片链接没有；换行时标识不孤行（`white-space: nowrap` 处理最后一个词——若做不到简单实现就只加标识不管孤行）。
 
-- [ ] **3.5 表格表头吸顶（可选，低优先）**
+- [x] **3.5 表格表头吸顶（可选，低优先）**
   - 做法：`.table-container` 内 `th { position: sticky; top: 0; }`。注意 `.table-container` 有 `overflow-x: auto`，sticky 在滚动容器内的表现要实测；若与横向滚动冲突则放弃此项并记录原因。
   - 验证：长表格纵向滚动时表头保持可见，横向滚动不错位。
 
@@ -214,3 +214,4 @@
 - 2026-07-06 Phase 2 字体加载：subset preload 在首页/长文/文件夹页/标签页均由 HTML link 触发，`performance` 里 `initiatorType=link`；补充 `©` 到子集保底文本，breadcrumb 分隔符 `❯` 改用系统字体（源文楷字体本身无该 glyph），全量文楷增加 CJK/常用标点 `unicode-range`，复测 4 个样本页只下载 `LXGWWenKai-Regular.subset.woff2`，不下载 8MB 全量 WOFF2。
 - 2026-07-06 Phase 2 字体配置：`quartz.config.yaml` 的 typography 保留 `Fraunces` / `Inter` / `IBM Plex Mono`，因为 `.quartz/plugins/og-image` 会按 config 字体名抓取 Google Fonts TTF；改成 `LXGW WenKai` 会导致 `CustomOgImages: No fonts are loaded` 构建失败。实际页面字体仍由 `custom.scss` 覆盖为文楷栈。
 - 2026-07-06 Phase 2 TOC 复验：长文页大距离回顶一度看似没有回到顶部，根因是 Quartz 基础样式 `html { scroll-behavior: smooth; }`，700ms 固定等待不足以覆盖超长页面平滑滚动。改用条件等待到 `scrollY <= 2` 后，`window.scrollTo` 和返回顶部按钮均恢复到 `scrollY=0`，TOC 仅有首标题 1 个 `.is-active`，按钮隐藏；连续 SPA 跳转 `/`、`/ai相关/`、`/tags/ai`、长文页后 skip link、sentinel、返回顶部按钮均保持单例。
+- 2026-07-06 Phase 3：打印样式隐藏侧栏、搜索、Graph、返回顶部、面包屑、skip link 和页脚，正文放开宽度，`http(s)` 外链打印 URL，非 `http(s)` 外链不打印屏幕态箭头；首页 PDF 复验不含 `跳转到正文` / `Graph View`，`GitHub` 链接打印 `https://github.com/JoeyRedfield`。代码块实测 `max-height=512px`、`overflow-y=auto`、语言标签显示 `data-language`，复制按钮右上角偏移正常；标题 hover 只显示 `#`，隐藏 Quartz 自带 SVG；正文外链屏幕态显示 `↗` 且隐藏原 SVG；长表格容器内 `th` sticky 生效。

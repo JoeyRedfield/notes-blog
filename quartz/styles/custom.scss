@@ -511,6 +511,63 @@ article h4 {
   margin-top: 1.6rem;
   font-size: 1.05rem;
 }
+
+article h1[id] > a[role="anchor"],
+article h2[id] > a[role="anchor"],
+article h3[id] > a[role="anchor"],
+article h4[id] > a[role="anchor"],
+article h5[id] > a[role="anchor"],
+article h6[id] > a[role="anchor"] {
+  opacity: 0;
+  color: var(--gray);
+  margin-inline-start: 0.35rem;
+  text-decoration: none;
+  transition:
+    opacity 0.16s ease,
+    color 0.16s ease;
+}
+
+article h1[id] > a[role="anchor"]::before,
+article h2[id] > a[role="anchor"]::before,
+article h3[id] > a[role="anchor"]::before,
+article h4[id] > a[role="anchor"]::before,
+article h5[id] > a[role="anchor"]::before,
+article h6[id] > a[role="anchor"]::before {
+  content: "#";
+}
+
+article h1[id] > a[role="anchor"] > svg,
+article h2[id] > a[role="anchor"] > svg,
+article h3[id] > a[role="anchor"] > svg,
+article h4[id] > a[role="anchor"] > svg,
+article h5[id] > a[role="anchor"] > svg,
+article h6[id] > a[role="anchor"] > svg {
+  display: none;
+}
+
+article h1[id]:hover > a[role="anchor"],
+article h2[id]:hover > a[role="anchor"],
+article h3[id]:hover > a[role="anchor"],
+article h4[id]:hover > a[role="anchor"],
+article h5[id]:hover > a[role="anchor"],
+article h6[id]:hover > a[role="anchor"],
+article h1[id] > a[role="anchor"]:focus-visible,
+article h2[id] > a[role="anchor"]:focus-visible,
+article h3[id] > a[role="anchor"]:focus-visible,
+article h4[id] > a[role="anchor"]:focus-visible,
+article h5[id] > a[role="anchor"]:focus-visible,
+article h6[id] > a[role="anchor"]:focus-visible {
+  opacity: 1;
+}
+
+article h1[id] > a[role="anchor"]:hover,
+article h2[id] > a[role="anchor"]:hover,
+article h3[id] > a[role="anchor"]:hover,
+article h4[id] > a[role="anchor"]:hover,
+article h5[id] > a[role="anchor"]:hover,
+article h6[id] > a[role="anchor"]:hover {
+  color: var(--accent);
+}
 // ── Links ──────────────────────────────────────────────────────
 a {
   color: var(--accent);
@@ -529,6 +586,18 @@ a:hover {
 
 article a:not(.internal):not(.tag-link):not([role="anchor"]) {
   text-decoration: underline;
+}
+
+article a.external .external-icon {
+  display: none;
+}
+
+article a.external:not(:has(> img))::after {
+  content: "↗";
+  margin-inline-start: 0.14em;
+  font-size: 0.75em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 a.internal {
@@ -664,6 +733,36 @@ figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
 
 pre {
   box-shadow: var(--shadow-near);
+  max-height: 32rem;
+  overflow: auto;
+  scrollbar-color: color-mix(in srgb, var(--accent) 38%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+pre[data-language]:not([data-language=""])::before {
+  content: attr(data-language);
+  position: sticky;
+  top: 0.55rem;
+  float: right;
+  z-index: 1;
+  max-width: min(11rem, 44%);
+  margin: 0.45rem 3rem 0 -100%;
+  padding: 0.14rem 0.5rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper-raised) 94%, transparent);
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  line-height: 1.2;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+pre[data-language]:not([data-language=""]) > code {
+  padding-top: 1.75rem;
 }
 
 pre > code {
@@ -678,7 +777,9 @@ pre > code > [data-line] {
   padding-left: 0.5rem;
 }
 
-.clipboard-button {
+pre > .clipboard-button {
+  top: 0.55rem;
+  right: 0.55rem;
   background: color-mix(in srgb, var(--paper-raised) 92%, transparent);
   border-color: var(--hairline);
   border-radius: 999px;
@@ -686,13 +787,13 @@ pre > code > [data-line] {
   box-shadow: var(--shadow-near);
 }
 
-.clipboard-button > svg {
+pre > .clipboard-button > svg {
   fill: currentColor;
   filter: none;
 }
 
-.clipboard-button:hover,
-.clipboard-button:focus-visible {
+pre > .clipboard-button:hover,
+pre > .clipboard-button:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
   outline: 2px solid color-mix(in srgb, var(--accent) 24%, transparent);
@@ -721,8 +822,8 @@ table {
 
 .table-container {
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  max-height: min(72vh, 42rem);
+  overflow: auto;
   scrollbar-color: color-mix(in srgb, var(--accent) 38%, transparent) transparent;
   scrollbar-width: thin;
 }
@@ -749,7 +850,10 @@ table {
   overflow-wrap: anywhere;
 }
 
-th {
+.table-container th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   background: var(--paper-sunken);
   border-bottom: 1px solid var(--hairline);
   color: var(--ink);
@@ -1071,6 +1175,132 @@ footer a:hover {
 
   .center > article {
     padding-bottom: 4.25rem;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    width: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  body {
+    font-size: 11pt;
+  }
+
+  .page,
+  .page > #quartz-body,
+  .center,
+  .center > article {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .sidebar,
+  .search,
+  .darkmode,
+  .readermode,
+  .graph,
+  .toc,
+  .backlinks,
+  .note-properties,
+  .back-to-top,
+  .skip-to-content,
+  .breadcrumb-container,
+  .navigation-progress,
+  footer,
+  .clipboard-button,
+  .mobile-only,
+  .desktop-only {
+    display: none !important;
+  }
+
+  .article-title,
+  article h1,
+  article h2,
+  article h3,
+  article h4,
+  article h5,
+  article h6 {
+    color: #000 !important;
+    text-wrap: auto;
+    break-after: avoid;
+  }
+
+  article {
+    color: #000 !important;
+    font-size: 11pt;
+  }
+
+  article a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  article a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.82em;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  article a.external[href^="http"]:not(:has(> img))::after {
+    content: " (" attr(href) ")";
+    font-size: 0.82em;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  article a.external:not([href^="http"]):not(:has(> img))::after {
+    display: none !important;
+  }
+
+  article a[href^="http"]:has(> img)::after,
+  article h1[id] > a[role="anchor"],
+  article h2[id] > a[role="anchor"],
+  article h3[id] > a[role="anchor"],
+  article h4[id] > a[role="anchor"],
+  article h5[id] > a[role="anchor"],
+  article h6[id] > a[role="anchor"] {
+    display: none !important;
+  }
+
+  pre,
+  pre > code {
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap;
+    break-inside: avoid;
+  }
+
+  pre {
+    border: 1px solid #bbb !important;
+    box-shadow: none !important;
+  }
+
+  pre[data-language]:not([data-language=""])::before {
+    display: none;
+  }
+
+  blockquote,
+  .callout,
+  .table-container,
+  table,
+  img {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  .table-container {
+    max-height: none !important;
+    overflow: visible !important;
   }
 }
 
