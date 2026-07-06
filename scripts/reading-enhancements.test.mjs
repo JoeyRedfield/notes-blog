@@ -144,6 +144,10 @@ test("renders the reading enhancement controls and ships SPA-aware script hooks"
   assert.match(readingEnhancementsScript, /syncThemeColorMeta/)
   assert.match(readingEnhancementsScript, /data-theme-color/)
   assert.match(readingEnhancementsScript, /not all/)
+  assert.match(readingEnhancementsScript, /setupMobileTocCollapsed/)
+  assert.match(readingEnhancementsScript, /max-width: 800px/)
+  assert.match(readingEnhancementsScript, /\.toc-header/)
+  assert.match(readingEnhancementsScript, /\.toc-content/)
   assert.match(Component.css, /skip-to-content/)
   assert.match(Component.css, /prefers-reduced-motion: reduce/)
   assert.match(Component.css, /focus-visible/)
@@ -221,4 +225,57 @@ test("custom styles keep visual polish consistent across scrollbars and the home
   assert.match(css, /body\[data-slug="index"\] article \.markdown-preview-view > ul > li/)
   assert.match(css, /margin: 0\.35rem 0/)
   assert.doesNotMatch(css, /\.page > #quartz-body \.sidebar\s*{[\s\S]*scrollbar-color/)
+})
+
+test("custom styles improve mobile search, toc, and touch ergonomics", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container\s*{[\s\S]*height: 100dvh/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container\s*{[\s\S]*overscroll-behavior: contain/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container > \.search-space\s*{[\s\S]*width: calc\(100% - 2rem\)/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.page > #quartz-body \.sidebar\.left\s*{[\s\S]*width: 100%/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.page > #quartz-body \.sidebar\.left\s*{[\s\S]*flex-wrap: wrap/,
+  )
+  assert.match(css, /@media all and \(\$mobile\)[\s\S]*\.page-title\s*{[\s\S]*min-width: 0/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container > \.search-space > \.search-layout > \.preview-container\s*{[\s\S]*display: none !important/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container > \.search-space > \.search-layout > \.results-container[\s\S]*max-height: calc\(100dvh - 8\.5rem\)/,
+  )
+  assert.match(css, /@media all and \(\$mobile\)[\s\S]*button\.toc-header\s*{[\s\S]*min-height: 44px/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-button,[\s\S]*\.readermode\s*{[\s\S]*min-width: 44px/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.page > #quartz-body \.sidebar\.right\s*{[\s\S]*flex-direction: column/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.page > #quartz-body \.sidebar\.right > \.toc\s*{[\s\S]*display: block/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.page > #quartz-body \.sidebar\.right > \.toc \.toc-content\.collapsed\s*{[\s\S]*display: none/,
+  )
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.explorer-content ul li > a,[\s\S]*footer a\s*{[\s\S]*min-height: 44px/,
+  )
+  assert.match(css, /@media all and \(\$mobile\)[\s\S]*a\.internal\.tag-link\s*{[\s\S]*min-height: 44px/)
 })

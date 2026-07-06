@@ -167,17 +167,17 @@
 
 ## Phase 5 — 移动端专项
 
-- [ ] **5.1 搜索弹层移动端体验**
+- [x] **5.1 搜索弹层移动端体验**（2026-07-06：390px 复测通过，中文搜索结果可滚动，预览面板隐藏）
   - 检查项：390px 宽度下打开搜索——输入框是否被软键盘遮挡、结果列表能否滚动、预览面板是否该隐藏（窄屏没空间）。
   - 做法：按实测结果修 custom.scss 的 `@media all and ($mobile)` 一节；预览面板窄屏隐藏是常见处理。
   - 验证：真机或 DevTools 设备模拟器输入中文搜索词，全流程可用。
 
-- [ ] **5.2 移动端 TOC 可达性**
+- [x] **5.2 移动端 TOC 可达性**（2026-07-06：移动端文末 TOC 恢复显示，默认收起且可展开）
   - 现状：TOC 在 right sidebar，确认移动端布局里它出现在文章后面（grid 顺序 `grid-sidebar-right` 在 center 之后）——读者读长文时无法快速跳节。
   - 做法（低成本方案）：接受现状但确认 TOC 折叠状态在移动端默认收起（避免长 TOC 把 backlinks/graph 推得太远）。如果 Quartz TOC 组件支持 `collapsed` 默认值就配置之；不支持则在 reading-enhancements 脚本里移动端宽度下初始加 collapsed class。
   - 验证：390px 宽度打开长文章，滚到文末，TOC 默认收起、可展开。
 
-- [ ] **5.3 触控目标尺寸审计**
+- [x] **5.3 触控目标尺寸审计**（2026-07-06：移动端侧栏链接、TOC、标签、页脚与顶部图标按钮提升到 44px 级别）
   - 检查项：explorer 链接、TOC 链接、标签 pill、页脚链接的可点击高度 ≥ 44px（当前 `padding: 0.18rem 0.4rem` + `font-size: 0.88rem` 约 30px，偏小）。
   - 做法：`@media all and ($mobile)` 内把侧栏链接 padding 提到 `0.4rem 0.5rem`。
   - 验证：Lighthouse Best Practices / 手动点按不误触。
@@ -216,3 +216,4 @@
 - 2026-07-06 Phase 2 TOC 复验：长文页大距离回顶一度看似没有回到顶部，根因是 Quartz 基础样式 `html { scroll-behavior: smooth; }`，700ms 固定等待不足以覆盖超长页面平滑滚动。改用条件等待到 `scrollY <= 2` 后，`window.scrollTo` 和返回顶部按钮均恢复到 `scrollY=0`，TOC 仅有首标题 1 个 `.is-active`，按钮隐藏；连续 SPA 跳转 `/`、`/ai相关/`、`/tags/ai`、长文页后 skip link、sentinel、返回顶部按钮均保持单例。
 - 2026-07-06 Phase 3：打印样式隐藏侧栏、搜索、Graph、返回顶部、面包屑、skip link 和页脚，正文放开宽度，`http(s)` 外链打印 URL，非 `http(s)` 外链不打印屏幕态箭头；首页 PDF 复验不含 `跳转到正文` / `Graph View`，`GitHub` 链接打印 `https://github.com/JoeyRedfield`。代码块实测 `max-height=512px`、`overflow-y=auto`、语言标签显示 `data-language`，复制按钮右上角偏移正常；标题 hover 只显示 `#`，隐藏 Quartz 自带 SVG；正文外链屏幕态显示 `↗` 且隐藏原 SVG；长表格容器内 `th` sticky 生效。
 - 2026-07-06 Phase 4：`theme-color` 通过 `reading-enhancements` 插件注入 light/dark 两条 meta，脚本监听 `themechange` 并按 `saved-theme` 切换 `media=all/not all`，避免手动主题切换后浏览器 chrome 颜色滞后；滚动条颜色统一到 `:root`，局部只保留代码块和表格的 `scrollbar-width: thin`；首页仅用 `body[data-slug="index"]` 收窄列表行距优化。复查当前 `public/` 未发现 `<figcaption>` 结构，4.4 不额外添加空转样式。
+- 2026-07-06 Phase 5：390px 首页实测发现移动端左侧栏仍按横向 flex 撑到 718px，搜索按钮落到视口外；在 `custom.scss` 移动断点限制 `.sidebar.left` 宽度、允许换行并给标题/工具条 `min-width: 0` 后，复测左侧栏宽 343px，顶部搜索/暗色/阅读按钮均为 44x44。搜索弹层改为 `100dvh`、结果区 `calc(100dvh - 8.5rem)` 且 `overflow-y: auto`，中文搜索“人工智能”返回 8 个结果、结果区可滚动、预览面板隐藏。长文页移动端 TOC 原本被 Quartz 基础样式隐藏，本阶段在移动端文末恢复显示，插件脚本初始化为 `aria-expanded=false` / `.collapsed`，折叠时内容 `display:none`，展开后内容区 288px 高且可滚动。侧栏链接、TOC 链接、backlinks、标签 pill、页脚链接与顶部图标按钮均提升到 44px 级别。

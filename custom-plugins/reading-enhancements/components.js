@@ -87,6 +87,23 @@ const setupReadingEnhancements = () => {
   });
   window.addCleanup(() => explorerAriaObserver.disconnect());
 
+  const setupMobileTocCollapsed = () => {
+    const mobileTocQuery = window.matchMedia("(max-width: 800px)");
+    if (!mobileTocQuery.matches) return;
+
+    for (const toc of document.querySelectorAll(".toc")) {
+      const button = toc.querySelector(".toc-header");
+      const content = toc.querySelector(".toc-content");
+      if (!(button instanceof HTMLElement) || !(content instanceof HTMLElement)) continue;
+
+      button.classList.add("collapsed");
+      button.setAttribute("aria-expanded", "false");
+      content.classList.add("collapsed");
+    }
+  };
+
+  setupMobileTocCollapsed();
+
   const backToTopButtons = Array.from(document.getElementsByClassName("back-to-top"));
   const setBackToTopVisible = (isVisible) => {
     for (const button of backToTopButtons) {
