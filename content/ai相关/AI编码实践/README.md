@@ -20,6 +20,7 @@ AI 编码工作流、方法论与实战记录。
 
 ## 内容索引
 
+- [[Codex 沙盒与权限设置]] — `[官方机制]` 整理 Codex 沙盒、批准策略、对话框权限 preset 与当前会话覆盖默认配置之间的关系
 - [[Codex Superpowers 插件与 brainstorming skill 的关系]] — `[实验观察]` 解释 Codex `superpowers` 插件、`brainstorming` skill 与当前会话技能暴露层之间的真实关系
 - [[AI编码全流程工作流——Matt Pocock 工作坊]] — `[社区快照]` Matt Pocock 的完整 AI 编码六阶段流程
 - [[软件基础在AI时代更重要——Matt Pocock]] — `[社区快照]` AI 时代软件基础更重要、五大失败模式

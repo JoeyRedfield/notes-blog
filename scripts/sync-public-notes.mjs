@@ -84,7 +84,12 @@ export function getReferencedAttachments(markdown) {
     attachments.push(decodeURI(match[1]).trim())
   }
 
-  return [...new Set(attachments)]
+  return [...new Set(attachments)].filter((reference) => !isPlaceholderAttachment(reference))
+}
+
+function isPlaceholderAttachment(reference) {
+  const trimmed = reference.trim()
+  return trimmed === "..." || trimmed.includes("*")
 }
 
 export function scanSensitiveTerms(markdown, sensitiveTerms) {
@@ -288,6 +293,10 @@ async function writeIndex(config, copiedMarkdown) {
 
   if (outro) {
     lines.push(outro, "")
+  }
+
+  while (lines.at(-1) === "") {
+    lines.pop()
   }
 
   await writeFile(path.join(config.contentDir, "index.md"), `${lines.join("\n")}\n`)

@@ -77,6 +77,16 @@ test("getReferencedAttachments extracts Obsidian embeds and markdown images", ()
   ])
 })
 
+test("getReferencedAttachments ignores obvious placeholder examples", () => {
+  const markdown = [
+    "图片嵌入用 ![[...]]",
+    "历史报告中会提到 ![[Untitled*.png]] 这种示例",
+    "![real](assets/real.png)",
+  ].join("\n")
+
+  assert.deepEqual(getReferencedAttachments(markdown), ["assets/real.png"])
+})
+
 test("siteIntro does not reference missing local images", async () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
   const configPath = path.join(repoRoot, "publish.config.json")
@@ -158,6 +168,29 @@ test("syncPublicNotes removes stale content not in current include list", async 
 
     assert.deepEqual(result.removed, ["drop/old.md"])
     assert.deepEqual(result.copiedMarkdown.includes("keep/note.md"), true)
+  })
+})
+
+test("syncPublicNotes writes index without trailing blank lines", async () => {
+  await withTempDir(async (root) => {
+    const vault = path.join(root, "vault")
+    const content = path.join(root, "content")
+    const reportPath = path.join(root, "reports", "sync.md")
+    await mkdir(path.join(vault, "公开"), { recursive: true })
+    await writeFile(path.join(vault, "公开", "note.md"), "keep")
+
+    await syncPublicNotes({
+      sourceVault: vault,
+      contentDir: content,
+      reportPath,
+      include: ["公开"],
+      exclude: [],
+      sensitiveTerms: [],
+    })
+
+    const index = await readFile(path.join(content, "index.md"), "utf8")
+    assert.equal(index.endsWith("\n"), true)
+    assert.equal(index.endsWith("\n\n"), false)
   })
 })
 

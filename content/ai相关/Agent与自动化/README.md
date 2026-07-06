@@ -38,9 +38,11 @@ AI Agent 工程化、自动化任务方案与政策跟踪。
 - [[“人工智能+消费”政策对职业方向的含义]] — `[社区快照]` 政策对职业路线的直接翻译
 - [[政策信号到行动清单：学什么、做什么项目]] — `[实验观察]` 从政策页继续收束成执行清单
 - [[AI时代软件开发职业方向]] — `[实验观察]` AI 时代软件开发职业主线与互补路线
+- [[Agent方向12周学习计划：从lienjack到作品集]] — `[实验观察]` 围绕本地 RAG + Agent 作品集的 12 周路线、阶段产出和验收标准
 - [[Agentic Engineering 实战技巧集（2026年6月）]] — `[社区快照]` @mvanhorn 的 22 个实战技巧
 - [[Claude Code Dynamic Workflows 动态工作流]] — `[官方机制]` Claude Code 动态工作流官方博文笔记
 - [[Loop Engineering]] — `[社区快照]` Addy Osmani + @0xCodez：从 prompt 到 loop 的范式转变
+- [[Harness Engineering 腾讯实践案例——从 AI 写得快到干得稳]] — `[社区快照]` 腾讯技术工程：协议层、管线层、纪律层、长期记忆与线上运营闭环
 - [[Harness Eval——把工作流评测变成一场考试]] — `[社区快照]` 腾讯技术工程的评测系统设计
 - [[Is it agentic enough——如何评测 Agent 是否真会用你的工具]] — `[官方机制]` Hugging Face：工具使用评测框架
 - [[Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系]] — `[实验观察]` Hermes 概念关系页

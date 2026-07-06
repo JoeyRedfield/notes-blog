@@ -4,7 +4,7 @@
   "reportPath": "./reports/public-sync-report.md",
   "siteTitle": "HenryWu's Blog",
   "siteDescription": "其实这是一个人机，里面全是乱写的笔记。",
-  "siteIntro": "## 联系我 / Contact\n\n> [!info] 找我聊聊\n> - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)\n> - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)\n> - **WeChat** — `***`（暂时不放上来了）",
+  "siteIntro": "阅读提示：如果页面字体看着偏小或偏大，可以直接用浏览器缩放；macOS 按 `Command (⌘)` + `+` 放大、`Command (⌘)` + `-` 缩小、`Command (⌘)` + `0` 还原，Windows/Linux 按 `Ctrl` + `+`、`Ctrl` + `-`、`Ctrl` + `0`。\n\n## 联系我 / Contact\n\n> [!info] 找我聊聊\n>\n> - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)\n> - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)\n> - **WeChat** — `***`（暂时不放上来了）",
   "include": ["llm-from-scratch", "ai相关", "gzhu", "lienjack"],
   "excludeFiles": [
     "llm-from-scratch/README.md",

@@ -65,10 +65,12 @@ tags: [index]
 - [[Agent与自动化/“人工智能+消费”政策对职业方向的含义]] — `[社区快照]` 从政策信号推到职业路线判断
 - [[Agent与自动化/政策信号到行动清单：学什么、做什么项目]] — `[实验观察]` 从政策页继续收束成行动清单
 - [[Agent与自动化/AI时代软件开发职业方向]] — `[实验观察]` AI 时代软件开发程序员的两个务实方向
+- [[Agent与自动化/Agent方向12周学习计划：从lienjack到作品集]] — `[实验观察]` 以本地 RAG + Agent 作品集为目标的 12 周学习和产出路线
 - [[Agent与自动化/Harness Engineering——人类掌舵 Agent 执行]] — `[社区快照]` Ryan Lopopolo 演讲：Code is free，如何构建 Agent 驾驭层
 - [[Agent与自动化/Agentic Engineering 实战技巧集（2026年6月）]] — `[社区快照]` @mvanhorn 的 22 个 Agentic Engineering 实战技巧
 - [[Agent与自动化/Claude Code Dynamic Workflows 动态工作流]] — `[官方机制]` Claude Code 动态工作流机制与编排模式
 - [[Agent与自动化/Loop Engineering]] — `[社区快照]` Addy Osmani + @0xCodez：从 prompt 到 loop 的范式转变
+- [[Agent与自动化/Harness Engineering 腾讯实践案例——从 AI 写得快到干得稳]] — `[社区快照]` 腾讯技术工程：AI 驱动研发全链路的协议、管线、纪律、知识库与运营闭环
 - [[Agent与自动化/Harness Eval——把工作流评测变成一场考试]] — `[社区快照]` 腾讯技术工程：把 Harness 工作流评测做成考试系统
 - [[Agent与自动化/Is it agentic enough——如何评测 Agent 是否真会用你的工具]] — `[官方机制]` Hugging Face：工具使用评测框架
 - [[Agent与自动化/Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系]] — `[实验观察]` Hermes 四层概念关系的澄清
@@ -119,4 +121,4 @@ tags: [index]
 - [[llm-from-scratch/README|LLM 从零实现]] — 深度学习底层原理
 - [[兴趣阅读/README|兴趣阅读]] — AI 相关读书笔记
 
-> 最后更新: 2026-06-22
+> 最后更新: 2026-06-29

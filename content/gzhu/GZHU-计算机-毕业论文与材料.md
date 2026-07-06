@@ -1,6 +1,8 @@
 ---
-tags: [学业]
+tags:
+  - 学业
 created: 2026-06-01
+password: chill-with-you
 ---
 
 
@@ -8,7 +10,7 @@ created: 2026-06-01
 
 > [!note]+ 
 > 写这篇文章的原因是因为[这个网站](https://welcome.acastu.com/)，我学到了很多关于GZHU的事情，可惜它已经停运了。
-我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，访问密码请私下获取，样式会比导出的PDF好点。
+我放到[我的博客](https://joeyredfield.github.io/notes-blog/)里，样式会比导出的PDF好点。
 主要还是来时路，内容不是很多，经验仅供参考，希望各位不要再做重复工作。以实际情况为准。
 
 ~~应该不会更新了。~~结果还是更新了一点点内容，不过应该问题不大。
