@@ -4,6 +4,8 @@ import { joinSegments, pathToRoot } from "@quartz-community/utils"
 export { ReadingEnhancements, readingEnhancementsScript } from "./components.js"
 
 export const fontSubsetPath = "static/fonts/LXGWWenKai-Regular.subset.woff2"
+export const themeColorLight = "#faf7f2"
+export const themeColorDark = "#1f1c18"
 
 export function fontPreloadHref(pageData = {}, basePath = "") {
   const slug = pageData.slug
@@ -62,6 +64,18 @@ export default function ReadingEnhancementsTransformer() {
               type: "font/woff2",
               crossOrigin: "anonymous",
             }),
+          h("meta", {
+            name: "theme-color",
+            content: themeColorLight,
+            media: "(prefers-color-scheme: light)",
+            "data-theme-color": "light",
+          }),
+          h("meta", {
+            name: "theme-color",
+            content: themeColorDark,
+            media: "(prefers-color-scheme: dark)",
+            "data-theme-color": "dark",
+          }),
         ],
       }
     },

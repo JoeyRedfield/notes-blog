@@ -144,22 +144,22 @@
 
 ## Phase 4 — 视觉一致性打磨
 
-- [ ] **4.1 `theme-color` meta 跟随明暗主题**
+- [x] **4.1 `theme-color` meta 跟随明暗主题**
   - 做法：检查 `public/` 产物是否有 `<meta name="theme-color">`；没有则注入两条（`media="(prefers-color-scheme: light)"` 用 `#faf7f2`，dark 用 `#1f1c18`）。注入途径同 2.1（优先插件，其次 Head.tsx 登记核心改动）。
   - 注意：站点是手动切换主题（`saved-theme` 属性）而非纯 prefers-color-scheme，手动切换时 meta 不会跟——可在 reading-enhancements 脚本里监听 `themechange` 事件（Quartz darkmode 组件会派发，先在 `quartz/components/scripts/darkmode.inline.ts` 确认事件名）动态更新 meta。
   - 验证：iOS Safari / Android Chrome 地址栏颜色与页面背景一致，切主题后跟随。
 
-- [ ] **4.2 滚动条全局风格统一**
+- [x] **4.2 滚动条全局风格统一**
   - 现状：`.sidebar` 和 `.table-container` 有 scrollbar-color，但 `pre`、搜索结果、body 主滚动条没有。
-  - 做法：`:root { scrollbar-color: color-mix(in srgb, var(--gray) 50%, transparent) transparent; scrollbar-width: thin; }` 统一，再删掉重复的局部声明。body 主滚动条保持默认宽度（thin 的主滚动条不好抓），只统一颜色。
+  - 做法：`:root { scrollbar-color: color-mix(in srgb, var(--gray) 50%, transparent) transparent; }` 统一颜色，再删掉重复的局部颜色声明。body 主滚动条保持默认宽度（thin 的主滚动条不好抓）；代码块、表格等局部滚动容器保留 `scrollbar-width: thin`。
   - 验证：明暗两模式下各滚动条颜色协调。
 
-- [ ] **4.3 首页列表页视觉（不改内容，只改样式）**
+- [x] **4.3 首页列表页视觉（不改内容，只改样式）**
   - 现状：首页是大量 `[[wikilink]]` 平铺列表，视觉密度高。
   - 做法（仅 CSS）：给首页正文里的 `ul` 增加呼吸感——`article > ul > li { margin: 0.35rem 0; }`；`h2` 之间已有 border-top 分隔，够用。**不做卡片化**（内容结构是 notes 侧生成的列表，卡片化需要改内容或写 transformer，超出本计划范围——如果想做，单独立项）。
   - 验证：首页明暗两模式截图对比基线，密度改善且无排版跳变。
 
-- [ ] **4.4 图片说明（caption）样式**
+- [x] **4.4 图片说明（caption）样式**
   - 做法：确认 Obsidian 图片 alt 是否被渲染为可见 caption（看 public 产物）。若图片后紧跟 `<em>` 段落是常见写法，不强行处理；仅当产物里有 `<figure><figcaption>` 结构时补样式：居中、`--gray`、0.86rem（对齐灯箱 caption 风格）。
   - 验证：找含图文章确认效果。
 
@@ -215,3 +215,4 @@
 - 2026-07-06 Phase 2 字体配置：`quartz.config.yaml` 的 typography 保留 `Fraunces` / `Inter` / `IBM Plex Mono`，因为 `.quartz/plugins/og-image` 会按 config 字体名抓取 Google Fonts TTF；改成 `LXGW WenKai` 会导致 `CustomOgImages: No fonts are loaded` 构建失败。实际页面字体仍由 `custom.scss` 覆盖为文楷栈。
 - 2026-07-06 Phase 2 TOC 复验：长文页大距离回顶一度看似没有回到顶部，根因是 Quartz 基础样式 `html { scroll-behavior: smooth; }`，700ms 固定等待不足以覆盖超长页面平滑滚动。改用条件等待到 `scrollY <= 2` 后，`window.scrollTo` 和返回顶部按钮均恢复到 `scrollY=0`，TOC 仅有首标题 1 个 `.is-active`，按钮隐藏；连续 SPA 跳转 `/`、`/ai相关/`、`/tags/ai`、长文页后 skip link、sentinel、返回顶部按钮均保持单例。
 - 2026-07-06 Phase 3：打印样式隐藏侧栏、搜索、Graph、返回顶部、面包屑、skip link 和页脚，正文放开宽度，`http(s)` 外链打印 URL，非 `http(s)` 外链不打印屏幕态箭头；首页 PDF 复验不含 `跳转到正文` / `Graph View`，`GitHub` 链接打印 `https://github.com/JoeyRedfield`。代码块实测 `max-height=512px`、`overflow-y=auto`、语言标签显示 `data-language`，复制按钮右上角偏移正常；标题 hover 只显示 `#`，隐藏 Quartz 自带 SVG；正文外链屏幕态显示 `↗` 且隐藏原 SVG；长表格容器内 `th` sticky 生效。
+- 2026-07-06 Phase 4：`theme-color` 通过 `reading-enhancements` 插件注入 light/dark 两条 meta，脚本监听 `themechange` 并按 `saved-theme` 切换 `media=all/not all`，避免手动主题切换后浏览器 chrome 颜色滞后；滚动条颜色统一到 `:root`，局部只保留代码块和表格的 `scrollbar-width: thin`；首页仅用 `body[data-slug="index"]` 收窄列表行距优化。复查当前 `public/` 未发现 `<figcaption>` 结构，4.4 不额外添加空转样式。

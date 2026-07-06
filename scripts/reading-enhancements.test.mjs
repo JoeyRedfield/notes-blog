@@ -9,6 +9,8 @@ import plugin, {
   fontPreloadHref,
   fontSubsetPath,
   readingEnhancementsScript,
+  themeColorDark,
+  themeColorLight,
 } from "../custom-plugins/reading-enhancements/index.js"
 
 test("adds lazy loading and async decoding to article images without overriding explicit loading", () => {
@@ -71,9 +73,11 @@ test("injects a page-relative preload for the LXGW subset font", () => {
   })
 
   assert.equal(fontSubsetPath, "static/fonts/LXGWWenKai-Regular.subset.woff2")
-  assert.equal(resources.additionalHead.length, 1)
+  assert.equal(resources.additionalHead.length, 3)
 
   const preload = resources.additionalHead[0]({ slug: "lienjack/ai/example" })
+  const lightThemeColor = resources.additionalHead[1]
+  const darkThemeColor = resources.additionalHead[2]
 
   assert.equal(preload.type, "link")
   assert.equal(preload.props.rel, "preload")
@@ -81,6 +85,19 @@ test("injects a page-relative preload for the LXGW subset font", () => {
   assert.equal(preload.props.type, "font/woff2")
   assert.equal(preload.props.crossOrigin, "anonymous")
   assert.equal(preload.props.href, "../../static/fonts/LXGWWenKai-Regular.subset.woff2")
+
+  assert.equal(themeColorLight, "#faf7f2")
+  assert.equal(themeColorDark, "#1f1c18")
+  assert.equal(lightThemeColor.type, "meta")
+  assert.equal(lightThemeColor.props.name, "theme-color")
+  assert.equal(lightThemeColor.props.content, themeColorLight)
+  assert.equal(lightThemeColor.props.media, "(prefers-color-scheme: light)")
+  assert.equal(lightThemeColor.props["data-theme-color"], "light")
+  assert.equal(darkThemeColor.type, "meta")
+  assert.equal(darkThemeColor.props.name, "theme-color")
+  assert.equal(darkThemeColor.props.content, themeColorDark)
+  assert.equal(darkThemeColor.props.media, "(prefers-color-scheme: dark)")
+  assert.equal(darkThemeColor.props["data-theme-color"], "dark")
 
   assert.equal(fontPreloadHref({ slug: "index" }), "./static/fonts/LXGWWenKai-Regular.subset.woff2")
   assert.equal(
@@ -123,6 +140,10 @@ test("renders the reading enhancement controls and ships SPA-aware script hooks"
   assert.match(readingEnhancementsScript, /delete root\.dataset\.readingEnhancementsBound/)
   assert.match(readingEnhancementsScript, /lastLightboxTrigger/)
   assert.match(readingEnhancementsScript, /放大图片/)
+  assert.match(readingEnhancementsScript, /themechange/)
+  assert.match(readingEnhancementsScript, /syncThemeColorMeta/)
+  assert.match(readingEnhancementsScript, /data-theme-color/)
+  assert.match(readingEnhancementsScript, /not all/)
   assert.match(Component.css, /skip-to-content/)
   assert.match(Component.css, /prefers-reduced-motion: reduce/)
   assert.match(Component.css, /focus-visible/)
@@ -186,4 +207,18 @@ test("custom styles make table headers sticky when the scroll container supports
   assert.match(css, /\.table-container th\s*{[\s\S]*position: sticky/)
   assert.match(css, /\.table-container th\s*{[\s\S]*top: 0/)
   assert.match(css, /\.table-container th\s*{[\s\S]*z-index: 1/)
+})
+
+test("custom styles keep visual polish consistent across scrollbars and the home list", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(
+    css,
+    /:root\s*{[\s\S]*scrollbar-color: color-mix\(in srgb, var\(--gray\) 50%, transparent\) transparent/,
+  )
+  assert.match(css, /pre\s*{[\s\S]*scrollbar-width: thin/)
+  assert.match(css, /\.table-container\s*{[\s\S]*scrollbar-width: thin/)
+  assert.match(css, /body\[data-slug="index"\] article \.markdown-preview-view > ul > li/)
+  assert.match(css, /margin: 0\.35rem 0/)
+  assert.doesNotMatch(css, /\.page > #quartz-body \.sidebar\s*{[\s\S]*scrollbar-color/)
 })

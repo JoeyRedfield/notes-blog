@@ -60,6 +60,7 @@
   --headerFont: var(--font-serif-cjk);
   --titleFont: var(--font-serif-cjk);
   --codeFont: var(--font-mono-cjk);
+  scrollbar-color: color-mix(in srgb, var(--gray) 50%, transparent) transparent;
 }
 
 :root[saved-theme="dark"] {
@@ -160,7 +161,6 @@ footer a:focus-visible,
 .page > #quartz-body .sidebar {
   gap: 1.1rem;
   padding-top: 3.2rem;
-  scrollbar-color: color-mix(in srgb, var(--gray) 50%, transparent) transparent;
 }
 // ── Page title (top-left brand) ─────────────────────────────────
 .page-title {
@@ -461,6 +461,10 @@ article li {
   line-height: 1.76;
 }
 
+body[data-slug="index"] article .markdown-preview-view > ul > li {
+  margin: 0.35rem 0;
+}
+
 article p {
   margin: 1.05rem 0;
 }
@@ -735,7 +739,6 @@ pre {
   box-shadow: var(--shadow-near);
   max-height: 32rem;
   overflow: auto;
-  scrollbar-color: color-mix(in srgb, var(--accent) 38%, transparent) transparent;
   scrollbar-width: thin;
 }
 
@@ -824,7 +827,6 @@ table {
   max-width: 100%;
   max-height: min(72vh, 42rem);
   overflow: auto;
-  scrollbar-color: color-mix(in srgb, var(--accent) 38%, transparent) transparent;
   scrollbar-width: thin;
 }
 

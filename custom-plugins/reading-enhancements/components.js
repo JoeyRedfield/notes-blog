@@ -9,6 +9,42 @@ const setupReadingEnhancements = () => {
     delete root.dataset.readingEnhancementsBound;
   });
 
+  const themeColors = {
+    light: "#faf7f2",
+    dark: "#1f1c18",
+  };
+
+  const currentTheme = () =>
+    document.documentElement.getAttribute("saved-theme") === "dark" ? "dark" : "light";
+
+  const ensureThemeColorMeta = (theme) => {
+    const selector = \`meta[name="theme-color"][data-theme-color="\${theme}"]\`;
+    const existing = document.head.querySelector(selector);
+    if (existing instanceof HTMLMetaElement) return existing;
+
+    const meta = document.createElement("meta");
+    meta.name = "theme-color";
+    meta.dataset.themeColor = theme;
+    document.head.appendChild(meta);
+    return meta;
+  };
+
+  const syncThemeColorMeta = (theme = currentTheme()) => {
+    for (const [name, color] of Object.entries(themeColors)) {
+      const meta = ensureThemeColorMeta(name);
+      meta.content = color;
+      meta.media = name === theme ? "all" : "not all";
+    }
+  };
+
+  const onThemeChange = (event) => {
+    syncThemeColorMeta(event.detail?.theme === "dark" ? "dark" : "light");
+  };
+
+  syncThemeColorMeta();
+  document.addEventListener("themechange", onThemeChange);
+  window.addCleanup(() => document.removeEventListener("themechange", onThemeChange));
+
   const prefersReducedMotion = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
