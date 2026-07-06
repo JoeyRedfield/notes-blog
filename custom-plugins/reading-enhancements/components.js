@@ -9,18 +9,62 @@ const setupReadingEnhancements = () => {
     delete root.dataset.readingEnhancementsBound;
   });
 
+  const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const skipLinks = Array.from(document.querySelectorAll(".skip-to-content"));
+  const skipLink = skipLinks[0];
+  if (skipLink instanceof HTMLAnchorElement) {
+    if (document.body.firstElementChild !== skipLink) {
+      document.body.insertBefore(skipLink, document.body.firstElementChild);
+    }
+
+    for (const duplicate of skipLinks.slice(1)) {
+      duplicate.remove();
+    }
+
+    const onSkipClick = () => {
+      const target = document.getElementById("quartz-body");
+      if (!(target instanceof HTMLElement)) return;
+
+      target.setAttribute("tabindex", "-1");
+      window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+    };
+
+    skipLink.addEventListener("click", onSkipClick);
+    window.addCleanup(() => skipLink.removeEventListener("click", onSkipClick));
+  }
+
+  const removeInvalidExplorerAria = () => {
+    for (const explorer of document.querySelectorAll(".explorer[aria-expanded]")) {
+      explorer.removeAttribute("aria-expanded");
+    }
+  };
+
+  removeInvalidExplorerAria();
+
+  const explorerAriaObserver = new MutationObserver(removeInvalidExplorerAria);
+  explorerAriaObserver.observe(document.body, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["aria-expanded"],
+  });
+  window.addCleanup(() => explorerAriaObserver.disconnect());
+
   const backToTopButtons = Array.from(document.getElementsByClassName("back-to-top"));
   const updateBackToTop = () => {
     const isVisible = window.scrollY > Math.max(480, window.innerHeight * 0.65);
     for (const button of backToTopButtons) {
       button.classList.toggle("is-visible", isVisible);
       button.setAttribute("aria-hidden", isVisible ? "false" : "true");
+      button.tabIndex = isVisible ? 0 : -1;
     }
   };
 
   for (const button of backToTopButtons) {
     button.dataset.readingEnhancementsBound = "true";
-    const onClick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+    const onClick = () =>
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
     button.addEventListener("click", onClick);
     window.addCleanup(() => {
       button.removeEventListener("click", onClick);
@@ -66,11 +110,26 @@ const setupReadingEnhancements = () => {
   const closeButton = dialog.querySelector(".image-lightbox-close");
   if (!(image instanceof HTMLImageElement) || !caption || !closeButton) return;
 
-  const closeLightbox = () => {
-    if (dialog.open) dialog.close();
+  let lastLightboxTrigger = null;
+
+  const restoreLightboxFocus = () => {
+    const trigger = lastLightboxTrigger;
+    lastLightboxTrigger = null;
+    if (!(trigger instanceof HTMLElement) || !document.contains(trigger)) return;
+
+    window.requestAnimationFrame(() => trigger.focus());
+  };
+
+  const resetLightbox = () => {
     image.removeAttribute("src");
     image.removeAttribute("alt");
     caption.textContent = "";
+    restoreLightboxFocus();
+  };
+
+  const closeLightbox = () => {
+    if (dialog.open) dialog.close();
+    else resetLightbox();
   };
 
   const onDialogClick = (event) => {
@@ -78,13 +137,16 @@ const setupReadingEnhancements = () => {
   };
 
   const onCloseClick = () => closeLightbox();
+  const onDialogClose = () => resetLightbox();
 
   dialog.dataset.readingEnhancementsBound = "true";
   closeButton.dataset.readingEnhancementsBound = "true";
   dialog.addEventListener("click", onDialogClick);
+  dialog.addEventListener("close", onDialogClose);
   closeButton.addEventListener("click", onCloseClick);
   window.addCleanup(() => {
     dialog.removeEventListener("click", onDialogClick);
+    dialog.removeEventListener("close", onDialogClose);
     closeButton.removeEventListener("click", onCloseClick);
     delete dialog.dataset.readingEnhancementsBound;
     delete closeButton.dataset.readingEnhancementsBound;
@@ -99,8 +161,10 @@ const setupReadingEnhancements = () => {
     img.classList.add("is-lightboxable");
     img.setAttribute("tabindex", "0");
     img.setAttribute("role", "button");
+    img.setAttribute("aria-label", img.alt ? \`放大图片：\${img.alt}\` : "放大图片");
 
     const openLightbox = () => {
+      lastLightboxTrigger = img;
       image.src = img.currentSrc || img.src;
       image.alt = img.alt || "";
       caption.textContent = img.alt || img.getAttribute("title") || "";
@@ -120,6 +184,7 @@ const setupReadingEnhancements = () => {
       img.removeEventListener("click", openLightbox);
       img.removeEventListener("keydown", onKeydown);
       delete img.dataset.readingEnhancementsBound;
+      img.removeAttribute("aria-label");
     });
   }
 };
@@ -131,6 +196,29 @@ document.addEventListener("render", setupReadingEnhancements);
 const readingEnhancementsCss = `
 .reading-enhancements {
   display: contents;
+}
+
+.skip-to-content {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--accent);
+  box-shadow: var(--shadow-near);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.skip-to-content:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  transform: translateY(0);
 }
 
 .back-to-top {
@@ -239,6 +327,16 @@ article img.is-lightboxable:focus-visible {
 .image-lightbox-close:focus-visible {
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, var(--paper-raised));
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-to-content,
+  .back-to-top {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 @media (max-width: 800px) {
@@ -266,6 +364,7 @@ article img.is-lightboxable:focus-visible {
 export function ReadingEnhancements() {
   const Component = () => {
     return h("div", { class: "reading-enhancements" }, [
+      h("a", { class: "skip-to-content", href: "#quartz-body" }, "跳转到正文"),
       h(
         "button",
         {
@@ -273,6 +372,7 @@ export function ReadingEnhancements() {
           type: "button",
           "aria-label": "返回顶部",
           "aria-hidden": "true",
+          tabindex: "-1",
         },
         h(
           "svg",

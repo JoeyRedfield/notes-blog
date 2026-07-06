@@ -23,7 +23,7 @@ configuration:
       lightMode:
         light: "#faf7f2"
         lightgray: "#ebe4d4"
-        gray: "#a89e8e"
+        gray: "#7a7064"
         darkgray: "#3d3a36"
         dark: "#1a1815"
         secondary: "#c15f3c"
@@ -33,7 +33,7 @@ configuration:
       darkMode:
         light: "#1f1c18"
         lightgray: "#2c2823"
-        gray: "#7d756a"
+        gray: "#9a9185"
         darkgray: "#d8cfc0"
         dark: "#f1e8d8"
         secondary: "#e8a987"

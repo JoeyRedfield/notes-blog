@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
 import { test } from "node:test"
 import { render } from "preact-render-to-string"
 
@@ -66,13 +67,35 @@ test("renders the reading enhancement controls and ships SPA-aware script hooks"
   const html = render(Component({}))
 
   assert.match(html, /class="back-to-top"/)
+  assert.match(html, /tabindex="-1"/)
+  assert.match(html, /class="skip-to-content"/)
+  assert.match(html, /href="#quartz-body"/)
   assert.match(html, /class="image-lightbox"/)
   assert.match(readingEnhancementsScript, /document\.addEventListener\("nav"/)
   assert.match(readingEnhancementsScript, /document\.addEventListener\("render"/)
+  assert.match(readingEnhancementsScript, /prefers-reduced-motion: reduce/)
   assert.match(readingEnhancementsScript, /scrollTo/)
+  assert.match(readingEnhancementsScript, /tabIndex = isVisible \? 0 : -1/)
+  assert.match(readingEnhancementsScript, /removeAttribute\("aria-expanded"\)/)
   assert.match(readingEnhancementsScript, /is-active/)
   assert.match(readingEnhancementsScript, /data-for/)
   assert.match(readingEnhancementsScript, /readingEnhancementsBound/)
   assert.match(readingEnhancementsScript, /dataset\.readingEnhancementsBound === "true"/)
   assert.match(readingEnhancementsScript, /delete root\.dataset\.readingEnhancementsBound/)
+  assert.match(readingEnhancementsScript, /lastLightboxTrigger/)
+  assert.match(readingEnhancementsScript, /放大图片/)
+  assert.match(Component.css, /skip-to-content/)
+  assert.match(Component.css, /prefers-reduced-motion: reduce/)
+  assert.match(Component.css, /focus-visible/)
+})
+
+test("custom styles include accessible motion and focus affordances", () => {
+  const css = readFileSync("quartz/styles/custom.scss", "utf8")
+
+  assert.match(css, /prefers-reduced-motion: reduce/)
+  assert.match(css, /outline: 2px solid var\(--accent\)/)
+  assert.match(css, /\.breadcrumb-container a:focus-visible/)
+  assert.match(css, /\.tag-link:focus-visible/)
+  assert.match(css, /footer a:focus-visible/)
+  assert.match(css, /ul\.toc-content\.overflow > li > a:focus-visible/)
 })

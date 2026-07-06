@@ -42,7 +42,7 @@
 
 ## Phase 1 — 可访问性（优先级最高）
 
-- [ ] **1.1 支持 `prefers-reduced-motion`**
+- [x] **1.1 支持 `prefers-reduced-motion`**
   - 文件：`quartz/styles/custom.scss`（末尾新增一节）、`custom-plugins/reading-enhancements/components.js`。
   - 做法：
     ```scss
@@ -57,23 +57,23 @@
   - `components.js` 中返回顶部按钮的 `window.scrollTo({ behavior: "smooth" })` 改为先检测 `window.matchMedia("(prefers-reduced-motion: reduce)").matches`，命中时用 `"auto"`。
   - 验证：macOS 系统设置 → 辅助功能 → 减弱动态效果，开启后刷新页面确认无平滑滚动、无过渡动画。
 
-- [ ] **1.2 添加"跳转到正文"链接（skip link）**
+- [x] **1.2 添加"跳转到正文"链接（skip link）**
   - 文件：`custom-plugins/reading-enhancements/components.js`（在 `ReadingEnhancements` 组件里加一个 `<a href="#quartz-body" class="skip-to-content">跳转到正文</a>`，注意该插件目前挂在 `afterBody`，skip link 需要出现在 DOM 靠前位置——如果 afterBody 位置导致 Tab 顺序不对，改为在 CSS 里用 `position: fixed` + 仅 `:focus-visible` 时可见，仍可接受；若不可接受，登记为核心改动，加到 `quartz/components/renderPage.tsx`）。
   - 样式：默认 `transform: translateY(-200%)` 隐藏，`:focus-visible` 时滑入左上角，使用现有 `--paper-raised` / `--accent` 变量。
   - 验证：刷新页面按 Tab，第一个焦点应为 skip link，回车后焦点落到正文区。
 
-- [ ] **1.3 焦点可见性审计**
+- [x] **1.3 焦点可见性审计**
   - 范围：explorer 链接、TOC 链接、breadcrumb、标签 pill、页脚链接、搜索按钮、darkmode/readermode 按钮、灯箱内关闭按钮。
   - 做法：给上述元素统一补 `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }`（custom.scss 已有 clipboard-button 的样式可作模板）。
   - 验证：纯键盘 Tab 遍历整页，每个可交互元素都有清晰焦点环。
 
-- [ ] **1.4 颜色对比度检查**
+- [x] **1.4 颜色对比度检查**
   - 工具：Lighthouse Accessibility 审计 + 手动检查。
   - 重点怀疑对象：`--gray`（`#a89e8e` on `#faf7f2`，用于 content-meta、breadcrumb、面板标题）大概率不足 4.5:1。
   - 做法：小字号（<0.85rem）的 `--gray` 文本如不达标，改用 `--ink-muted` 或加深 `--gray` 色值（同时微调 darkMode 对应值保持风格统一）。
   - 验证：Lighthouse Accessibility ≥ 95，且明暗两模式目测无风格突变。
 
-- [ ] **1.5 灯箱可访问性补全**
+- [x] **1.5 灯箱可访问性补全**
   - 文件：`custom-plugins/reading-enhancements/components.js`。
   - 检查项：`<dialog>` 原生已有焦点陷阱和 Esc 关闭；补充关闭后焦点归还到触发图片（记录 `document.activeElement` 并在 `closeLightbox` 里 `focus()` 回去）；`img[role="button"]` 补 `aria-label`（用 alt 文本或"放大图片"）。
   - 验证：键盘打开灯箱 → Esc 关闭 → 焦点回到原图片。
@@ -200,9 +200,12 @@
 | ---- | ---- | ---- | ---- | --- | --- | ---- |
 | 2026-07-06 | 首页 `/` | 55 | 90 | 125592ms | 0 | Phase 0 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-home-baseline.json` |
 | 2026-07-06 | 长文章 `/lienjack/ai/learn-llm/math_foundations_deep_dive` | 55 | 88 | 125283ms | 0 | Phase 0 mobile Lighthouse；覆盖图片/代码块/表格/callout；JSON: `docs-internal/ui-baseline/lighthouse-long-baseline.json` |
+| 2026-07-06 | 首页 `/` | 55 | 100 | 125939ms | 0 | Phase 1 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-home-phase1.json` |
+| 2026-07-06 | 长文章 `/lienjack/ai/learn-llm/math_foundations_deep_dive` | 55 | 100 | 127977ms | 0 | Phase 1 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-long-phase1.json` |
 
 ## 决策记录
 
 - 2026-07-06 计划创建。范围明确排除：评论系统（comments 插件保持关闭）、首页卡片化改版（需 notes 侧配合，单独立项）、stacked-pages（保持关闭）。
 - 2026-07-06 Phase 0 截图样本：`/`、`/lienjack/ai/learn-llm/math_foundations_deep_dive`、`/ai相关/`、`/tags/ai`、`/__ui-baseline-missing-page__`；每个样本截桌面/移动、明/暗各 1 张。当前 `public/static/encryptedContentIndex.json` entries 为空，未找到可确认的加密页面样本。
 - 2026-07-06 Phase 0 产物观察：代码块语言属性为 `data-language`（`pre` 和 `code` 均有）；正文图片主要渲染为 `<p><img ...></p>`，未发现全站 `<figcaption>` 结构。
+- 2026-07-06 Phase 1：`--gray` 明色从 `#a89e8e` 调整为 `#7a7064`（对 `#faf7f2` 约 4.54:1），暗色从 `#7d756a` 调整为 `#9a9185`（对 `#1f1c18` 约 5.46:1）。移动端 Explorer 容器会由插件脚本抑制错误的容器级 `aria-expanded`，保留按钮和内容区上的可访问状态。
