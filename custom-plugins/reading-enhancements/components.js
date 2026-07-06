@@ -52,8 +52,7 @@ const setupReadingEnhancements = () => {
   window.addCleanup(() => explorerAriaObserver.disconnect());
 
   const backToTopButtons = Array.from(document.getElementsByClassName("back-to-top"));
-  const updateBackToTop = () => {
-    const isVisible = window.scrollY > Math.max(480, window.innerHeight * 0.65);
+  const setBackToTopVisible = (isVisible) => {
     for (const button of backToTopButtons) {
       button.classList.toggle("is-visible", isVisible);
       button.setAttribute("aria-hidden", isVisible ? "false" : "true");
@@ -72,35 +71,77 @@ const setupReadingEnhancements = () => {
     });
   }
 
-  window.addEventListener("scroll", updateBackToTop, { passive: true });
-  window.addCleanup(() => window.removeEventListener("scroll", updateBackToTop));
-  updateBackToTop();
+  if (backToTopButtons.length > 0 && "IntersectionObserver" in window) {
+    const backToTopThreshold = Math.max(480, window.innerHeight * 0.65);
+    const backToTopSentinel = document.createElement("span");
+    backToTopSentinel.className = "back-to-top-sentinel";
+    backToTopSentinel.setAttribute("aria-hidden", "true");
+    backToTopSentinel.style.cssText = \`position:absolute;top:\${backToTopThreshold}px;width:1px;height:1px;pointer-events:none;\`;
+    document.body.appendChild(backToTopSentinel);
+
+    const backToTopObserver = new IntersectionObserver(([entry]) => {
+      setBackToTopVisible(!entry.isIntersecting);
+    });
+    backToTopObserver.observe(backToTopSentinel);
+    window.addCleanup(() => {
+      backToTopObserver.disconnect();
+      backToTopSentinel.remove();
+    });
+  } else {
+    setBackToTopVisible(false);
+  }
 
   const tocLinks = Array.from(document.querySelectorAll(".toc a[data-for]"));
   const headings = Array.from(
     document.querySelectorAll("article h1[id], article h2[id], article h3[id], article h4[id], article h5[id], article h6[id]")
   );
-  const updateActiveToc = () => {
-    if (tocLinks.length === 0 || headings.length === 0) return;
-
-    let activeHeading = headings[0];
-    for (const heading of headings) {
-      if (heading.getBoundingClientRect().top <= 128) {
-        activeHeading = heading;
-      } else {
-        break;
-      }
-    }
-
-    const activeId = activeHeading?.id ?? "";
+  const setActiveToc = (activeId) => {
     for (const link of tocLinks) {
       link.classList.toggle("is-active", link.getAttribute("data-for") === activeId);
     }
   };
 
-  window.addEventListener("scroll", updateActiveToc, { passive: true });
-  window.addCleanup(() => window.removeEventListener("scroll", updateActiveToc));
-  updateActiveToc();
+  if (tocLinks.length > 0 && headings.length > 0 && "IntersectionObserver" in window) {
+    let activeTocFrame = 0;
+
+    const updateActiveToc = () => {
+      const activeOffset = window.scrollY + 128;
+      let activeHeadingId = headings[0].id;
+
+      for (const heading of headings) {
+        if (heading.offsetTop <= activeOffset) {
+          activeHeadingId = heading.id;
+        } else {
+          break;
+        }
+      }
+
+      setActiveToc(activeHeadingId);
+    };
+
+    const queueActiveTocUpdate = () => {
+      if (activeTocFrame !== 0) return;
+
+      activeTocFrame = window.requestAnimationFrame(() => {
+        activeTocFrame = 0;
+        updateActiveToc();
+      });
+    };
+
+    const tocObserver = new IntersectionObserver(queueActiveTocUpdate, {
+      rootMargin: "0px 0px -80% 0px",
+    });
+
+    for (const heading of headings) {
+      tocObserver.observe(heading);
+    }
+
+    updateActiveToc();
+    window.addCleanup(() => {
+      tocObserver.disconnect();
+      if (activeTocFrame !== 0) window.cancelAnimationFrame(activeTocFrame);
+    });
+  }
 
   const dialog = document.querySelector(".image-lightbox");
   if (!(dialog instanceof HTMLDialogElement)) return;

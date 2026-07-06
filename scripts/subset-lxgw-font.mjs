@@ -18,6 +18,7 @@ export const fallbackSubsetText = `
 HenryWu's Blog
 阅读提示：如果页面字体看着偏小或偏大，可以直接用浏览器缩放；macOS 按 Command (⌘) + + 放大、Command (⌘) + - 缩小、Command (⌘) + 0 还原，Windows/Linux 按 Ctrl + +、Ctrl + -、Ctrl + 0。
 返回顶部 图片预览 关闭图片预览 搜索 目录 暗色模式 亮色模式 阅读模式 联系我
+© ❯
 ，。！？；：“”‘’（）《》〈〉【】「」『』、·…—－～￥%
 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 `

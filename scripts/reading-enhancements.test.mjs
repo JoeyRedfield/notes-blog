@@ -6,6 +6,8 @@ import { render } from "preact-render-to-string"
 import plugin, {
   ReadingEnhancements,
   addLazyLoadingToImages,
+  fontPreloadHref,
+  fontSubsetPath,
   readingEnhancementsScript,
 } from "../custom-plugins/reading-enhancements/index.js"
 
@@ -62,6 +64,35 @@ test("exports a Quartz transformer that registers the image loading rehype plugi
   assert.equal(transformer.htmlPlugins().length, 1)
 })
 
+test("injects a page-relative preload for the LXGW subset font", () => {
+  const transformer = plugin()
+  const resources = transformer.externalResources({
+    cfg: { configuration: { baseUrl: "joeyredfield.github.io/notes-blog" } },
+  })
+
+  assert.equal(fontSubsetPath, "static/fonts/LXGWWenKai-Regular.subset.woff2")
+  assert.equal(resources.additionalHead.length, 1)
+
+  const preload = resources.additionalHead[0]({ slug: "lienjack/ai/example" })
+
+  assert.equal(preload.type, "link")
+  assert.equal(preload.props.rel, "preload")
+  assert.equal(preload.props.as, "font")
+  assert.equal(preload.props.type, "font/woff2")
+  assert.equal(preload.props.crossOrigin, "anonymous")
+  assert.equal(preload.props.href, "../../static/fonts/LXGWWenKai-Regular.subset.woff2")
+
+  assert.equal(fontPreloadHref({ slug: "index" }), "./static/fonts/LXGWWenKai-Regular.subset.woff2")
+  assert.equal(
+    fontPreloadHref({ slug: "lienjack/ai/learn-llm/index" }),
+    "../../../static/fonts/LXGWWenKai-Regular.subset.woff2",
+  )
+  assert.equal(
+    fontPreloadHref({ slug: "404" }, "/notes-blog"),
+    "/notes-blog/static/fonts/LXGWWenKai-Regular.subset.woff2",
+  )
+})
+
 test("renders the reading enhancement controls and ships SPA-aware script hooks", () => {
   const Component = ReadingEnhancements()
   const html = render(Component({}))
@@ -77,6 +108,14 @@ test("renders the reading enhancement controls and ships SPA-aware script hooks"
   assert.match(readingEnhancementsScript, /scrollTo/)
   assert.match(readingEnhancementsScript, /tabIndex = isVisible \? 0 : -1/)
   assert.match(readingEnhancementsScript, /removeAttribute\("aria-expanded"\)/)
+  assert.match(readingEnhancementsScript, /IntersectionObserver/)
+  assert.doesNotMatch(
+    readingEnhancementsScript,
+    /window\.addEventListener\("scroll", updateActiveToc/,
+  )
+  assert.doesNotMatch(readingEnhancementsScript, /getBoundingClientRect\(\)/)
+  assert.match(readingEnhancementsScript, /window\.scrollY \+ 128/)
+  assert.match(readingEnhancementsScript, /heading\.offsetTop <= activeOffset/)
   assert.match(readingEnhancementsScript, /is-active/)
   assert.match(readingEnhancementsScript, /data-for/)
   assert.match(readingEnhancementsScript, /readingEnhancementsBound/)
@@ -98,4 +137,7 @@ test("custom styles include accessible motion and focus affordances", () => {
   assert.match(css, /\.tag-link:focus-visible/)
   assert.match(css, /footer a:focus-visible/)
   assert.match(css, /ul\.toc-content\.overflow > li > a:focus-visible/)
+  assert.match(css, /\.breadcrumb-container p/)
+  assert.doesNotMatch(css, /font-variation-settings/)
+  assert.doesNotMatch(css, /font-optical-sizing/)
 })

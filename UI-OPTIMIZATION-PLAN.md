@@ -82,19 +82,19 @@
 
 ## Phase 2 — 性能与加载
 
-- [ ] **2.1 字体子集 preload**
+- [x] **2.1 字体子集 preload**（2026-07-06：通过 `reading-enhancements` 插件 `externalResources().additionalHead` 注入页面相对 preload）
   - 现状：`LXGWWenKai-Regular.subset.woff2` 是首屏渲染关键资源，但没有 preload，靠 CSS 解析后才发现。
   - 做法（按优先顺序尝试）：
     1. 查看 `custom-plugins/reading-enhancements/index.js` 能否通过插件 `externalResources()` / `additionalHead` 注入 `<link rel="preload" as="font" type="font/woff2" crossorigin>`（参考其他社区插件如何注入 head 资源）。
     2. 若插件机制做不到，改 `quartz/components/Head.tsx`（登记核心改动），在 `coreStylesheet` preload 附近加一行，href 用 `static/fonts/LXGWWenKai-Regular.subset.woff2` 并带上 baseUrl 前缀逻辑（照抄同文件已有资源路径写法）。
   - 验证：DevTools Network 面板，字体请求应在 HTML 解析早期发出（priority: High）；Lighthouse LCP 不劣化。
 
-- [ ] **2.2 确认全量字体不被多余下载**
+- [x] **2.2 确认全量字体不被多余下载**（2026-07-06：4 个样本页网络复测仅请求 subset；全量字体保留 CJK `unicode-range` 缺字兜底）
   - 现状：`custom.scss` 同时声明 subset 和全量 `LXGWWenKai-Regular.woff2`（约几 MB），字体栈里 subset 在前。
   - 做法：DevTools Network 验证正常浏览时**只**下载 subset；如果全量也被下载（可能因为某字符不在子集触发 fallback），评估两个选项——(a) 接受（这是设计意图，缺字兜底）；(b) 给全量 `@font-face` 加 `unicode-range` 限制。把结论写进本文件。
   - 验证：清缓存后访问 3 篇不同文章，观察字体请求。
 
-- [ ] **2.3 TOC 高亮与返回顶部改用 IntersectionObserver**
+- [x] **2.3 TOC 高亮与返回顶部改用 IntersectionObserver**（2026-07-06：浏览器验证 TOC active、返回顶部显示/隐藏、SPA 跳转后 sentinel/skip link 不重复）
   - 文件：`custom-plugins/reading-enhancements/components.js`。
   - 现状：两个 `scroll` 监听器每次滚动都遍历 headings 并调 `getBoundingClientRect()`（强制布局）。
   - 做法：
@@ -104,7 +104,7 @@
   - 验证：长文章滚动时 TOC 高亮行为与现在一致（对照改动前录屏）；SPA 跳转 3 次后无重复绑定（看 `is-active` 是否错乱）。
   - 风险：行为微妙差异。如果 IntersectionObserver 版本在快速滚动时跳档，可退回 scroll 监听 + `requestAnimationFrame` 节流的折中方案。
 
-- [ ] **2.4 清理无效的 Latin 字体配置**
+- [x] **2.4 清理无效的 Latin 字体配置**（2026-07-06：删除 custom.scss 中 Fraunces variable 相关死代码；config typography 保留给 OG 插件）
   - 现状：`quartz.config.yaml` typography 配了 Fraunces/Inter/IBM Plex Mono，但 `fontOrigin: local` 且这些字体不在 `static/fonts/`；custom.scss 又把 `--bodyFont`/`--headerFont`/`--titleFont` 全部覆盖为文楷栈。结果是 Fraunces 的 `font-variation-settings`（custom.scss 中 `.page-title`、`.article-title`、`article h1-h6` 共 4 处）在访客机器上是死代码。
   - 决策（二选一，做之前想清楚）：
     - **方案 A（推荐，零成本）**：接受"全站文楷"现状，删除 custom.scss 中 4 处 `font-variation-settings` 和 `font-optical-sizing` 死代码，`quartz.config.yaml` typography 改为与实际一致（如都写文楷名），消除误导。
@@ -202,6 +202,8 @@
 | 2026-07-06 | 长文章 `/lienjack/ai/learn-llm/math_foundations_deep_dive` | 55 | 88 | 125283ms | 0 | Phase 0 mobile Lighthouse；覆盖图片/代码块/表格/callout；JSON: `docs-internal/ui-baseline/lighthouse-long-baseline.json` |
 | 2026-07-06 | 首页 `/` | 55 | 100 | 125939ms | 0 | Phase 1 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-home-phase1.json` |
 | 2026-07-06 | 长文章 `/lienjack/ai/learn-llm/math_foundations_deep_dive` | 55 | 100 | 127977ms | 0 | Phase 1 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-long-phase1.json` |
+| 2026-07-06 | 首页 `/` | 45 | 100 | 82821ms | 0 | Phase 2 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-home-phase2.json` |
+| 2026-07-06 | 长文章 `/lienjack/ai/learn-llm/math_foundations_deep_dive` | 31 | 100 | 84923ms | 0 | Phase 2 mobile Lighthouse；JSON: `docs-internal/ui-baseline/lighthouse-long-phase2.json` |
 
 ## 决策记录
 
@@ -209,3 +211,6 @@
 - 2026-07-06 Phase 0 截图样本：`/`、`/lienjack/ai/learn-llm/math_foundations_deep_dive`、`/ai相关/`、`/tags/ai`、`/__ui-baseline-missing-page__`；每个样本截桌面/移动、明/暗各 1 张。当前 `public/static/encryptedContentIndex.json` entries 为空，未找到可确认的加密页面样本。
 - 2026-07-06 Phase 0 产物观察：代码块语言属性为 `data-language`（`pre` 和 `code` 均有）；正文图片主要渲染为 `<p><img ...></p>`，未发现全站 `<figcaption>` 结构。
 - 2026-07-06 Phase 1：`--gray` 明色从 `#a89e8e` 调整为 `#7a7064`（对 `#faf7f2` 约 4.54:1），暗色从 `#7d756a` 调整为 `#9a9185`（对 `#1f1c18` 约 5.46:1）。移动端 Explorer 容器会由插件脚本抑制错误的容器级 `aria-expanded`，保留按钮和内容区上的可访问状态。
+- 2026-07-06 Phase 2 字体加载：subset preload 在首页/长文/文件夹页/标签页均由 HTML link 触发，`performance` 里 `initiatorType=link`；补充 `©` 到子集保底文本，breadcrumb 分隔符 `❯` 改用系统字体（源文楷字体本身无该 glyph），全量文楷增加 CJK/常用标点 `unicode-range`，复测 4 个样本页只下载 `LXGWWenKai-Regular.subset.woff2`，不下载 8MB 全量 WOFF2。
+- 2026-07-06 Phase 2 字体配置：`quartz.config.yaml` 的 typography 保留 `Fraunces` / `Inter` / `IBM Plex Mono`，因为 `.quartz/plugins/og-image` 会按 config 字体名抓取 Google Fonts TTF；改成 `LXGW WenKai` 会导致 `CustomOgImages: No fonts are loaded` 构建失败。实际页面字体仍由 `custom.scss` 覆盖为文楷栈。
+- 2026-07-06 Phase 2 TOC 复验：长文页大距离回顶一度看似没有回到顶部，根因是 Quartz 基础样式 `html { scroll-behavior: smooth; }`，700ms 固定等待不足以覆盖超长页面平滑滚动。改用条件等待到 `scrollY <= 2` 后，`window.scrollTo` 和返回顶部按钮均恢复到 `scrollY=0`，TOC 仅有首标题 1 个 `.is-active`，按钮隐藏；连续 SPA 跳转 `/`、`/ai相关/`、`/tags/ai`、长文页后 skip link、sentinel、返回顶部按钮均保持单例。
