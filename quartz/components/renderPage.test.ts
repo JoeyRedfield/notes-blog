@@ -398,6 +398,7 @@ describe("filterResourcesForTree", () => {
     tree: Root,
     allFiles: QuartzComponentProps["allFiles"] = [],
     treeTransforms?: Parameters<typeof renderPage>[5],
+    pageBody?: (props: QuartzComponentProps) => ReturnType<typeof h>,
   ) {
     const Head = (({ externalResources }: QuartzComponentProps) =>
       h(
@@ -407,7 +408,7 @@ describe("filterResourcesForTree", () => {
           h("link", { rel: "stylesheet", href: content }),
         ),
       )) as never
-    const Content = (() => h("main", {}, "content")) as never
+    const Content = (pageBody ?? (() => h("main", {}, "content"))) as never
     const Empty = (() => null) as never
     const componentData = {
       ctx: { argv: { serve: true } },
@@ -479,6 +480,21 @@ describe("filterResourcesForTree", () => {
 
     assert.match(html, /katex@0\.16\.11/)
     assert.match(html, /copy-tex\.min\.js/)
+  })
+
+  test("keeps math resources emitted by a page component without rendering it twice", () => {
+    let renders = 0
+    const html = renderWithMathResources({ type: "root", children: [] }, [], undefined, () => {
+      renders += 1
+      return h("main", {}, h("span", { class: "katex" }, "component formula"))
+    })
+
+    assert.equal(renders, 1)
+    assert.match(html, /class="katex"/)
+    assert.match(html, /katex@0\.16\.11/)
+    assert.match(html, /copy-tex\.min\.js/)
+    assert.ok(html.indexOf("<head>") < html.indexOf("<body"))
+    assert.ok(html.indexOf('class="katex"') < html.indexOf("copy-tex.min.js"))
   })
 
   test("uses the filtered resources in both the head and trailing scripts", () => {

@@ -47,9 +47,23 @@ function isKatexResourceUrl(url: string): boolean {
   return url.includes("/katex@") || url.includes("copy-tex")
 }
 
+function htmlHasClass(html: string, className: string): boolean {
+  const classAttribute = /\bclass=(?:"([^"]*)"|'([^']*)')/g
+  let match: RegExpExecArray | null
+  while ((match = classAttribute.exec(html)) !== null) {
+    const classes = (match[1] ?? match[2] ?? "").split(/\s+/)
+    if (classes.includes(className)) return true
+  }
+  return false
+}
+
 /** @internal Exported for testing only. */
-export function filterResourcesForTree(tree: Root, resources: StaticResources): StaticResources {
-  if (treeHasClass(tree, "katex")) return resources
+export function filterResourcesForTree(
+  tree: Root,
+  resources: StaticResources,
+  renderedBody = "",
+): StaticResources {
+  if (treeHasClass(tree, "katex") || htmlHasClass(renderedBody, "katex")) return resources
 
   return {
     css: resources.css.filter((resource) => !isKatexResourceUrl(resource.content)),
@@ -348,11 +362,9 @@ export function renderPage(
     }
   }
 
-  const filteredPageResources = filterResourcesForTree(root, pageResources)
-
   // set componentData.tree to the edited html that has transclusions rendered
   componentData.tree = root
-  componentData.externalResources = filteredPageResources
+  componentData.externalResources = pageResources
 
   const {
     head: Head,
@@ -376,33 +388,47 @@ export function renderPage(
     componentData.ctx.argv.serve || !cfg.baseUrl
       ? ""
       : new URL(`https://${cfg.baseUrl}`).pathname.replace(/\/$/, "")
-  const doc = (
-    <html lang={lang} dir={direction}>
-      <Head {...componentData} />
-      <body data-slug={slug} data-basepath={basePath}>
-        {frame.css && <style dangerouslySetInnerHTML={{ __html: frame.css }} />}
-        <div id="quartz-root" class="page" data-frame={frame.name}>
-          <Body {...componentData}>
-            {[
-              frame.render({
-                componentData,
-                head: Head,
-                header,
-                beforeBody,
-                pageBody: Content,
-                afterBody,
-                left,
-                right,
-                footer: Footer,
-              }),
-            ]}
-          </Body>
-        </div>
-      </body>
+  // Render the body once before Head so component-generated markup can inform resource filtering.
+  const body = (
+    <body data-slug={slug} data-basepath={basePath}>
+      {frame.css && <style dangerouslySetInnerHTML={{ __html: frame.css }} />}
+      <div id="quartz-root" class="page" data-frame={frame.name}>
+        <Body {...componentData}>
+          {[
+            frame.render({
+              componentData,
+              head: Head,
+              header,
+              beforeBody,
+              pageBody: Content,
+              afterBody,
+              left,
+              right,
+              footer: Footer,
+            }),
+          ]}
+        </Body>
+      </div>
+    </body>
+  )
+  const renderedBody = render(body)
+  const filteredPageResources = filterResourcesForTree(root, pageResources, renderedBody)
+  componentData.externalResources = filteredPageResources
+
+  const renderedHead = render(<Head {...componentData} />)
+  const renderedScripts = render(
+    <>
       {filteredPageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res, true))}
-    </html>
+    </>,
+  )
+  const doc = (
+    <html
+      lang={lang}
+      dir={direction}
+      dangerouslySetInnerHTML={{ __html: renderedHead + renderedBody + renderedScripts }}
+    />
   )
 
   return "<!DOCTYPE html>\n" + render(doc)
