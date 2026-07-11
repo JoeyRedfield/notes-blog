@@ -140,6 +140,11 @@ plugins:
       position: left
       priority: 50
   - source: github:quartz-community/graph
+    enabled: false
+    layout:
+      position: right
+      priority: 50
+  - source: ./custom-plugins/graph-lazy
     enabled: true
     layout:
       position: right

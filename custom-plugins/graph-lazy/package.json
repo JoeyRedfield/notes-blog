@@ -1,0 +1,37 @@
+{
+  "name": "graph-lazy",
+  "version": "0.1.0",
+  "description": "Load Quartz graph libraries and metadata only when the graph is requested.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "graph-lazy",
+    "displayName": "Lazy Graph",
+    "description": "A relationship graph that defers D3, PixiJS, and metadata until needed.",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "GraphLazy": {
+        "name": "GraphLazy",
+        "displayName": "Lazy Graph",
+        "description": "Viewport and interaction activated relationship graph.",
+        "version": "0.1.0",
+        "quartzVersion": ">=5.0.0",
+        "defaultPosition": "right",
+        "defaultPriority": 50
+      }
+    }
+  }
+}
