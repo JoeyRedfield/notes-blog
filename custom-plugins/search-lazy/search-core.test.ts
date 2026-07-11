@@ -248,7 +248,7 @@ test("SearchLazy renders the established markup and bundles a lazy browser scrip
   }
 })
 
-test("SearchLazy waits for the initial nav event before binding in production order", async () => {
+test("SearchLazy waits for nav and flushes the current query before Enter", async () => {
   const { SearchLazy } = await import("./components.js")
   const script = SearchLazy().afterDOMLoaded ?? ""
   type Listener = (event?: Record<string, unknown>) => void
@@ -283,7 +283,9 @@ test("SearchLazy waits for the initial nav event before binding in production or
     readonly dataset: Record<string, string> = {}
     readonly listeners = new Map<string, Set<Listener>>()
     className = ""
+    clicks = 0
     hidden = false
+    href = ""
     id = ""
     isConnected = true
     parent?: FakeElement
@@ -306,6 +308,14 @@ test("SearchLazy waits for the initial nav event before binding in production or
       child.parent = this
       this.children.push(child)
       return child
+    }
+
+    click() {
+      this.clicks += 1
+    }
+
+    dispatch(type: string, event: Record<string, unknown> = {}) {
+      for (const listener of this.listeners.get(type) ?? []) listener(event)
     }
 
     focus() {
@@ -392,11 +402,17 @@ test("SearchLazy waits for the initial nav event before binding in production or
   const second = createRoot()
   document.roots.push(first.root, second.root)
   let fetches = 0
+  let nextTimerId = 0
+  const timers = new Map<number, () => void>()
   const cleanup: Array<() => void> = []
   const window = {
-    clearTimeout,
+    clearTimeout: (timerId: number) => timers.delete(timerId),
     location: { origin: "https://example.com" },
-    setTimeout,
+    setTimeout: (callback: () => void) => {
+      const timerId = ++nextTimerId
+      timers.set(timerId, callback)
+      return timerId
+    },
   } as Record<string, unknown>
 
   assert.doesNotThrow(() =>
@@ -406,7 +422,13 @@ test("SearchLazy waits for the initial nav event before binding in production or
       document,
       fetch: async () => {
         fetches += 1
-        throw new Error("search must stay lazy")
+        return {
+          json: async () => ({
+            "notes/quartz": { title: "Quartz", tags: [], content: "Static site generator" },
+            "notes/performance": { title: "性能", tags: [], content: "Redis optimization" },
+          }),
+          ok: true,
+        }
       },
       window,
     }),
@@ -429,4 +451,29 @@ test("SearchLazy waits for the initial nav event before binding in production or
   assert.equal(first.elements[".search-bar"].attributes.get("aria-controls"), firstResultsId)
   assert.equal(second.elements[".search-bar"].attributes.get("aria-controls"), secondResultsId)
   assert.equal(fetches, 0)
+
+  const input = first.elements[".search-bar"]
+  const results = first.elements[".results-container"]
+  input.value = "Quartz"
+  first.elements[".search-button"].dispatch("click")
+  await new Promise<void>((resolve) => setImmediate(resolve))
+
+  assert.equal(fetches, 1)
+  assert.equal(results.children.length, 1)
+  const staleResult = results.children[0]
+  assert.equal(staleResult.href, "/notes/quartz")
+
+  input.value = "性能"
+  input.dispatch("input")
+  input.dispatch("keydown", {
+    isComposing: false,
+    key: "Enter",
+    preventDefault() {},
+  })
+
+  assert.equal(staleResult.clicks, 0)
+  assert.equal(timers.size, 0)
+  assert.equal(results.children.length, 1)
+  assert.equal(results.children[0].href, "/notes/performance")
+  assert.equal(results.children[0].clicks, 1)
 })

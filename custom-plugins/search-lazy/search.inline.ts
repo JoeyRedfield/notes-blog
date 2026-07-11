@@ -132,6 +132,12 @@ function bindSearch(root: HTMLElement) {
   const resultLinks = () =>
     Array.from(resultsContainer.querySelectorAll<HTMLAnchorElement>(".result-card"))
 
+  const clearDebounce = () => {
+    if (debounceTimer === undefined) return
+    window.clearTimeout(debounceTimer)
+    debounceTimer = undefined
+  }
+
   const clearActive = () => {
     activeIndex = -1
     input.removeAttribute("aria-activedescendant")
@@ -260,8 +266,11 @@ function bindSearch(root: HTMLElement) {
     }
   }
   const onInput = () => {
-    if (debounceTimer !== undefined) window.clearTimeout(debounceTimer)
-    debounceTimer = window.setTimeout(renderResults, 120)
+    clearDebounce()
+    debounceTimer = window.setTimeout(() => {
+      debounceTimer = undefined
+      renderResults()
+    }, 120)
   }
   const onInputKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
@@ -271,6 +280,8 @@ function bindSearch(root: HTMLElement) {
       event.preventDefault()
       setActive(activeIndex - 1)
     } else if (event.key === "Enter" && !event.isComposing) {
+      clearDebounce()
+      renderResults()
       const selected = resultLinks()[activeIndex]
       if (selected) {
         event.preventDefault()
@@ -294,7 +305,7 @@ function bindSearch(root: HTMLElement) {
   retry.addEventListener("click", onRetry)
 
   window.addCleanup(() => {
-    if (debounceTimer !== undefined) window.clearTimeout(debounceTimer)
+    clearDebounce()
     button.removeEventListener("click", onButtonClick)
     closeButton.removeEventListener("click", close)
     overlay.removeEventListener("click", onOverlayClick)
