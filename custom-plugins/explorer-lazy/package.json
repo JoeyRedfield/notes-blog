@@ -1,0 +1,37 @@
+{
+  "name": "explorer-lazy",
+  "version": "0.1.0",
+  "description": "Cache the Quartz explorer trie and materialize collapsed folders on demand.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "explorer-lazy",
+    "displayName": "Lazy Explorer",
+    "description": "A cached explorer that renders folder contents only when needed.",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "ExplorerLazy": {
+        "name": "ExplorerLazy",
+        "displayName": "Lazy Explorer",
+        "description": "Cached and lazily materialized file explorer.",
+        "version": "0.1.0",
+        "quartzVersion": ">=5.0.0",
+        "defaultPosition": "left",
+        "defaultPriority": 50
+      }
+    }
+  }
+}
