@@ -565,4 +565,125 @@ describe("Assets emitter", () => {
       process.chdir(originalCwd)
     }
   })
+
+  test("full emit rejects slugified source collisions before writing output", async () => {
+    const first = path.join(contentDir, "Assets", "Slug Identity.png")
+    const second = path.join(contentDir, "Assets", "Slug-Identity.png")
+    await Promise.all([
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#115577" },
+      })
+        .png()
+        .toFile(first),
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#771155" },
+      })
+        .png()
+        .toFile(second),
+    ])
+
+    process.chdir(root)
+    try {
+      const emitter = Assets()
+      const ctx = {
+        argv: {
+          directory: contentDir,
+          output: outputDir,
+          verbose: false,
+          serve: false,
+          watch: false,
+          port: 8080,
+          wsPort: 3001,
+        },
+        cfg: {
+          configuration: { ignorePatterns: [] },
+          plugins: { pageTypes: [] },
+        },
+      }
+
+      await assert.rejects(
+        emittedFiles(emitter.emit(ctx as never, [], {} as never)),
+        (error: Error) => {
+          assert.match(error.message, /assets\/slug-identity\.png/)
+          assert.ok(
+            error.message.indexOf("Assets/Slug Identity.png") <
+              error.message.indexOf("Assets/Slug-Identity.png"),
+          )
+          return true
+        },
+      )
+      await assert.rejects(fs.access(path.join(outputDir, "assets/slug-identity.png")))
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
+
+  test("partial add rejects a new slugified collision before replacing existing outputs", async () => {
+    const firstPath = "Assets/Partial Identity.png"
+    const secondPath = "Assets/Partial-Identity.png"
+    const first = path.join(contentDir, firstPath)
+    const second = path.join(contentDir, secondPath)
+    await sharp({
+      create: { width: 1000, height: 500, channels: 3, background: "#226644" },
+    })
+      .png()
+      .toFile(first)
+
+    process.chdir(root)
+    try {
+      const emitter = Assets()
+      const ctx = {
+        argv: {
+          directory: contentDir,
+          output: outputDir,
+          verbose: false,
+          serve: false,
+          watch: true,
+          port: 8080,
+          wsPort: 3001,
+        },
+        cfg: {
+          configuration: { ignorePatterns: [] },
+          plugins: { pageTypes: [] },
+        },
+        allFiles: [firstPath],
+      }
+      const partialEmit = emitter.partialEmit
+      assert.equal(typeof partialEmit, "function")
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "add", path: firstPath as never },
+        ]) as never,
+      )
+
+      const outputPath = path.join(outputDir, "assets/partial-identity.png")
+      const variantPath = path.join(outputDir, "assets/partial-identity.png.w720.webp")
+      const originalBefore = await fs.readFile(outputPath)
+      const variantBefore = await fs.readFile(variantPath)
+
+      await sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#662244" },
+      })
+        .png()
+        .toFile(second)
+      ctx.allFiles = [firstPath, secondPath]
+
+      await assert.rejects(
+        emittedFiles(
+          partialEmit!(ctx as never, [], {} as never, [
+            { type: "add", path: secondPath as never },
+          ]) as never,
+        ),
+        (error: Error) => {
+          assert.match(error.message, /assets\/partial-identity\.png/)
+          assert.ok(error.message.indexOf(firstPath) < error.message.indexOf(secondPath))
+          return true
+        },
+      )
+      assert.equal(Buffer.compare(await fs.readFile(outputPath), originalBefore), 0)
+      assert.equal(Buffer.compare(await fs.readFile(variantPath), variantBefore), 0)
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
 })

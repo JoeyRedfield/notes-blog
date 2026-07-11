@@ -42,6 +42,35 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig, excludeExtensions: Set
   return await glob("**", argv.directory, excludePatterns)
 }
 
+function assetSourcePaths(files: Iterable<FilePath>, excludeExtensions: Set<string>): FilePath[] {
+  return [...new Set(files)].filter((fp) => {
+    const ext = path.extname(fp)
+    return ext !== ".md" && !excludeExtensions.has(ext)
+  })
+}
+
+function assertUniqueAssetOutputPaths(files: Iterable<FilePath>) {
+  const sourcesByOutput = new Map<string, FilePath[]>()
+  for (const fp of [...new Set(files)].sort()) {
+    const outputPath = slugifyFilePath(fp).toLowerCase()
+    const sources = sourcesByOutput.get(outputPath) ?? []
+    sources.push(fp)
+    sourcesByOutput.set(outputPath, sources)
+  }
+
+  const collisions = [...sourcesByOutput.entries()]
+    .filter(([, sources]) => sources.length > 1)
+    .sort(([first], [second]) => first.localeCompare(second))
+  if (collisions.length === 0) return
+
+  const details = collisions
+    .map(([outputPath, sources]) => `  ${outputPath}: ${sources.join(", ")}`)
+    .join("\n")
+  throw new Error(
+    `Asset output path collision detected. Rename the conflicting source files:\n${details}`,
+  )
+}
+
 const copyFile = async (argv: Argv, fp: FilePath) => {
   const src = joinSegments(argv.directory, fp) as FilePath
 
@@ -101,6 +130,7 @@ export const Assets: QuartzEmitterPlugin = () => {
     async *emit(ctx) {
       const excludeExtensions = getPageTypeExtensions(ctx)
       const fps = await filesToCopy(ctx.argv, ctx.cfg, excludeExtensions)
+      assertUniqueAssetOutputPaths(fps)
       const occupiedPaths = new Set(
         [...(ctx.allFiles ?? []), ...fps].map((fp) => slugifyFilePath(fp)),
       )
@@ -117,6 +147,7 @@ export const Assets: QuartzEmitterPlugin = () => {
         if (event.type === "delete") currentFiles.delete(event.path)
         else currentFiles.add(event.path)
       }
+      assertUniqueAssetOutputPaths(assetSourcePaths(currentFiles, excludeExtensions))
 
       const previousFiles = new Set(currentFiles)
       for (const event of changeEvents) {
