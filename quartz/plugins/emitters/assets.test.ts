@@ -686,4 +686,140 @@ describe("Assets emitter", () => {
       process.chdir(originalCwd)
     }
   })
+
+  test("partial same-slug responsive rename is independent of event order", async (t) => {
+    const cases = [
+      {
+        name: "add then delete",
+        oldPath: "Assets/Responsive Rename Add Delete.png",
+        newPath: "Assets/Responsive-Rename-Add-Delete.png",
+        outputPath: "assets/responsive-rename-add-delete.png",
+        addFirst: true,
+      },
+      {
+        name: "delete then add",
+        oldPath: "Assets/Responsive Rename Delete Add.png",
+        newPath: "Assets/Responsive-Rename-Delete-Add.png",
+        outputPath: "assets/responsive-rename-delete-add.png",
+        addFirst: false,
+      },
+    ]
+
+    for (const renameCase of cases) {
+      await t.test(renameCase.name, async () => {
+        const oldSource = path.join(contentDir, renameCase.oldPath)
+        const newSource = path.join(contentDir, renameCase.newPath)
+        await sharp({
+          create: { width: 1000, height: 500, channels: 3, background: "#224466" },
+        })
+          .png()
+          .toFile(oldSource)
+
+        process.chdir(root)
+        try {
+          const emitter = Assets()
+          const ctx = {
+            argv: {
+              directory: contentDir,
+              output: outputDir,
+              verbose: false,
+              serve: false,
+              watch: true,
+              port: 8080,
+              wsPort: 3001,
+            },
+            cfg: {
+              configuration: { ignorePatterns: [] },
+              plugins: { pageTypes: [] },
+            },
+            allFiles: [renameCase.oldPath],
+          }
+          const partialEmit = emitter.partialEmit
+          assert.equal(typeof partialEmit, "function")
+          await emittedFiles(
+            partialEmit!(ctx as never, [], {} as never, [
+              { type: "add", path: renameCase.oldPath as never },
+            ]) as never,
+          )
+
+          await sharp({
+            create: { width: 1000, height: 500, channels: 3, background: "#662244" },
+          })
+            .png()
+            .toFile(newSource)
+          ctx.allFiles = [renameCase.newPath]
+          const addEvent = { type: "add", path: renameCase.newPath as never } as const
+          const deleteEvent = { type: "delete", path: renameCase.oldPath as never } as const
+          const changeEvents = renameCase.addFirst
+            ? [addEvent, deleteEvent]
+            : [deleteEvent, addEvent]
+
+          await emittedFiles(
+            partialEmit!(ctx as never, [], {} as never, changeEvents as never) as never,
+          )
+
+          assert.equal(
+            Buffer.compare(
+              await fs.readFile(newSource),
+              await fs.readFile(path.join(outputDir, renameCase.outputPath)),
+            ),
+            0,
+          )
+          await fs.access(path.join(outputDir, `${renameCase.outputPath}.w720.webp`))
+        } finally {
+          process.chdir(originalCwd)
+        }
+      })
+    }
+  })
+
+  test("partial same-slug non-responsive rename deletes before copying the new source", async () => {
+    const oldPath = "Assets/Plain Rename.txt"
+    const newPath = "Assets/Plain-Rename.txt"
+    await fs.writeFile(path.join(contentDir, oldPath), "old source")
+
+    process.chdir(root)
+    try {
+      const emitter = Assets()
+      const ctx = {
+        argv: {
+          directory: contentDir,
+          output: outputDir,
+          verbose: false,
+          serve: false,
+          watch: true,
+          port: 8080,
+          wsPort: 3001,
+        },
+        cfg: {
+          configuration: { ignorePatterns: [] },
+          plugins: { pageTypes: [] },
+        },
+        allFiles: [oldPath],
+      }
+      const partialEmit = emitter.partialEmit
+      assert.equal(typeof partialEmit, "function")
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "add", path: oldPath as never },
+        ]) as never,
+      )
+
+      await fs.writeFile(path.join(contentDir, newPath), "new source")
+      ctx.allFiles = [newPath]
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "add", path: newPath as never },
+          { type: "delete", path: oldPath as never },
+        ]) as never,
+      )
+
+      assert.equal(
+        await fs.readFile(path.join(outputDir, "assets/plain-rename.txt"), "utf8"),
+        "new source",
+      )
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
 })

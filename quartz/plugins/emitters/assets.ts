@@ -181,7 +181,11 @@ export const Assets: QuartzEmitterPlugin = () => {
       }
 
       const regeneratedImages = new Set<FilePath>()
-      for (const changeEvent of changeEvents) {
+      const orderedChangeEvents = [
+        ...changeEvents.filter((event) => event.type === "delete"),
+        ...changeEvents.filter((event) => event.type !== "delete"),
+      ]
+      for (const changeEvent of orderedChangeEvents) {
         const ext = path.extname(changeEvent.path)
         if (ext === ".md" || excludeExtensions.has(ext)) continue
         if (isResponsiveImagePath(changeEvent.path)) {
