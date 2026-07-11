@@ -125,6 +125,7 @@ export function buildIndexes(content, opts = {}) {
     const links = asStringArray(data.links)
     const tags = asStringArray(frontmatter.tags)
     const filePath = typeof data.relativePath === "string" ? data.relativePath : null
+    const isRealFile = typeof data.filePath === "string"
     const fullDetails = {
       slug,
       filePath,
@@ -149,9 +150,8 @@ export function buildIndexes(content, opts = {}) {
       tags: [...tags],
     }
 
-    if (filePath !== null) {
+    if (isRealFile) {
       searchIndex[slug] = {
-        slug,
         title,
         tags: [...tags],
         content: text,

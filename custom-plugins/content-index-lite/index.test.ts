@@ -11,6 +11,7 @@ type TestContent = [Root, { data: Record<string, unknown> }]
 function page(
   slug: string,
   options: {
+    filePath?: string
     relativePath?: string
     title?: string
     tags?: string[]
@@ -36,6 +37,7 @@ function page(
     {
       data: {
         slug,
+        ...(options.filePath === undefined ? {} : { filePath: options.filePath }),
         ...(options.relativePath === undefined ? {} : { relativePath: options.relativePath }),
         frontmatter: {
           title,
@@ -53,6 +55,7 @@ function page(
 function fixture(): TestContent[] {
   return [
     page("notes/real", {
+      filePath: "/tmp/content/notes/real.md",
       relativePath: "notes/real.md",
       title: "Real note",
       tags: ["performance"],
@@ -60,6 +63,7 @@ function fixture(): TestContent[] {
       text: "Searchable full text",
     }),
     page("tags/performance", {
+      relativePath: "tags/performance.md",
       title: "Performance tag",
       links: ["notes/real"],
       text: "Generated virtual page text",
@@ -90,7 +94,7 @@ describe("buildIndexes", () => {
       },
       "tags/performance": {
         slug: "tags/performance",
-        filePath: null,
+        filePath: "tags/performance.md",
         title: "Performance tag",
         links: ["notes/real"],
         tags: [],
@@ -98,7 +102,6 @@ describe("buildIndexes", () => {
     })
     assert.deepStrictEqual(searchIndex, {
       "notes/real": {
-        slug: "notes/real",
         title: "Real note",
         tags: ["performance"],
         content: "Searchable full text",
@@ -116,13 +119,24 @@ describe("buildIndexes", () => {
         "title",
       ])
     }
+    for (const details of Object.values(searchIndex)) {
+      assert.deepStrictEqual(Object.keys(details).sort(), ["content", "tags", "title"])
+    }
   })
 
   test("honors includeEmptyFiles for real and virtual pages", () => {
     const content = [
-      page("notes/empty", { relativePath: "notes/empty.md", text: "" }),
-      page("tags/empty", { text: "" }),
-      page("notes/full", { relativePath: "notes/full.md", text: "body" }),
+      page("notes/empty", {
+        filePath: "/tmp/content/notes/empty.md",
+        relativePath: "notes/empty.md",
+        text: "",
+      }),
+      page("tags/empty", { relativePath: "tags/empty.md", text: "" }),
+      page("notes/full", {
+        filePath: "/tmp/content/notes/full.md",
+        relativePath: "notes/full.md",
+        text: "body",
+      }),
     ]
 
     const { metadataIndex, searchIndex } = buildIndexes(content, { includeEmptyFiles: false })
