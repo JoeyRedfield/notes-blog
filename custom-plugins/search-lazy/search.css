@@ -52,6 +52,7 @@
 }
 
 .search > .search-container > .search-space {
+  position: relative;
   width: min(65%, 58rem);
   margin: 12vh auto 2rem;
 }
@@ -68,10 +69,42 @@
 }
 
 .search > .search-container > .search-space > input {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 3.25rem 0.5rem 1rem;
   color: var(--dark);
   font: inherit;
   font-size: 1.1rem;
+}
+
+.search > .search-container > .search-space > .search-close {
+  position: absolute;
+  z-index: 1;
+  top: 0.35rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--darkgray);
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.search > .search-container > .search-space > .search-close:hover {
+  background: color-mix(in srgb, var(--secondary) 12%, transparent);
+  color: var(--dark);
+}
+
+.search > .search-container > .search-space > .search-close:focus-visible {
+  background: color-mix(in srgb, var(--secondary) 12%, transparent);
+  color: var(--dark);
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
 }
 
 .search > .search-container > .search-space > input:focus {

@@ -62,16 +62,25 @@ export const SearchLazy = () => {
             name: "search",
             type: "search",
             "aria-label": "搜索笔记",
-            "aria-controls": "search-lazy-results",
             "aria-autocomplete": "list",
+            "aria-expanded": "false",
             placeholder: "搜索笔记",
+            role: "combobox",
           }),
+          h(
+            "button",
+            {
+              class: "search-close",
+              type: "button",
+              "aria-label": "关闭搜索",
+            },
+            h("span", { "aria-hidden": "true" }, "×"),
+          ),
           h("div", { class: "search-layout", "aria-busy": "false" }, [
             h("p", { class: "search-status", role: "status", "aria-live": "polite", hidden: true }),
             h("button", { class: "search-retry", type: "button", hidden: true }, "重试"),
             h("div", {
               class: "results-container",
-              id: "search-lazy-results",
               role: "listbox",
               "aria-label": "搜索结果",
             }),

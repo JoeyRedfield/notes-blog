@@ -64,11 +64,7 @@ function recordFromEntry(
 
 export function extractSearchIndex(value: unknown): SearchIndex {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {}
-  const root = value as Record<string, unknown>
-  if (root.content && typeof root.content === "object" && !Array.isArray(root.content)) {
-    return root.content as SearchIndex
-  }
-  return root
+  return value as SearchIndex
 }
 
 export function buildSearchRecords(index: SearchIndex): SearchRecord[] {

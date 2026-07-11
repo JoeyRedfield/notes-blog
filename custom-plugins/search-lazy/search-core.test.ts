@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { runInNewContext } from "node:vm"
 import test, { describe } from "node:test"
 import { render } from "preact-render-to-string"
 
@@ -81,6 +82,24 @@ describe("buildSearchRecords", () => {
         normalizedContent: "body text",
       },
     ])
+  })
+
+  test("preserves every flat-map slug including content and __proto__", async () => {
+    const { buildSearchRecords, extractSearchIndex } = await core()
+    const source = Object.fromEntries([
+      ["normal", { title: "Normal", tags: [], content: "Body" }],
+      ["content", { title: "Content slug", tags: ["edge"], content: "Entry body" }],
+      ["__proto__", { title: "Prototype slug", tags: [], content: "Safe body" }],
+    ])
+
+    assert.deepStrictEqual(
+      buildSearchRecords(extractSearchIndex(source)).map(({ slug, title }) => [slug, title]),
+      [
+        ["normal", "Normal"],
+        ["content", "Content slug"],
+        ["__proto__", "Prototype slug"],
+      ],
+    )
   })
 })
 
@@ -200,6 +219,7 @@ test("SearchLazy renders the established markup and bundles a lazy browser scrip
     for (const className of [
       "search",
       "search-button",
+      "search-close",
       "search-container",
       "search-space",
       "search-bar",
@@ -208,12 +228,205 @@ test("SearchLazy renders the established markup and bundles a lazy browser scrip
     ]) {
       assert.match(html, new RegExp(`class="[^"]*\\b${className}\\b`))
     }
+    assert.match(html, /aria-label="关闭搜索"/)
+    assert.match(html, /role="combobox"/)
+    assert.match(html, /aria-expanded="false"/)
+    assert.match(html, /aria-autocomplete="list"/)
+    assert.doesNotMatch(html, /id="search-lazy-results"/)
+    assert.doesNotMatch(html, /aria-controls="search-lazy-results"/)
     assert.match(Component.afterDOMLoaded ?? "", /searchIndex\.json/)
     assert.match(Component.afterDOMLoaded ?? "", /content-index-updated/)
+    assert.match(Component.afterDOMLoaded ?? "", /search-lazy-results-/)
+    assert.match(Component.afterDOMLoaded ?? "", /aria-activedescendant/)
+    assert.match(Component.afterDOMLoaded ?? "", /-option-/)
+    assert.match(Component.afterDOMLoaded ?? "", /"Tab"/)
     assert.doesNotMatch(Component.afterDOMLoaded ?? "", /innerHTML\s*=/)
     assert.equal(typeof Component.css, "string")
     assert.equal(fetches, 0)
   } finally {
     globalThis.fetch = originalFetch
   }
+})
+
+test("SearchLazy waits for the initial nav event before binding in production order", async () => {
+  const { SearchLazy } = await import("./components.js")
+  const script = SearchLazy().afterDOMLoaded ?? ""
+  type Listener = (event?: Record<string, unknown>) => void
+
+  class FakeClassList {
+    private readonly values = new Set<string>()
+
+    add(value: string) {
+      this.values.add(value)
+    }
+
+    remove(value: string) {
+      this.values.delete(value)
+    }
+
+    contains(value: string) {
+      return this.values.has(value)
+    }
+
+    toggle(value: string, force?: boolean) {
+      const enabled = force ?? !this.values.has(value)
+      if (enabled) this.values.add(value)
+      else this.values.delete(value)
+      return enabled
+    }
+  }
+
+  class FakeElement {
+    readonly attributes = new Map<string, string>()
+    readonly children: FakeElement[] = []
+    readonly classList = new FakeClassList()
+    readonly dataset: Record<string, string> = {}
+    readonly listeners = new Map<string, Set<Listener>>()
+    className = ""
+    hidden = false
+    id = ""
+    isConnected = true
+    parent?: FakeElement
+    textContent = ""
+    value = ""
+
+    constructor(private readonly ownerDocument: FakeDocument) {}
+
+    addEventListener(type: string, listener: Listener) {
+      const listeners = this.listeners.get(type) ?? new Set<Listener>()
+      listeners.add(listener)
+      this.listeners.set(type, listeners)
+    }
+
+    removeEventListener(type: string, listener: Listener) {
+      this.listeners.get(type)?.delete(listener)
+    }
+
+    appendChild(child: FakeElement) {
+      child.parent = this
+      this.children.push(child)
+      return child
+    }
+
+    focus() {
+      this.ownerDocument.activeElement = this
+    }
+
+    querySelector(_selector: string): FakeElement | null {
+      return null
+    }
+
+    querySelectorAll(selector: string): FakeElement[] {
+      if (selector === ".result-card") {
+        return this.children.filter((child) =>
+          child.className.split(/\s+/u).includes("result-card"),
+        )
+      }
+      return []
+    }
+
+    remove() {
+      if (!this.parent) return
+      const index = this.parent.children.indexOf(this)
+      if (index !== -1) this.parent.children.splice(index, 1)
+    }
+
+    removeAttribute(name: string) {
+      this.attributes.delete(name)
+    }
+
+    scrollIntoView() {}
+
+    setAttribute(name: string, value: string) {
+      this.attributes.set(name, value)
+    }
+  }
+
+  class FakeDocument {
+    activeElement: FakeElement | null = null
+    readonly body = { dataset: { basepath: "" } }
+    readonly listeners = new Map<string, Set<Listener>>()
+    readonly roots: FakeElement[] = []
+    searchQueries = 0
+
+    addEventListener(type: string, listener: Listener) {
+      const listeners = this.listeners.get(type) ?? new Set<Listener>()
+      listeners.add(listener)
+      this.listeners.set(type, listeners)
+    }
+
+    createElement() {
+      return new FakeElement(this)
+    }
+
+    dispatch(type: string, event: Record<string, unknown> = {}) {
+      for (const listener of this.listeners.get(type) ?? []) listener(event)
+    }
+
+    querySelectorAll(selector: string) {
+      if (selector !== ".search") return []
+      this.searchQueries += 1
+      return this.roots
+    }
+  }
+
+  const document = new FakeDocument()
+  const createRoot = () => {
+    const root = new FakeElement(document)
+    const elements = Object.fromEntries(
+      [
+        ".search-button",
+        ".search-close",
+        ".search-container",
+        ".search-bar",
+        ".search-layout",
+        ".results-container",
+        ".search-status",
+        ".search-retry",
+      ].map((selector) => [selector, new FakeElement(document)]),
+    ) as Record<string, FakeElement>
+    root.querySelector = (selector: string) => elements[selector] ?? null
+    return { root, elements }
+  }
+  const first = createRoot()
+  const second = createRoot()
+  document.roots.push(first.root, second.root)
+  let fetches = 0
+  const cleanup: Array<() => void> = []
+  const window = {
+    clearTimeout,
+    location: { origin: "https://example.com" },
+    setTimeout,
+  } as Record<string, unknown>
+
+  assert.doesNotThrow(() =>
+    runInNewContext(script, {
+      URL,
+      console,
+      document,
+      fetch: async () => {
+        fetches += 1
+        throw new Error("search must stay lazy")
+      },
+      window,
+    }),
+  )
+  assert.equal(document.searchQueries, 0)
+  assert.equal(fetches, 0)
+  assert.equal(document.listeners.get("nav")?.size, 1)
+
+  window.addCleanup = (fn: () => void) => cleanup.push(fn)
+  document.dispatch("nav")
+
+  assert.equal(cleanup.length, 2)
+  assert.equal(first.root.dataset.searchLazyBound, "true")
+  assert.equal(second.root.dataset.searchLazyBound, "true")
+  const firstResultsId = first.elements[".results-container"].id
+  const secondResultsId = second.elements[".results-container"].id
+  assert.match(firstResultsId, /^search-lazy-results-/)
+  assert.match(secondResultsId, /^search-lazy-results-/)
+  assert.notEqual(firstResultsId, secondResultsId)
+  assert.equal(first.elements[".search-bar"].attributes.get("aria-controls"), firstResultsId)
+  assert.equal(second.elements[".search-bar"].attributes.get("aria-controls"), secondResultsId)
+  assert.equal(fetches, 0)
 })

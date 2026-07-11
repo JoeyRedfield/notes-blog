@@ -17,6 +17,7 @@ type SearchController = {
 
 const merger = createSearchRecordMerger()
 const controllers = new Set<SearchController>()
+let searchInstanceId = 0
 
 function basePath(): string {
   return (document.body.dataset.basepath ?? "").replace(/^\/+|\/+$/gu, "")
@@ -61,10 +62,11 @@ function removeRenderedResults(container: HTMLElement) {
   for (const child of Array.from(container.children)) child.remove()
 }
 
-function appendResult(container: HTMLElement, result: SearchResult) {
+function appendResult(container: HTMLElement, result: SearchResult, id: string) {
   const link = document.createElement("a")
   link.className = "result-card internal"
   link.href = sitePath(result.slug)
+  link.id = id
   link.setAttribute("role", "option")
   link.setAttribute("aria-selected", "false")
 
@@ -100,20 +102,40 @@ function bindSearch(root: HTMLElement) {
   if (root.dataset.searchLazyBound === "true") return
 
   const button = root.querySelector<HTMLElement>(".search-button")
+  const closeButton = root.querySelector<HTMLButtonElement>(".search-close")
   const overlay = root.querySelector<HTMLElement>(".search-container")
   const input = root.querySelector<HTMLInputElement>(".search-bar")
   const layout = root.querySelector<HTMLElement>(".search-layout")
   const resultsContainer = root.querySelector<HTMLElement>(".results-container")
   const status = root.querySelector<HTMLElement>(".search-status")
   const retry = root.querySelector<HTMLButtonElement>(".search-retry")
-  if (!button || !overlay || !input || !layout || !resultsContainer || !status || !retry) return
+  if (
+    !button ||
+    !closeButton ||
+    !overlay ||
+    !input ||
+    !layout ||
+    !resultsContainer ||
+    !status ||
+    !retry
+  ) {
+    return
+  }
 
   root.dataset.searchLazyBound = "true"
+  const resultsId = `search-lazy-results-${++searchInstanceId}`
+  resultsContainer.id = resultsId
+  input.setAttribute("aria-controls", resultsId)
   let activeIndex = -1
   let debounceTimer: number | undefined
 
   const resultLinks = () =>
     Array.from(resultsContainer.querySelectorAll<HTMLAnchorElement>(".result-card"))
+
+  const clearActive = () => {
+    activeIndex = -1
+    input.removeAttribute("aria-activedescendant")
+  }
 
   const setStatus = (message: string, showRetry = false) => {
     status.textContent = message
@@ -125,7 +147,7 @@ function bindSearch(root: HTMLElement) {
   const setActive = (nextIndex: number) => {
     const links = resultLinks()
     if (links.length === 0) {
-      activeIndex = -1
+      clearActive()
       return
     }
     activeIndex = (nextIndex + links.length) % links.length
@@ -134,14 +156,15 @@ function bindSearch(root: HTMLElement) {
       link.classList.toggle("focus", active)
       link.setAttribute("aria-selected", String(active))
     })
+    input.setAttribute("aria-activedescendant", links[activeIndex].id)
     links[activeIndex]?.scrollIntoView({ block: "nearest" })
   }
 
   const renderResults = () => {
     removeRenderedResults(resultsContainer)
+    clearActive()
     const query = input.value
     if (!query.trim()) {
-      activeIndex = -1
       setStatus("")
       layout.classList.remove("display-results")
       return
@@ -149,10 +172,11 @@ function bindSearch(root: HTMLElement) {
     if (!merger.isInitialized()) return
 
     const matches = searchRecords(merger.getRecords(), query)
-    for (const result of matches) appendResult(resultsContainer, result)
+    for (const [index, result] of matches.entries()) {
+      appendResult(resultsContainer, result, `${resultsId}-option-${index}`)
+    }
     if (matches.length === 0) {
       setStatus("没有找到结果")
-      activeIndex = -1
     } else {
       setStatus("")
       layout.classList.add("display-results")
@@ -165,6 +189,8 @@ function bindSearch(root: HTMLElement) {
     overlay.hidden = true
     overlay.setAttribute("aria-hidden", "true")
     button.setAttribute("aria-expanded", "false")
+    input.setAttribute("aria-expanded", "false")
+    clearActive()
     layout.setAttribute("aria-busy", "false")
     button.focus()
   }
@@ -174,6 +200,7 @@ function bindSearch(root: HTMLElement) {
     overlay.classList.add("active")
     overlay.setAttribute("aria-hidden", "false")
     button.setAttribute("aria-expanded", "true")
+    input.setAttribute("aria-expanded", "true")
     input.focus()
 
     if (merger.isInitialized()) {
@@ -210,15 +237,34 @@ function bindSearch(root: HTMLElement) {
   const onOverlayClick = (event: MouseEvent) => {
     if (event.target === overlay) close()
   }
+  const onOverlayKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      event.preventDefault()
+      close()
+      return
+    }
+    if (event.key !== "Tab") return
+
+    const focusable = [input, closeButton, ...(!retry.hidden ? [retry] : []), ...resultLinks()]
+    const currentIndex = focusable.indexOf(document.activeElement as HTMLElement)
+    const next = event.shiftKey
+      ? currentIndex <= 0
+        ? focusable[focusable.length - 1]
+        : undefined
+      : currentIndex === -1 || currentIndex === focusable.length - 1
+        ? focusable[0]
+        : undefined
+    if (next) {
+      event.preventDefault()
+      next.focus()
+    }
+  }
   const onInput = () => {
     if (debounceTimer !== undefined) window.clearTimeout(debounceTimer)
     debounceTimer = window.setTimeout(renderResults, 120)
   }
   const onInputKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      event.preventDefault()
-      close()
-    } else if (event.key === "ArrowDown") {
+    if (event.key === "ArrowDown") {
       event.preventDefault()
       setActive(activeIndex + 1)
     } else if (event.key === "ArrowUp") {
@@ -239,7 +285,9 @@ function bindSearch(root: HTMLElement) {
   const onRetry = () => void open()
 
   button.addEventListener("click", onButtonClick)
+  closeButton.addEventListener("click", close)
   overlay.addEventListener("click", onOverlayClick)
+  overlay.addEventListener("keydown", onOverlayKeyDown)
   input.addEventListener("input", onInput)
   input.addEventListener("keydown", onInputKeyDown)
   resultsContainer.addEventListener("click", onResultClick)
@@ -248,7 +296,9 @@ function bindSearch(root: HTMLElement) {
   window.addCleanup(() => {
     if (debounceTimer !== undefined) window.clearTimeout(debounceTimer)
     button.removeEventListener("click", onButtonClick)
+    closeButton.removeEventListener("click", close)
     overlay.removeEventListener("click", onOverlayClick)
+    overlay.removeEventListener("keydown", onOverlayKeyDown)
     input.removeEventListener("input", onInput)
     input.removeEventListener("keydown", onInputKeyDown)
     resultsContainer.removeEventListener("click", onResultClick)
@@ -282,5 +332,3 @@ document.addEventListener("content-index-updated", (event) => {
 })
 
 document.addEventListener("nav", setupSearch)
-document.addEventListener("render", setupSearch)
-setupSearch()
