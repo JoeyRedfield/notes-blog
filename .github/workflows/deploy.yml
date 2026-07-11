@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .quartz-cache/responsive-images
-          key: ${{ runner.os }}-responsive-images-v1-${{ hashFiles('content/**/*.png', 'content/**/*.PNG', 'content/**/*.jpg', 'content/**/*.JPG', 'content/**/*.jpeg', 'content/**/*.JPEG', 'content/**/*.webp', 'content/**/*.WEBP', 'content/**/*.gif', 'content/**/*.GIF', 'package-lock.json') }}
+          key: ${{ runner.os }}-responsive-images-v1-${{ hashFiles('content/**/*.[pP][nN][gG]', 'content/**/*.[jJ][pP][gG]', 'content/**/*.[jJ][pP][eE][gG]', 'content/**/*.[wW][eE][bB][pP]', 'content/**/*.[gG][iI][fF]', 'package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-responsive-images-v1-
       - name: Install Dependencies

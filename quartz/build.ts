@@ -22,6 +22,10 @@ import { getStaticResourcesFromPlugins } from "./plugins"
 import { randomIdNonSecure } from "./util/random"
 import { ChangeEvent } from "./plugins/types"
 import { minimatch } from "minimatch"
+import {
+  planResponsiveImageWatchBatch,
+  withSyntheticResponsiveMarkdownChanges,
+} from "./util/responsiveImageWatch"
 
 function reportSlugCollisions(content: ProcessedContent[]): void {
   const collisions = detectSlugCollisions(content)
@@ -208,6 +212,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   ctx.buildId = buildId
   buildData.lastBuildMs = new Date().getTime()
   const numChangesInBuild = changes.length
+  const currentChanges = changes.slice(0, numChangesInBuild)
   const release = await mut.acquire()
   try {
     // if there's another build after us, release and let them do it
@@ -220,19 +225,35 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     console.log(styleText("yellow", "Detected change, rebuilding..."))
 
     // update changesSinceLastBuild
-    for (const change of changes) {
+    for (const change of currentChanges) {
       changesSinceLastBuild[change.path] = change.type
     }
 
     const staticResources = getStaticResourcesFromPlugins(ctx)
-    const pathsToParse: FilePath[] = []
+    const responsiveImagePlan = planResponsiveImageWatchBatch(currentChanges, contentMap)
+    if (responsiveImagePlan.refreshMarkdown) {
+      for (const change of responsiveImagePlan.nonMarkdownMembershipChanges) {
+        if (change.type === "delete") {
+          contentMap.delete(change.path)
+        } else if (change.type === "add") {
+          contentMap.set(change.path, { type: "other" })
+        }
+      }
+      ctx.allFiles = Array.from(contentMap.keys())
+      ctx.allSlugs = ctx.allFiles.map((fp) => slugifyFilePath(fp as FilePath))
+    }
+
+    const pathsToParse = new Set<FilePath>()
     for (const [fp, type] of Object.entries(changesSinceLastBuild)) {
       if (type === "delete" || path.extname(fp) !== ".md") continue
       const fullPath = joinSegments(argv.directory, toPosixPath(fp)) as FilePath
-      pathsToParse.push(fullPath)
+      pathsToParse.add(fullPath)
+    }
+    for (const fp of responsiveImagePlan.markdownPaths) {
+      pathsToParse.add(joinSegments(argv.directory, toPosixPath(fp)) as FilePath)
     }
 
-    const parsed = await parseMarkdown(ctx, pathsToParse)
+    const parsed = await parseMarkdown(ctx, Array.from(pathsToParse))
     for (const content of parsed) {
       const relPath = content[1].data.relativePath
       if (!relPath) {
@@ -264,26 +285,31 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     }
 
     const changeEvents: ChangeEvent[] = Object.entries(changesSinceLastBuild).map(([fp, type]) => {
-      const path = fp as FilePath
-      const processedContent = contentMap.get(path)
+      const filePath = fp as FilePath
+      const processedContent = contentMap.get(filePath)
       if (processedContent?.type === "markdown") {
         const [_tree, file] = processedContent.content
         return {
           type,
-          path,
+          path: filePath,
           file,
         }
       }
 
       return {
         type,
-        path,
+        path: filePath,
       }
     })
 
     // update allFiles and then allSlugs with the consistent view of content map
     ctx.allFiles = Array.from(contentMap.keys())
     ctx.allSlugs = ctx.allFiles.map((fp) => slugifyFilePath(fp as FilePath))
+    const effectiveChangeEvents = withSyntheticResponsiveMarkdownChanges(
+      changeEvents,
+      contentMap,
+      responsiveImagePlan.refreshMarkdown,
+    )
 
     const markdownContent = Array.from(contentMap.values())
       .filter((file) => file.type === "markdown")
@@ -298,7 +324,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     if (dispatcher) {
       ctx.virtualPages = []
       const emitFn = dispatcher.partialEmit ?? dispatcher.emit
-      const emitted = await emitFn(ctx, processedFiles, staticResources, changeEvents)
+      const emitted = await emitFn(ctx, processedFiles, staticResources, effectiveChangeEvents)
       if (emitted !== null) {
         if (Symbol.asyncIterator in emitted) {
           for await (const file of emitted) {
@@ -325,7 +351,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
       if (emitter.name === "PageTypeDispatcher") continue
       // Try to use partialEmit if available, otherwise assume the output is static
       const emitFn = emitter.partialEmit ?? emitter.emit
-      const emitted = await emitFn(ctx, contentWithVirtual, staticResources, changeEvents)
+      const emitted = await emitFn(ctx, contentWithVirtual, staticResources, effectiveChangeEvents)
       if (emitted === null) {
         continue
       }

@@ -393,8 +393,14 @@ test("deploy workflow caches content-addressed responsive images independently",
   assert.match(workflow, /- name: Cache responsive images/)
   assert.match(workflow, /path: \.quartz-cache\/responsive-images/)
   assert.match(workflow, /key:.*runner\.os.*responsive-images-v1-.*hashFiles/)
-  for (const extension of ["png", "jpg", "jpeg", "webp", "gif"]) {
-    assert.match(workflow, new RegExp(`content/\\*\\*/\\*\\.${extension}`))
+  for (const extensionGlob of [
+    "[pP][nN][gG]",
+    "[jJ][pP][gG]",
+    "[jJ][pP][eE][gG]",
+    "[wW][eE][bB][pP]",
+    "[gG][iI][fF]",
+  ]) {
+    assert.ok(workflow.includes(`content/**/*.${extensionGlob}`))
   }
   assert.match(workflow, /restore-keys:[\s\S]*runner\.os.*responsive-images-v1-/)
   assert.match(workflow, /runner\.os.*plugins-[\s\S]*restore-keys:/)
