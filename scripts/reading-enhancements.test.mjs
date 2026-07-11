@@ -182,7 +182,7 @@ describe("responsive article images", () => {
     await addLazyLoadingToImages(tree, pageFile, ctx, { cacheDir })
 
     const [image, animated, autoSized, explicitSrcSet] = tree.children
-    const base = encodeURI("/notes-blog/知识/图片-目录/封面-图")
+    const base = encodeURI("/notes-blog/知识/图片-目录/封面-图.PNG")
     assert.equal(image.properties.width, 1600)
     assert.equal(image.properties.height, 900)
     assert.equal(image.properties.srcSet, `${base}.w720.webp 720w, ${base}.w1440.webp 1440w`)
@@ -191,7 +191,7 @@ describe("responsive article images", () => {
     assert.equal(animated.properties.height, 40)
     assert.equal(
       animated.properties.srcSet,
-      `${encodeURI("/notes-blog/知识/图片-目录/动画")}.w720.webp 720w`,
+      `${encodeURI("/notes-blog/知识/图片-目录/动画.GIF")}.w720.webp 720w`,
     )
     assert.equal(autoSized.properties.width, 1600)
     assert.equal(autoSized.properties.height, 900)
@@ -227,7 +227,7 @@ describe("responsive article images", () => {
     await addLazyLoadingToImages(tree, pageFile, serveCtx, { cacheDir })
 
     const [image] = tree.children
-    const rootAsset = encodeURI("/知识/图片-目录/封面-图")
+    const rootAsset = encodeURI("/知识/图片-目录/封面-图.PNG")
     assert.equal(
       image.properties.srcSet,
       `${rootAsset}.w720.webp 720w, ${rootAsset}.w1440.webp 1440w`,

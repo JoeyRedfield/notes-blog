@@ -55,10 +55,32 @@ describe("responsive image helpers", () => {
     assert.deepEqual(responsiveWidths(1440), [720])
   })
 
-  test("uses deterministic WebP names for the final extension", () => {
-    assert.equal(responsivePath("assets/photo.png", 720), "assets/photo.w720.webp")
-    assert.equal(responsivePath("assets/photo.final.PNG", 1440), "assets/photo.final.w1440.webp")
-    assert.equal(responsivePath("assets/photo.JpEg", 720), "assets/photo.w720.webp")
+  test("uses deterministic collision-free WebP names for every source extension", () => {
+    const sources = [
+      "assets/photo.png",
+      "assets/photo.jpg",
+      "assets/photo.jpeg",
+      "assets/photo.webp",
+      "assets/photo.gif",
+    ]
+    const variants = sources.map((source) => responsivePath(source, 720))
+
+    assert.deepEqual(variants, [
+      "assets/photo.png.w720.webp",
+      "assets/photo.jpg.w720.webp",
+      "assets/photo.jpeg.w720.webp",
+      "assets/photo.webp.w720.webp",
+      "assets/photo.gif.w720.webp",
+    ])
+    assert.equal(new Set(variants).size, sources.length)
+    assert.deepEqual(
+      sources.map((source) => responsivePath(source, 720)),
+      variants,
+    )
+    assert.equal(
+      responsivePath("assets/photo.final.PNG", 1440),
+      "assets/photo.final.PNG.w1440.webp",
+    )
   })
 })
 
@@ -244,19 +266,19 @@ describe("Assets emitter", () => {
       assert.deepEqual(outputs.map((fp) => path.relative(outputDir, fp)).sort(), [
         "assets/broken.png",
         "assets/diagram.WebP",
-        "assets/diagram.w720.webp",
+        "assets/diagram.WebP.w720.webp",
         "assets/motion.GIF",
-        "assets/motion.w720.webp",
+        "assets/motion.GIF.w720.webp",
         "assets/photo.final.PNG",
-        "assets/photo.final.w1440.webp",
-        "assets/photo.final.w720.webp",
+        "assets/photo.final.PNG.w1440.webp",
+        "assets/photo.final.PNG.w720.webp",
         "assets/portrait.JPEG",
-        "assets/portrait.w720.webp",
+        "assets/portrait.JPEG.w720.webp",
       ])
       assert.equal(warnings.length, 1)
       assert.match(warnings[0], /Broken\.png/)
 
-      const animated = await sharp(path.join(outputDir, "assets/motion.w720.webp"), {
+      const animated = await sharp(path.join(outputDir, "assets/motion.GIF.w720.webp"), {
         animated: true,
       }).metadata()
       assert.equal(animated.pages, 2)
@@ -304,7 +326,7 @@ describe("Assets emitter", () => {
       )
       assert.deepEqual(
         added.map((fp) => path.relative(outputDir, fp)),
-        ["assets/incremental.jpg", "assets/incremental.w720.webp"],
+        ["assets/incremental.jpg", "assets/incremental.jpg.w720.webp"],
       )
 
       await sharp({
@@ -319,7 +341,11 @@ describe("Assets emitter", () => {
       )
       assert.deepEqual(
         changed.map((fp) => path.relative(outputDir, fp)),
-        ["assets/incremental.jpg", "assets/incremental.w720.webp", "assets/incremental.w1440.webp"],
+        [
+          "assets/incremental.jpg",
+          "assets/incremental.jpg.w720.webp",
+          "assets/incremental.jpg.w1440.webp",
+        ],
       )
 
       const cacheDir = path.join(root, ".quartz-cache", "responsive-images")
@@ -338,8 +364,8 @@ describe("Assets emitter", () => {
         shrunk.map((fp) => path.relative(outputDir, fp)),
         ["assets/incremental.jpg"],
       )
-      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.w720.webp")))
-      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.w1440.webp")))
+      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.jpg.w720.webp")))
+      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.jpg.w1440.webp")))
       assert.deepEqual((await fs.readdir(cacheDir)).sort(), cacheBeforeShrink)
 
       const cacheBeforeDelete = (await fs.readdir(cacheDir)).sort()
@@ -351,10 +377,76 @@ describe("Assets emitter", () => {
 
       assert.deepEqual(deleted, [])
       await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.jpg")))
-      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.w720.webp")))
-      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.w1440.webp")))
+      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.jpg.w720.webp")))
+      await assert.rejects(fs.access(path.join(outputDir, "assets/incremental.jpg.w1440.webp")))
       await fs.access(source)
       assert.deepEqual((await fs.readdir(cacheDir)).sort(), cacheBeforeDelete)
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
+
+  test("partial delete removes only variants belonging to the matching source extension", async () => {
+    const pngSource = path.join(contentDir, "Assets", "Collision.png")
+    const jpegSource = path.join(contentDir, "Assets", "Collision.jpg")
+    await Promise.all([
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#224466" },
+      })
+        .png()
+        .toFile(pngSource),
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#662244" },
+      })
+        .jpeg()
+        .toFile(jpegSource),
+    ])
+
+    process.chdir(root)
+    try {
+      const emitter = Assets()
+      const ctx = {
+        argv: {
+          directory: contentDir,
+          output: outputDir,
+          verbose: false,
+          serve: false,
+          watch: true,
+          port: 8080,
+          wsPort: 3001,
+        },
+        cfg: {
+          configuration: { ignorePatterns: [] },
+          plugins: { pageTypes: [] },
+        },
+      }
+      const partialEmit = emitter.partialEmit
+      assert.equal(typeof partialEmit, "function")
+
+      const added = await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "add", path: "Assets/Collision.png" as never },
+          { type: "add", path: "Assets/Collision.jpg" as never },
+        ]) as never,
+      )
+      assert.deepEqual(
+        added.map((fp) => path.relative(outputDir, fp)),
+        [
+          "assets/collision.png",
+          "assets/collision.png.w720.webp",
+          "assets/collision.jpg",
+          "assets/collision.jpg.w720.webp",
+        ],
+      )
+
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "delete", path: "Assets/Collision.png" as never },
+        ]) as never,
+      )
+
+      await assert.rejects(fs.access(path.join(outputDir, "assets/collision.png.w720.webp")))
+      await fs.access(path.join(outputDir, "assets/collision.jpg.w720.webp"))
     } finally {
       process.chdir(originalCwd)
     }

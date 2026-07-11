@@ -13,9 +13,7 @@ export function responsiveWidths(sourceWidth) {
 }
 
 export function responsivePath(fp, width) {
-  const ext = path.posix.extname(fp)
-  const stem = ext.length > 0 ? fp.slice(0, -ext.length) : fp
-  return `${stem}.w${width}.webp`
+  return `${fp}.w${width}.webp`
 }
 
 export function responsiveCachePath(sourceHash, width, cacheDir = defaultResponsiveCacheDir) {
