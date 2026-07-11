@@ -95,7 +95,10 @@ describe("graph library loading", () => {
     remove: () => void
   }
 
-  function browserHarness(loadGlobals: (script: FakeScript, window: FakeWindow) => void) {
+  function browserHarness(
+    loadGlobals: (script: FakeScript, window: FakeWindow) => void,
+    autoSettle = true,
+  ) {
     const window: FakeWindow = {}
     const scripts: FakeScript[] = []
     const document = {
@@ -115,10 +118,12 @@ describe("graph library loading", () => {
       head: {
         appendChild(script: FakeScript) {
           scripts.push(script)
-          queueMicrotask(() => {
-            loadGlobals(script, window)
-            script.onload?.()
-          })
+          if (autoSettle) {
+            queueMicrotask(() => {
+              loadGlobals(script, window)
+              script.onload?.()
+            })
+          }
           return script
         },
       },
@@ -202,6 +207,52 @@ describe("graph library loading", () => {
     assert.equal(harness.scripts.length, 4)
     assert.strictEqual(libraries.d3, harness.window.d3)
     assert.strictEqual(libraries.PIXI, harness.window.PIXI)
+  })
+
+  test("waits for every script to settle before unlocking a failed attempt", async () => {
+    const { createGraphLibraryLoader, D3_CDN_URL, PIXI_CDN_URL } = await core()
+    const harness = browserHarness(() => {}, false)
+    const load = createGraphLibraryLoader(harness)
+
+    const first = load()
+    void first.catch(() => {})
+    await new Promise<void>((resolve) => setImmediate(resolve))
+    const firstD3 = harness.scripts.find(({ src }) => src === D3_CDN_URL)
+    const firstPixi = harness.scripts.find(({ src }) => src === PIXI_CDN_URL)
+    assert.ok(firstD3)
+    assert.ok(firstPixi)
+
+    firstD3.onerror?.()
+    await new Promise<void>((resolve) => setImmediate(resolve))
+
+    const retryWhilePixiIsPending = load()
+    assert.strictEqual(retryWhilePixiIsPending, first)
+    assert.equal(
+      harness.scripts.filter(({ removed, src }) => !removed && src === PIXI_CDN_URL).length,
+      1,
+    )
+
+    firstPixi.onerror?.()
+    await assert.rejects(first, /Failed to load graph library/)
+    assert.equal(
+      harness.scripts.every(({ removed }) => removed),
+      true,
+    )
+
+    const second = load()
+    await new Promise<void>((resolve) => setImmediate(resolve))
+    const activeD3 = harness.scripts.filter(({ removed, src }) => !removed && src === D3_CDN_URL)
+    const activePixi = harness.scripts.filter(
+      ({ removed, src }) => !removed && src === PIXI_CDN_URL,
+    )
+    assert.equal(activeD3.length, 1)
+    assert.equal(activePixi.length, 1)
+
+    harness.window.d3 = { ready: true }
+    harness.window.PIXI = { ready: true }
+    activeD3[0].onload?.()
+    activePixi[0].onload?.()
+    await second
   })
 })
 
@@ -422,6 +473,7 @@ test("GraphLazy renders the complete lazy shell without fetching during componen
       "graph-container",
       "graph-load-button",
       "global-graph-icon",
+      "global-graph-status",
       "global-graph-outer",
       "global-graph-container",
     ]) {
@@ -434,6 +486,7 @@ test("GraphLazy renders the complete lazy shell without fetching during componen
     assert.match(html, /aria-label="加载关系图"/)
     assert.match(html, /加载关系图/)
     assert.match(html, /class="global-graph-icon"[^>]*type="button"/)
+    assert.match(html, /class="global-graph-status"[^>]*role="status"[^>]*hidden/)
     assert.match(html, /aria-expanded="false"/)
     assert.match(html, /class="global-graph-outer"[^>]*aria-hidden="true"/)
     assert.doesNotMatch(html, /<script\b/)
@@ -553,6 +606,7 @@ test("GraphLazy rolls back the global overlay when Pixi initialization fails", a
       ".graph-load-button",
       ".graph-load-status",
       ".global-graph-icon",
+      ".global-graph-status",
       ".global-graph-outer",
       ".global-graph-container",
     ].map((selector) => {
@@ -564,6 +618,7 @@ test("GraphLazy rolls back the global overlay when Pixi initialization fails", a
   root.querySelector = (selector: string) => elements[selector] ?? null
   elements[".graph-container"].dataset.cfg = "{}"
   elements[".global-graph-container"].dataset.cfg = "{}"
+  elements[".global-graph-status"].hidden = true
 
   const listeners = new Map<string, Set<Listener>>()
   const document = {
@@ -585,11 +640,15 @@ test("GraphLazy rolls back the global overlay when Pixi initialization fails", a
     },
   }
   const mediaListeners = new Set<Listener>()
+  let pixiAttempts = 0
+  const keepSecondPixiAttemptPending = new Promise<void>(() => {})
   const window = {
     PIXI: {
       Application: class {
         async init() {
-          throw new Error("pixi init failed")
+          pixiAttempts += 1
+          if (pixiAttempts === 1) throw new Error("pixi init failed")
+          return keepSecondPixiAttemptPending
         }
       },
     },
@@ -617,17 +676,37 @@ test("GraphLazy rolls back the global overlay when Pixi initialization fails", a
       storage.set(key, value)
     },
   }
+  let releaseMetadata: ((value: unknown) => void) | undefined
+  const pendingMetadata = new Promise<unknown>((resolve) => {
+    releaseMetadata = resolve
+  })
 
   runInNewContext(script, {
     URL,
     console,
     document,
-    fetchData: Promise.resolve({ index: { title: "Home", links: [], tags: [] } }),
+    fetchData: pendingMetadata,
     getComputedStyle: () => ({ getPropertyValue: () => "" }),
     localStorage,
     window,
   })
   document.dispatch("nav", { detail: { url: "index" } })
+  document.dispatch("click", { target: elements[".global-graph-icon"] })
+  assert.equal(elements[".global-graph-icon"].dataset.state, "loading")
+
+  document.dispatch("click", { target: elements[".global-graph-icon"] })
+  assert.equal(elements[".global-graph-icon"].dataset.state, "idle")
+
+  document.dispatch("click", { target: elements[".global-graph-icon"] })
+  assert.equal(elements[".global-graph-icon"].dataset.state, "loading")
+  document.dispatch("keydown", { key: "Escape" })
+  assert.equal(elements[".global-graph-icon"].dataset.state, "idle")
+
+  releaseMetadata?.({ index: { title: "Home", links: [], tags: [] } })
+  await new Promise<void>((resolve) => setImmediate(resolve))
+  assert.equal(elements[".global-graph-outer"].classList.contains("active"), false)
+  assert.equal(pixiAttempts, 0)
+
   document.dispatch("click", { target: elements[".global-graph-icon"] })
   await new Promise<void>((resolve) => setImmediate(resolve))
 
@@ -640,6 +719,13 @@ test("GraphLazy rolls back the global overlay when Pixi initialization fails", a
     elements[".global-graph-icon"].attributes.get("aria-label"),
     "全局关系图加载失败，重试",
   )
+  assert.equal(elements[".global-graph-status"].hidden, false)
+  assert.equal(elements[".global-graph-status"].textContent, "全局关系图加载失败，请重试")
+
+  document.dispatch("click", { target: elements[".global-graph-icon"] })
+  await Promise.resolve()
+  assert.equal(elements[".global-graph-status"].hidden, true)
+  assert.equal(elements[".global-graph-status"].textContent, "")
 })
 
 test("GraphLazy bundle starts inert and only registers event handlers", async () => {

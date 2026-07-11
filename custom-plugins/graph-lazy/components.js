@@ -104,6 +104,12 @@ export const GraphLazy = (userOptions = {}) => {
           },
           globalGraphIcon(),
         ),
+        h("p", {
+          class: "global-graph-status",
+          role: "status",
+          "aria-live": "polite",
+          hidden: true,
+        }),
       ]),
       h(
         "div",

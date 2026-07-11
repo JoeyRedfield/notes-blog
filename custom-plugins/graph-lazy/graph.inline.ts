@@ -496,6 +496,11 @@ function setLocalUi(state, status, message = "") {
   }
 }
 
+function setGlobalStatus(state, message = "") {
+  state.globalStatus.textContent = message
+  state.globalStatus.hidden = message === ""
+}
+
 async function renderLocal(state) {
   const generation = ++state.localGeneration
   state.localCleanup?.()
@@ -539,7 +544,9 @@ function closeGlobal(state = activeGlobalState) {
   state.globalContainer.setAttribute("aria-busy", "false")
   state.globalIcon.setAttribute("aria-expanded", "false")
   state.globalIcon.setAttribute("aria-label", globalGraphButtonLabel(false))
+  state.globalIcon.dataset.state = "idle"
   state.globalIcon.removeAttribute("aria-busy")
+  setGlobalStatus(state)
   const sidebar = state.globalOuter.closest(".sidebar")
   if (sidebar) sidebar.style.zIndex = ""
   if (activeGlobalState === state) activeGlobalState = null
@@ -550,6 +557,7 @@ function openGlobal(state) {
   const generation = ++state.globalGeneration
   state.globalIcon.setAttribute("aria-busy", "true")
   state.globalIcon.dataset.state = "loading"
+  setGlobalStatus(state)
 
   const attempt = Promise.all([ensureGraphLibraries(), metadataLoader.load()])
     .then(async ([libraries, data]) => {
@@ -584,12 +592,15 @@ function openGlobal(state) {
         closeGlobal(state)
         state.globalIcon.dataset.state = "error"
         state.globalIcon.setAttribute("aria-label", "全局关系图加载失败，重试")
+        setGlobalStatus(state, "全局关系图加载失败，请重试")
       }
       throw error
     })
     .finally(() => {
-      if (state.globalPending === attempt) state.globalPending = undefined
-      state.globalIcon.removeAttribute("aria-busy")
+      if (state.globalPending === attempt) {
+        state.globalPending = undefined
+        state.globalIcon.removeAttribute("aria-busy")
+      }
     })
   state.globalPending = attempt
   return attempt
@@ -650,6 +661,7 @@ function bindGraph(root) {
   const button = root.querySelector(".graph-load-button")
   const status = root.querySelector(".graph-load-status")
   const globalIcon = root.querySelector(".global-graph-icon")
+  const globalStatus = root.querySelector(".global-graph-status")
   const globalOuter = root.querySelector(".global-graph-outer")
   const globalContainer = root.querySelector(".global-graph-container")
   if (
@@ -658,6 +670,7 @@ function bindGraph(root) {
     !button ||
     !status ||
     !globalIcon ||
+    !globalStatus ||
     !globalOuter ||
     !globalContainer
   ) {
@@ -672,6 +685,7 @@ function bindGraph(root) {
     button,
     status,
     globalIcon,
+    globalStatus,
     globalOuter,
     globalContainer,
     mobile: mediaQuery.matches,
@@ -749,7 +763,7 @@ document.addEventListener("click", (event) => {
   if (globalIcon) {
     const state = graphStates.get(globalIcon.closest(".graph"))
     if (state) {
-      if (state === activeGlobalState) closeGlobal(state)
+      if (state.globalPending || state === activeGlobalState) closeGlobal(state)
       else void openGlobal(state).catch(() => {})
     }
     return
@@ -765,9 +779,13 @@ document.addEventListener("click", (event) => {
 })
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && activeGlobalState) {
-    closeGlobal(activeGlobalState)
-    return
+  if (event.key === "Escape") {
+    const pendingGlobalState = [...graphStates.values()].find((state) => state.globalPending)
+    const state = activeGlobalState ?? pendingGlobalState
+    if (state) {
+      closeGlobal(state)
+      return
+    }
   }
   if (
     event.key.toLocaleLowerCase() === "g" &&

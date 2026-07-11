@@ -112,13 +112,20 @@ function scriptPromise(
 
 export function createGraphLibraryLoader(environment: GraphLibraryEnvironment) {
   return createRetryableLoader(async () => {
-    const scripts = await Promise.all([
+    const results = await Promise.allSettled([
       scriptPromise(environment, D3_CDN_URL, () => Boolean(environment.window.d3)),
       scriptPromise(environment, PIXI_CDN_URL, () => Boolean(environment.window.PIXI)),
     ])
+    const scripts = results.flatMap((result) =>
+      result.status === "fulfilled" && result.value ? [result.value] : [],
+    )
+    const failure = results.find(
+      (result): result is PromiseRejectedResult => result.status === "rejected",
+    )
 
-    if (!environment.window.d3 || !environment.window.PIXI) {
+    if (failure || !environment.window.d3 || !environment.window.PIXI) {
       for (const script of scripts) script?.remove()
+      if (failure) throw failure.reason
       throw new Error("Graph library scripts loaded, but required globals were unavailable")
     }
 
