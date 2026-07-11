@@ -13,6 +13,19 @@ export interface ResponsiveImageWatchBatchPlan {
   nonMarkdownMembershipChanges: Array<Pick<ChangeEvent, "type" | "path">>
 }
 
+export interface WatchChangeBatch {
+  changes: ChangeEvent[]
+  commit: () => void
+}
+
+export function beginWatchChangeBatch(queue: ChangeEvent[]): WatchChangeBatch {
+  const changes = queue.slice()
+  return {
+    changes,
+    commit: () => queue.splice(0, changes.length),
+  }
+}
+
 export function planResponsiveImageWatchBatch(
   currentChanges: ChangeEvent[],
   contentMap: ReadonlyMap<FilePath, WatchContentEntry>,

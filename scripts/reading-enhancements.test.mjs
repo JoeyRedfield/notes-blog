@@ -7,6 +7,7 @@ import { after, before, describe, test } from "node:test"
 import { h } from "preact"
 import { render } from "preact-render-to-string"
 import sharp from "sharp"
+import YAML from "yaml"
 import { normalizeHastElement } from "@quartz-community/utils"
 
 import plugin, {
@@ -388,11 +389,14 @@ test("injects a page-relative preload for the LXGW subset font", () => {
 })
 
 test("deploy workflow caches content-addressed responsive images independently", () => {
-  const workflow = readFileSync(".github/workflows/deploy.yml", "utf8")
+  const workflow = YAML.parse(readFileSync(".github/workflows/deploy.yml", "utf8"))
+  const responsiveCache = workflow.jobs.build.steps.find(
+    (step) => step.name === "Cache responsive images",
+  )
 
-  assert.match(workflow, /- name: Cache responsive images/)
-  assert.match(workflow, /path: \.quartz-cache\/responsive-images/)
-  assert.match(workflow, /key:.*runner\.os.*responsive-images-v1-.*hashFiles/)
+  assert.ok(responsiveCache)
+  assert.equal(responsiveCache.with.path, ".quartz-cache/responsive-images")
+  assert.match(responsiveCache.with.key, /runner\.os.*responsive-images-v1-.*hashFiles/)
   for (const extensionGlob of [
     "[pP][nN][gG]",
     "[jJ][pP][gG]",
@@ -400,10 +404,12 @@ test("deploy workflow caches content-addressed responsive images independently",
     "[wW][eE][bB][pP]",
     "[gG][iI][fF]",
   ]) {
-    assert.ok(workflow.includes(`content/**/*.${extensionGlob}`))
+    assert.ok(responsiveCache.with.key.includes(`content/**/*.${extensionGlob}`))
   }
-  assert.match(workflow, /restore-keys:[\s\S]*runner\.os.*responsive-images-v1-/)
-  assert.match(workflow, /runner\.os.*plugins-[\s\S]*restore-keys:/)
+  assert.equal(
+    responsiveCache.with["restore-keys"].trim(),
+    "${{ runner.os }}-responsive-images-v1-",
+  )
 })
 
 test("renders the reading enhancement controls and ships SPA-aware script hooks", () => {

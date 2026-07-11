@@ -23,6 +23,7 @@ import { randomIdNonSecure } from "./util/random"
 import { ChangeEvent } from "./plugins/types"
 import { minimatch } from "minimatch"
 import {
+  beginWatchChangeBatch,
   planResponsiveImageWatchBatch,
   withSyntheticResponsiveMarkdownChanges,
 } from "./util/responsiveImageWatch"
@@ -211,12 +212,16 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   const buildId = randomIdNonSecure()
   ctx.buildId = buildId
   buildData.lastBuildMs = new Date().getTime()
-  const numChangesInBuild = changes.length
-  const currentChanges = changes.slice(0, numChangesInBuild)
   const release = await mut.acquire()
   try {
     // if there's another build after us, release and let them do it
     if (ctx.buildId !== buildId) {
+      return
+    }
+
+    const changeBatch = beginWatchChangeBatch(changes)
+    const currentChanges = changeBatch.changes
+    if (currentChanges.length === 0) {
       return
     }
 
@@ -379,7 +384,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
       `Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince("rebuild")}`,
     )
     console.log(styleText("green", `Done rebuilding in ${perf.timeSince()}`))
-    changes.splice(0, numChangesInBuild)
+    changeBatch.commit()
     clientRefresh()
   } finally {
     release()

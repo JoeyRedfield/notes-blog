@@ -6,6 +6,7 @@ import { ChangeEvent } from "./plugins/types"
 import { ProcessedContent } from "./plugins/vfile"
 import { FilePath, FullSlug } from "./util/path"
 import {
+  beginWatchChangeBatch,
   planResponsiveImageWatchBatch,
   withSyntheticResponsiveMarkdownChanges,
 } from "./util/responsiveImageWatch"
@@ -29,11 +30,11 @@ function contentFixture() {
 }
 
 describe("responsive image watch batches", () => {
-  for (const transition of ["1600 to 600", "1600 to damaged", "600 to 1600"]) {
-    test(`${transition} reparses and synthetically changes every current Markdown page`, () => {
+  test("every responsive image event reparses all current Markdown pages", () => {
+    for (const type of ["add", "change", "delete"] as const) {
       const contentMap = contentFixture()
       const imageChange: ChangeEvent = {
-        type: "change",
+        type,
         path: "assets/photo.PnG" as FilePath,
       }
       const plan = planResponsiveImageWatchBatch([imageChange], contentMap)
@@ -53,13 +54,44 @@ describe("responsive image watch batches", () => {
       assert.deepEqual(
         effective.map((event) => [event.type, event.path, event.file?.data.slug]),
         [
-          ["change", "assets/photo.PnG", undefined],
+          [type, "assets/photo.PnG", undefined],
           ["change", "notes/a.md", "notes/a"],
           ["change", "notes/b.md", "notes/b"],
         ],
       )
-    })
-  }
+    }
+  })
+
+  test("captures and consumes only the queue state visible after the previous batch commits", () => {
+    const imageChange: ChangeEvent = {
+      type: "change",
+      path: "assets/photo.png" as FilePath,
+    }
+    const markdownChange: ChangeEvent = {
+      type: "change",
+      path: "notes/a.md" as FilePath,
+    }
+    const jsonChange: ChangeEvent = {
+      type: "change",
+      path: "assets/data.json" as FilePath,
+    }
+    const queue = [imageChange]
+
+    const imageBatch = beginWatchChangeBatch(queue)
+    queue.push(markdownChange)
+    imageBatch.commit()
+
+    const markdownBatch = beginWatchChangeBatch(queue)
+    assert.deepEqual(markdownBatch.changes, [markdownChange])
+    assert.equal(
+      planResponsiveImageWatchBatch(markdownBatch.changes, contentFixture()).refreshMarkdown,
+      false,
+    )
+
+    queue.push(jsonChange)
+    markdownBatch.commit()
+    assert.deepEqual(queue, [jsonChange])
+  })
 
   test("image add and delete expose ordered non-Markdown membership updates before parsing", () => {
     const contentMap = contentFixture()
