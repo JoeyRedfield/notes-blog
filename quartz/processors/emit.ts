@@ -1,12 +1,19 @@
 import { PerfTimer } from "../util/perf"
-import { getStaticResourcesFromPlugins } from "../plugins"
-import { ProcessedContent } from "../plugins/vfile"
-import { QuartzEmitterPluginInstance } from "../plugins/types"
+import type { ProcessedContent } from "../plugins/vfile"
+import type { QuartzEmitterPluginInstance } from "../plugins/types"
 import { QuartzLogger } from "../util/log"
 import { trace } from "../util/trace"
-import { BuildCtx } from "../util/ctx"
-import { StaticResources } from "../util/resources"
+import type { BuildCtx } from "../util/ctx"
+import type { StaticResources } from "../util/resources"
 import { styleText } from "util"
+
+export function contentForEmitter(
+  emitter: QuartzEmitterPluginInstance,
+  content: ProcessedContent[],
+  contentWithVirtual: ProcessedContent[],
+): ProcessedContent[] {
+  return emitter.name === "CustomOgImages" ? content : contentWithVirtual
+}
 
 async function runEmitter(
   emitter: QuartzEmitterPluginInstance,
@@ -46,6 +53,7 @@ async function runEmitter(
 }
 
 export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
+  const { getStaticResourcesFromPlugins } = await import("../plugins")
   const { argv, cfg } = ctx
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
@@ -81,7 +89,13 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   let emitErrors = 0
   const counts = await Promise.all(
     otherEmitters.map((emitter) =>
-      runEmitter(emitter, ctx, contentWithVirtual, staticResources, log).catch((err) => {
+      runEmitter(
+        emitter,
+        ctx,
+        contentForEmitter(emitter, content, contentWithVirtual),
+        staticResources,
+        log,
+      ).catch((err) => {
         emitErrors++
         console.error(`Emitter "${emitter.name}" failed:`, err.message ?? err)
         return 0

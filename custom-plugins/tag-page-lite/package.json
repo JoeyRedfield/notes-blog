@@ -1,0 +1,28 @@
+{
+  "name": "tag-page-lite",
+  "version": "0.1.0",
+  "description": "Compact tag index and article lists for this Quartz site.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "tag-page-lite",
+    "displayName": "Tag Page Lite",
+    "description": "Generates compact tag index and tag article pages.",
+    "category": "pageType",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  }
+}

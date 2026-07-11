@@ -36,8 +36,6 @@ jobs:
         with:
           path: .quartz/plugins
           key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-plugins-
       - name: Cache responsive images
         uses: actions/cache@v5
         with:

@@ -1,6 +1,8 @@
 import test, { describe } from "node:test"
 import assert from "node:assert"
-import { renderTranscludes, pageResources } from "./renderPage"
+import { h } from "preact"
+import * as renderPageModule from "./renderPage"
+import { renderPage, renderTranscludes, pageResources } from "./renderPage"
 import { Root, Element } from "hast"
 import { FullSlug } from "../util/path"
 import { GlobalConfiguration } from "../cfg"
@@ -323,5 +325,178 @@ describe("pageResources", () => {
       !inlineJsServe.script.includes("/quartz/static/contentIndex.json"),
       `expected contentIndex fetch without /quartz/ prefix in serve mode, got: ${inlineJsServe.script}`,
     )
+  })
+})
+
+describe("filterResourcesForTree", () => {
+  const mathResources: StaticResources = {
+    css: [
+      { content: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" },
+      { content: "/static/site.css" },
+    ],
+    js: [
+      {
+        src: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js",
+        loadTime: "afterDOMReady",
+        contentType: "external",
+      },
+      {
+        src: "/static/site.js",
+        loadTime: "afterDOMReady",
+        contentType: "external",
+      },
+    ],
+    additionalHead: [],
+  }
+
+  function filter(tree: Root) {
+    const helper = renderPageModule.filterResourcesForTree
+    assert.equal(typeof helper, "function")
+    return helper(tree, mathResources)
+  }
+
+  test("removes KaTeX and copy-tex URLs when the final tree has no katex class", () => {
+    const filtered = filter({
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "p",
+          properties: {},
+          children: [{ type: "text", value: "Plain text" }],
+        },
+      ],
+    })
+
+    assert.deepStrictEqual(filtered.css, [{ content: "/static/site.css" }])
+    assert.deepStrictEqual(filtered.js, [
+      {
+        src: "/static/site.js",
+        loadTime: "afterDOMReady",
+        contentType: "external",
+      },
+    ])
+  })
+
+  test("preserves every resource when the final tree contains katex", () => {
+    const filtered = filter({
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["katex"] },
+          children: [],
+        },
+      ],
+    })
+
+    assert.strictEqual(filtered, mathResources)
+  })
+
+  function renderWithMathResources(
+    tree: Root,
+    allFiles: QuartzComponentProps["allFiles"] = [],
+    treeTransforms?: Parameters<typeof renderPage>[5],
+  ) {
+    const Head = (({ externalResources }: QuartzComponentProps) =>
+      h(
+        "head",
+        {},
+        ...externalResources.css.map(({ content }) =>
+          h("link", { rel: "stylesheet", href: content }),
+        ),
+      )) as never
+    const Content = (() => h("main", {}, "content")) as never
+    const Empty = (() => null) as never
+    const componentData = {
+      ctx: { argv: { serve: true } },
+      fileData: { slug: "notes/current", frontmatter: { title: "Current", tags: [] } },
+      externalResources: mathResources,
+      cfg: { locale: "en-US" },
+      children: [],
+      tree,
+      allFiles,
+    } as unknown as QuartzComponentProps
+
+    return renderPage(
+      { locale: "en-US" } as GlobalConfiguration,
+      "notes/current" as FullSlug,
+      componentData,
+      {
+        head: Head,
+        header: [],
+        beforeBody: [],
+        pageBody: Content,
+        afterBody: [],
+        left: [],
+        right: [],
+        footer: Empty,
+        frame: "minimal",
+      },
+      mathResources,
+      treeTransforms,
+    )
+  }
+
+  test("keeps math resources introduced by a transclusion", () => {
+    const html = renderWithMathResources(
+      { type: "root", children: [makeTranscludeBlockquote("notes/formula")] },
+      [
+        makePageData("notes/formula", {
+          type: "root",
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["katex"] },
+              children: [],
+            },
+          ],
+        }),
+      ],
+    )
+
+    assert.match(html, /katex@0\.16\.11/)
+    assert.match(html, /copy-tex\.min\.js/)
+  })
+
+  test("keeps math resources introduced by a final tree transform", () => {
+    const html = renderWithMathResources(
+      { type: "root", children: [] },
+      [],
+      [
+        (root) => {
+          root.children.push({
+            type: "element",
+            tagName: "span",
+            properties: { className: "katex" },
+            children: [],
+          })
+        },
+      ],
+    )
+
+    assert.match(html, /katex@0\.16\.11/)
+    assert.match(html, /copy-tex\.min\.js/)
+  })
+
+  test("uses the filtered resources in both the head and trailing scripts", () => {
+    const html = renderWithMathResources({
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "p",
+          properties: {},
+          children: [{ type: "text", value: "Plain text" }],
+        },
+      ],
+    })
+
+    assert.doesNotMatch(html, /katex@0\.16\.11/)
+    assert.doesNotMatch(html, /copy-tex\.min\.js/)
+    assert.match(html, /\/static\/site\.css/)
+    assert.match(html, /\/static\/site\.js/)
   })
 })

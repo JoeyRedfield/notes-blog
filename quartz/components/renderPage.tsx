@@ -30,6 +30,36 @@ interface RenderComponents {
 }
 
 const headerRegex = new RegExp(/h[1-6]/)
+
+function treeHasClass(node: Root | Element, className: string): boolean {
+  if (node.type === "element") {
+    const value = node.properties?.className
+    const classes = Array.isArray(value) ? value.map(String) : String(value ?? "").split(/\s+/)
+    if (classes.includes(className)) return true
+  }
+
+  return (node.children ?? []).some(
+    (child) => child.type === "element" && treeHasClass(child, className),
+  )
+}
+
+function isKatexResourceUrl(url: string): boolean {
+  return url.includes("/katex@") || url.includes("copy-tex")
+}
+
+/** @internal Exported for testing only. */
+export function filterResourcesForTree(tree: Root, resources: StaticResources): StaticResources {
+  if (treeHasClass(tree, "katex")) return resources
+
+  return {
+    css: resources.css.filter((resource) => !isKatexResourceUrl(resource.content)),
+    js: resources.js.filter(
+      (resource) => resource.contentType !== "external" || !isKatexResourceUrl(resource.src),
+    ),
+    additionalHead: resources.additionalHead,
+  }
+}
+
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
@@ -318,8 +348,11 @@ export function renderPage(
     }
   }
 
+  const filteredPageResources = filterResourcesForTree(root, pageResources)
+
   // set componentData.tree to the edited html that has transclusions rendered
   componentData.tree = root
+  componentData.externalResources = filteredPageResources
 
   const {
     head: Head,
@@ -366,7 +399,7 @@ export function renderPage(
           </Body>
         </div>
       </body>
-      {pageResources.js
+      {filteredPageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res, true))}
     </html>
