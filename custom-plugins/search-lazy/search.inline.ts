@@ -133,9 +133,10 @@ function bindSearch(root: HTMLElement) {
     Array.from(resultsContainer.querySelectorAll<HTMLAnchorElement>(".result-card"))
 
   const clearDebounce = () => {
-    if (debounceTimer === undefined) return
+    if (debounceTimer === undefined) return false
     window.clearTimeout(debounceTimer)
     debounceTimer = undefined
+    return true
   }
 
   const clearActive = () => {
@@ -280,8 +281,7 @@ function bindSearch(root: HTMLElement) {
       event.preventDefault()
       setActive(activeIndex - 1)
     } else if (event.key === "Enter" && !event.isComposing) {
-      clearDebounce()
-      renderResults()
+      if (clearDebounce()) renderResults()
       const selected = resultLinks()[activeIndex]
       if (selected) {
         event.preventDefault()

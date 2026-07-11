@@ -248,7 +248,7 @@ test("SearchLazy renders the established markup and bundles a lazy browser scrip
   }
 })
 
-test("SearchLazy waits for nav and flushes the current query before Enter", async () => {
+test("SearchLazy waits for nav and keeps Enter aligned with the current selection", async () => {
   const { SearchLazy } = await import("./components.js")
   const script = SearchLazy().afterDOMLoaded ?? ""
   type Listener = (event?: Record<string, unknown>) => void
@@ -425,7 +425,9 @@ test("SearchLazy waits for nav and flushes the current query before Enter", asyn
         return {
           json: async () => ({
             "notes/quartz": { title: "Quartz", tags: [], content: "Static site generator" },
-            "notes/performance": { title: "性能", tags: [], content: "Redis optimization" },
+            "notes/performance": { title: "性能", tags: [], content: "Cache optimization" },
+            "notes/redis-basics": { title: "Redis basics", tags: [], content: "Introduction" },
+            "notes/redis-tuning": { title: "Redis tuning", tags: [], content: "Advanced" },
           }),
           ok: true,
         }
@@ -476,4 +478,22 @@ test("SearchLazy waits for nav and flushes the current query before Enter", asyn
   assert.equal(results.children.length, 1)
   assert.equal(results.children[0].href, "/notes/performance")
   assert.equal(results.children[0].clicks, 1)
+
+  input.value = "Redis"
+  first.elements[".search-button"].dispatch("click")
+  assert.equal(timers.size, 0)
+  assert.equal(results.children.length, 2)
+  const firstRedisResult = results.children[0]
+  const secondRedisResult = results.children[1]
+  input.dispatch("keydown", { key: "ArrowDown", preventDefault() {} })
+  assert.equal(input.attributes.get("aria-activedescendant"), secondRedisResult.id)
+
+  input.dispatch("keydown", {
+    isComposing: false,
+    key: "Enter",
+    preventDefault() {},
+  })
+
+  assert.equal(firstRedisResult.clicks, 0)
+  assert.equal(secondRedisResult.clicks, 1)
 })
