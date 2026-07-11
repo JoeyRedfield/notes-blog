@@ -5,6 +5,17 @@ import fs from "fs"
 import { glob } from "../../util/glob"
 import { Argv, BuildCtx } from "../../util/ctx"
 import { QuartzConfig } from "../../cfg"
+import { ensureResponsiveVariants, responsivePath } from "./responsive-images.js"
+
+export {
+  imageMetadata,
+  responsiveCachePath,
+  responsivePath,
+  responsiveWidths,
+} from "./responsive-images.js"
+export { ensureResponsiveVariants }
+
+const RESPONSIVE_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"])
 
 function getPageTypeExtensions(ctx: BuildCtx): Set<string> {
   const extensions = new Set<string>()
@@ -40,6 +51,32 @@ const copyFile = async (argv: Argv, fp: FilePath) => {
   return dest
 }
 
+const copyResponsiveVariants = async function* (argv: Argv, fp: FilePath) {
+  if (!RESPONSIVE_IMAGE_EXTENSIONS.has(path.extname(fp).toLowerCase())) return
+
+  const src = joinSegments(argv.directory, fp) as FilePath
+  const outputPath = slugifyFilePath(fp)
+  const { variants } = await ensureResponsiveVariants({ sourcePath: src, outputPath })
+  for (const variant of variants) {
+    const dest = joinSegments(argv.output, variant.outputPath) as FilePath
+    await fs.promises.mkdir(path.dirname(dest), { recursive: true })
+    await fs.promises.copyFile(variant.cachePath, dest)
+    yield dest
+  }
+}
+
+const deleteResponsiveOutputs = async (argv: Argv, fp: FilePath) => {
+  if (!RESPONSIVE_IMAGE_EXTENSIONS.has(path.extname(fp).toLowerCase())) return
+
+  const outputPath = slugifyFilePath(fp)
+  for (const width of [720, 1440]) {
+    const dest = joinSegments(argv.output, responsivePath(outputPath, width)) as FilePath
+    await fs.promises.unlink(dest).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") throw error
+    })
+  }
+}
+
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name: "Assets",
@@ -48,6 +85,7 @@ export const Assets: QuartzEmitterPlugin = () => {
       const fps = await filesToCopy(ctx.argv, ctx.cfg, excludeExtensions)
       for (const fp of fps) {
         yield copyFile(ctx.argv, fp)
+        yield* copyResponsiveVariants(ctx.argv, fp)
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
@@ -57,11 +95,14 @@ export const Assets: QuartzEmitterPlugin = () => {
         if (ext === ".md" || excludeExtensions.has(ext)) continue
 
         if (changeEvent.type === "add" || changeEvent.type === "change") {
+          await deleteResponsiveOutputs(ctx.argv, changeEvent.path)
           yield copyFile(ctx.argv, changeEvent.path)
+          yield* copyResponsiveVariants(ctx.argv, changeEvent.path)
         } else if (changeEvent.type === "delete") {
           const name = slugifyFilePath(changeEvent.path)
           const dest = joinSegments(ctx.argv.output, name) as FilePath
           await fs.promises.unlink(dest)
+          await deleteResponsiveOutputs(ctx.argv, changeEvent.path)
         }
       }
     },

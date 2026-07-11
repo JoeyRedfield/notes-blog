@@ -1,7 +1,13 @@
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
-import { test } from "node:test"
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
+import os from "node:os"
+import path from "node:path"
+import { after, before, describe, test } from "node:test"
+import { h } from "preact"
 import { render } from "preact-render-to-string"
+import sharp from "sharp"
+import { normalizeHastElement } from "@quartz-community/utils"
 
 import plugin, {
   ReadingEnhancements,
@@ -13,7 +19,7 @@ import plugin, {
   themeColorLight,
 } from "../custom-plugins/reading-enhancements/index.js"
 
-test("adds lazy loading and async decoding to article images without overriding explicit loading", () => {
+test("adds lazy loading and async decoding to article images without overriding explicit loading", async () => {
   const tree = {
     type: "root",
     children: [
@@ -36,7 +42,7 @@ test("adds lazy loading and async decoding to article images without overriding 
               {
                 type: "element",
                 tagName: "img",
-                properties: { src: "hero.png", loading: "eager" },
+                properties: { src: "hero.png", loading: "eager", decoding: "sync" },
                 children: [],
               },
             ],
@@ -46,7 +52,7 @@ test("adds lazy loading and async decoding to article images without overriding 
     ],
   }
 
-  addLazyLoadingToImages(tree)
+  await addLazyLoadingToImages(tree)
 
   const [article] = tree.children
   const [firstImage, paragraph] = article.children
@@ -55,7 +61,278 @@ test("adds lazy loading and async decoding to article images without overriding 
   assert.equal(firstImage.properties.loading, "lazy")
   assert.equal(firstImage.properties.decoding, "async")
   assert.equal(explicitImage.properties.loading, "eager")
-  assert.equal(explicitImage.properties.decoding, "async")
+  assert.equal(explicitImage.properties.decoding, "sync")
+})
+
+async function writeAnimatedGif(fp, width = 800, pageHeight = 40) {
+  const pages = 2
+  const channels = 4
+  const pixels = Buffer.alloc(width * pageHeight * pages * channels)
+  for (let y = 0; y < pageHeight * pages; y++) {
+    for (let x = 0; x < width; x++) {
+      const offset = (y * width + x) * channels
+      pixels[offset] = y < pageHeight ? 255 : 0
+      pixels[offset + 1] = y < pageHeight ? 0 : 255
+      pixels[offset + 2] = 0
+      pixels[offset + 3] = 255
+    }
+  }
+
+  await sharp(pixels, {
+    raw: { width, height: pageHeight * pages, pageHeight, channels },
+  })
+    .gif({ delay: [100, 100], loop: 0 })
+    .toFile(fp)
+}
+
+describe("responsive article images", () => {
+  let root
+  let contentDir
+  let cacheDir
+  let pageFile
+  let ctx
+
+  before(async () => {
+    root = await mkdtemp(path.join(os.tmpdir(), "reading-responsive-images-"))
+    contentDir = path.join(root, "content")
+    cacheDir = path.join(root, "cache")
+    await mkdir(path.join(contentDir, "知识", "图片 目录"), { recursive: true })
+    await sharp({
+      create: { width: 1600, height: 900, channels: 3, background: "#cc4422" },
+    })
+      .png()
+      .toFile(path.join(contentDir, "知识", "图片 目录", "封面 图.PNG"))
+    await writeAnimatedGif(path.join(contentDir, "知识", "图片 目录", "动画.GIF"))
+    await sharp({
+      create: { width: 600, height: 400, channels: 3, background: "#336699" },
+    })
+      .webp()
+      .toFile(path.join(contentDir, "知识", "图片 目录", "小 图.webp"))
+    await writeFile(path.join(contentDir, "知识", "图片 目录", "损坏.jpg"), "not an image")
+    await writeFile(
+      path.join(contentDir, "知识", "图片 目录", "vector.svg"),
+      '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500"></svg>',
+    )
+
+    pageFile = {
+      data: {
+        slug: "知识/嵌套-页面",
+        relativePath: "知识/嵌套 页面.md",
+        filePath: path.join(contentDir, "知识", "嵌套 页面.md"),
+      },
+    }
+    ctx = {
+      argv: { directory: contentDir },
+      cfg: { configuration: { baseUrl: "joeyredfield.github.io/notes-blog" } },
+      allFiles: [
+        "知识/嵌套 页面.md",
+        "知识/图片 目录/封面 图.PNG",
+        "知识/图片 目录/动画.GIF",
+        "知识/图片 目录/小 图.webp",
+        "知识/图片 目录/损坏.jpg",
+        "知识/图片 目录/vector.svg",
+      ],
+    }
+  })
+
+  after(async () => {
+    await rm(root, { recursive: true, force: true })
+  })
+
+  test("adds natural dimensions and stable base-path variants for nested localized assets", async () => {
+    const tree = {
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/封面-图.PNG") },
+          children: [],
+        },
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/动画.GIF") },
+          children: [],
+        },
+        {
+          type: "element",
+          tagName: "img",
+          properties: {
+            src: encodeURI("./图片-目录/封面-图.PNG"),
+            width: "auto",
+            height: "auto",
+          },
+          children: [],
+        },
+        {
+          type: "element",
+          tagName: "img",
+          properties: {
+            src: encodeURI("./图片-目录/封面-图.PNG"),
+            srcSet: "/custom/image.webp 1x",
+            sizes: "50vw",
+          },
+          children: [],
+        },
+      ],
+    }
+
+    await addLazyLoadingToImages(tree, pageFile, ctx, { cacheDir })
+
+    const [image, animated, autoSized, explicitSrcSet] = tree.children
+    const base = encodeURI("/notes-blog/知识/图片-目录/封面-图")
+    assert.equal(image.properties.width, 1600)
+    assert.equal(image.properties.height, 900)
+    assert.equal(image.properties.srcSet, `${base}.w720.webp 720w, ${base}.w1440.webp 1440w`)
+    assert.equal(image.properties.sizes, "(max-width: 800px) calc(100vw - 2rem), 800px")
+    assert.equal(animated.properties.width, 800)
+    assert.equal(animated.properties.height, 40)
+    assert.equal(
+      animated.properties.srcSet,
+      `${encodeURI("/notes-blog/知识/图片-目录/动画")}.w720.webp 720w`,
+    )
+    assert.equal(autoSized.properties.width, 1600)
+    assert.equal(autoSized.properties.height, 900)
+    assert.equal(explicitSrcSet.properties.srcSet, "/custom/image.webp 1x")
+    assert.equal(explicitSrcSet.properties.sizes, "50vw")
+
+    const html = render(h("img", image.properties))
+    assert.match(html, /srcset="[^"]+w720\.webp 720w, [^"]+w1440\.webp 1440w"/)
+    assert.doesNotMatch(html, /srcSet=/)
+
+    const transcluded = normalizeHastElement(image, "知识/嵌套-页面", "其他/目标页面")
+    assert.notEqual(transcluded.properties.src, image.properties.src)
+    assert.equal(transcluded.properties.srcSet, image.properties.srcSet)
+  })
+
+  test("uses root-relative variants while serving locally", async () => {
+    const tree = {
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/封面-图.PNG") },
+          children: [],
+        },
+      ],
+    }
+    const serveCtx = {
+      ...ctx,
+      argv: { ...ctx.argv, serve: true },
+    }
+
+    await addLazyLoadingToImages(tree, pageFile, serveCtx, { cacheDir })
+
+    const [image] = tree.children
+    const rootAsset = encodeURI("/知识/图片-目录/封面-图")
+    assert.equal(
+      image.properties.srcSet,
+      `${rootAsset}.w720.webp 720w, ${rootAsset}.w1440.webp 1440w`,
+    )
+    assert.doesNotMatch(image.properties.srcSet, /\/notes-blog\//)
+  })
+
+  test("skips unsupported sources and keeps local fallbacks when no variant is usable", async () => {
+    const skippedSources = [
+      "https://example.com/image.png",
+      "http://example.com/image.png",
+      "//cdn.example.com/image.png",
+      "data:image/png;base64,AAAA",
+      "blob:https://example.com/id",
+      encodeURI("./图片-目录/vector.svg"),
+      encodeURI("./图片-目录/missing.png"),
+    ]
+    const tree = {
+      type: "root",
+      children: [
+        ...skippedSources.map((src) => ({
+          type: "element",
+          tagName: "img",
+          properties: { src },
+          children: [],
+        })),
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/小-图.webp") },
+          children: [],
+        },
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/损坏.jpg") },
+          children: [],
+        },
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片 目录/封面 图.PNG") },
+          children: [],
+        },
+      ],
+    }
+    const warnings = []
+    const originalWarn = console.warn
+    console.warn = (message) => warnings.push(String(message))
+    try {
+      await addLazyLoadingToImages(tree, pageFile, ctx, { cacheDir })
+    } finally {
+      console.warn = originalWarn
+    }
+
+    for (const image of tree.children.slice(0, skippedSources.length)) {
+      assert.equal(image.properties.loading, "lazy")
+      assert.equal(image.properties.decoding, "async")
+      assert.equal(image.properties.srcSet, undefined)
+      assert.equal(image.properties.sizes, undefined)
+    }
+
+    const [small, broken, rawSource] = tree.children.slice(skippedSources.length)
+    assert.equal(small.properties.width, 600)
+    assert.equal(small.properties.height, 400)
+    assert.equal(small.properties.srcSet, undefined)
+    assert.equal(small.properties.sizes, undefined)
+    assert.equal(broken.properties.width, undefined)
+    assert.equal(broken.properties.srcSet, undefined)
+    assert.equal(warnings.length, 1)
+    assert.match(warnings[0], /损坏\.jpg/)
+    assert.equal(rawSource.properties.width, 1600)
+    assert.match(rawSource.properties.srcSet, /w720\.webp 720w/)
+  })
+
+  test("does not advertise variants when cache generation fails", async () => {
+    const blockedCache = path.join(root, "blocked-cache")
+    await writeFile(blockedCache, "not a directory")
+    const tree = {
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/封面-图.PNG") },
+          children: [],
+        },
+      ],
+    }
+    const warnings = []
+    const originalWarn = console.warn
+    console.warn = (message) => warnings.push(String(message))
+    try {
+      await addLazyLoadingToImages(tree, pageFile, ctx, { cacheDir: blockedCache })
+    } finally {
+      console.warn = originalWarn
+    }
+
+    const [image] = tree.children
+    assert.equal(image.properties.width, 1600)
+    assert.equal(image.properties.height, 900)
+    assert.equal(image.properties.srcSet, undefined)
+    assert.equal(image.properties.sizes, undefined)
+    assert.equal(warnings.length, 1)
+    assert.match(warnings[0], /responsive image cache/)
+  })
 })
 
 test("exports a Quartz transformer that registers the image loading rehype plugin", () => {
@@ -108,6 +385,19 @@ test("injects a page-relative preload for the LXGW subset font", () => {
     fontPreloadHref({ slug: "404" }, "/notes-blog"),
     "/notes-blog/static/fonts/LXGWWenKai-Regular.subset.woff2",
   )
+})
+
+test("deploy workflow caches content-addressed responsive images independently", () => {
+  const workflow = readFileSync(".github/workflows/deploy.yml", "utf8")
+
+  assert.match(workflow, /- name: Cache responsive images/)
+  assert.match(workflow, /path: \.quartz-cache\/responsive-images/)
+  assert.match(workflow, /key:.*runner\.os.*responsive-images-v1-.*hashFiles/)
+  for (const extension of ["png", "jpg", "jpeg", "webp", "gif"]) {
+    assert.match(workflow, new RegExp(`content/\\*\\*/\\*\\.${extension}`))
+  }
+  assert.match(workflow, /restore-keys:[\s\S]*runner\.os.*responsive-images-v1-/)
+  assert.match(workflow, /runner\.os.*plugins-[\s\S]*restore-keys:/)
 })
 
 test("renders the reading enhancement controls and ships SPA-aware script hooks", () => {
@@ -172,11 +462,17 @@ test("custom styles include print-friendly reading output", () => {
 
   assert.match(css, /@media print/)
   assert.match(css, /\.sidebar,[\s\S]*\.search,[\s\S]*\.darkmode,[\s\S]*\.readermode/)
-  assert.match(css, /\.back-to-top,[\s\S]*\.skip-to-content,[\s\S]*\.breadcrumb-container,[\s\S]*footer/)
+  assert.match(
+    css,
+    /\.back-to-top,[\s\S]*\.skip-to-content,[\s\S]*\.breadcrumb-container,[\s\S]*footer/,
+  )
   assert.match(css, /display: none !important/)
   assert.match(css, /article a\[href\^="http"\]::after[\s\S]*content: " \(" attr\(href\) "\)"/)
   assert.match(css, /article a\.external\[href\^="http"\]:not\(:has\(> img\)\)::after/)
-  assert.match(css, /article a\.external:not\(\[href\^="http"\]\):not\(:has\(> img\)\)::after[\s\S]*display: none !important/)
+  assert.match(
+    css,
+    /article a\.external:not\(\[href\^="http"\]\):not\(:has\(> img\)\)::after[\s\S]*display: none !important/,
+  )
   assert.match(css, /pre,[\s\S]*pre > code[\s\S]*white-space: pre-wrap/)
 })
 
@@ -194,11 +490,20 @@ test("custom styles improve code block scanning without covering controls", () =
 test("custom styles expose heading anchors and external links intentionally", () => {
   const css = readFileSync("quartz/styles/custom.scss", "utf8")
 
-  assert.match(css, /article h1\[id\] > a\[role="anchor"\],[\s\S]*article h6\[id\] > a\[role="anchor"\]/)
+  assert.match(
+    css,
+    /article h1\[id\] > a\[role="anchor"\],[\s\S]*article h6\[id\] > a\[role="anchor"\]/,
+  )
   assert.match(css, /content: "#"/)
-  assert.match(css, /article h1\[id\] > a\[role="anchor"\] > svg,[\s\S]*article h6\[id\] > a\[role="anchor"\] > svg[\s\S]*display: none/)
+  assert.match(
+    css,
+    /article h1\[id\] > a\[role="anchor"\] > svg,[\s\S]*article h6\[id\] > a\[role="anchor"\] > svg[\s\S]*display: none/,
+  )
   assert.match(css, /opacity: 0/)
-  assert.match(css, /article h1\[id\]:hover > a\[role="anchor"\],[\s\S]*article h6\[id\]:hover > a\[role="anchor"\]/)
+  assert.match(
+    css,
+    /article h1\[id\]:hover > a\[role="anchor"\],[\s\S]*article h6\[id\]:hover > a\[role="anchor"\]/,
+  )
   assert.match(css, /article a\.external:not\(:has\(> img\)\)::after/)
   assert.match(css, /content: "↗"/)
   assert.match(css, /article a\.external \.external-icon[\s\S]*display: none/)
@@ -230,7 +535,10 @@ test("custom styles keep visual polish consistent across scrollbars and the home
 test("custom styles improve mobile search, toc, and touch ergonomics", () => {
   const css = readFileSync("quartz/styles/custom.scss", "utf8")
 
-  assert.match(css, /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container\s*{[\s\S]*height: 100dvh/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container\s*{[\s\S]*height: 100dvh/,
+  )
   assert.match(
     css,
     /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container\s*{[\s\S]*overscroll-behavior: contain/,
@@ -256,7 +564,10 @@ test("custom styles improve mobile search, toc, and touch ergonomics", () => {
     css,
     /@media all and \(\$mobile\)[\s\S]*\.search > \.search-container > \.search-space > \.search-layout > \.results-container[\s\S]*max-height: calc\(100dvh - 8\.5rem\)/,
   )
-  assert.match(css, /@media all and \(\$mobile\)[\s\S]*button\.toc-header\s*{[\s\S]*min-height: 44px/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*button\.toc-header\s*{[\s\S]*min-height: 44px/,
+  )
   assert.match(
     css,
     /@media all and \(\$mobile\)[\s\S]*\.search > \.search-button,[\s\S]*\.readermode\s*{[\s\S]*min-width: 44px/,
@@ -277,5 +588,8 @@ test("custom styles improve mobile search, toc, and touch ergonomics", () => {
     css,
     /@media all and \(\$mobile\)[\s\S]*\.explorer-content ul li > a,[\s\S]*footer a\s*{[\s\S]*min-height: 44px/,
   )
-  assert.match(css, /@media all and \(\$mobile\)[\s\S]*a\.internal\.tag-link\s*{[\s\S]*min-height: 44px/)
+  assert.match(
+    css,
+    /@media all and \(\$mobile\)[\s\S]*a\.internal\.tag-link\s*{[\s\S]*min-height: 44px/,
+  )
 })

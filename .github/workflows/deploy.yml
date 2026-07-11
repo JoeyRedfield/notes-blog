@@ -1,19 +1,19 @@
 name: Deploy Quartz site to GitHub Pages
- 
+
 on:
   push:
     branches:
       - v5
- 
+
 permissions:
   contents: read
   pages: write
   id-token: write
- 
+
 concurrency:
   group: "pages"
   cancel-in-progress: false
- 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,6 +38,13 @@ jobs:
           key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-plugins-
+      - name: Cache responsive images
+        uses: actions/cache@v5
+        with:
+          path: .quartz-cache/responsive-images
+          key: ${{ runner.os }}-responsive-images-v1-${{ hashFiles('content/**/*.png', 'content/**/*.PNG', 'content/**/*.jpg', 'content/**/*.JPG', 'content/**/*.jpeg', 'content/**/*.JPEG', 'content/**/*.webp', 'content/**/*.WEBP', 'content/**/*.gif', 'content/**/*.GIF', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-responsive-images-v1-
       - name: Install Dependencies
         run: npm ci
       - name: Install Quartz plugins
@@ -48,7 +55,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
- 
+
   deploy:
     needs: build
     environment:
