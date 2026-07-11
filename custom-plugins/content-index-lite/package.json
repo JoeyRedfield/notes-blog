@@ -1,0 +1,33 @@
+{
+  "name": "content-index-lite",
+  "version": "0.1.0",
+  "description": "Split Quartz metadata and full-text search indexes.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "content-index-lite",
+    "displayName": "Content Index Lite",
+    "description": "Emits a small metadata index and a separate full-text search index.",
+    "category": [
+      "emitter"
+    ],
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultEnabled": true,
+    "defaultOptions": {
+      "enableSiteMap": true,
+      "enableRSS": true,
+      "rssLimit": 10,
+      "rssFullHtml": false,
+      "rssSlug": "index",
+      "includeEmptyFiles": true
+    }
+  }
+}
