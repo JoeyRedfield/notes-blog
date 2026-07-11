@@ -1,0 +1,37 @@
+{
+  "name": "search-lazy",
+  "version": "0.1.0",
+  "description": "Load the Quartz full-text search index only when search is opened.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "sideEffects": false,
+  "quartz": {
+    "name": "search-lazy",
+    "displayName": "Lazy Search",
+    "description": "A compact full-text search component that loads its index on demand.",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "SearchLazy": {
+        "name": "SearchLazy",
+        "displayName": "Lazy Search",
+        "description": "On-demand full-text search.",
+        "version": "0.1.0",
+        "quartzVersion": ">=5.0.0",
+        "defaultPosition": "left",
+        "defaultPriority": 20
+      }
+    }
+  }
+}
