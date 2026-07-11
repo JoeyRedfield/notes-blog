@@ -1,7 +1,10 @@
 import { h } from "preact"
 import path from "node:path"
 import { joinSegments, pathToRoot, slugifyFilePath } from "@quartz-community/utils"
-import { ensureResponsiveVariants } from "../../quartz/plugins/emitters/responsive-images.js"
+import {
+  createResponsivePathResolver,
+  ensureResponsiveVariants,
+} from "../../quartz/plugins/emitters/responsive-images.js"
 
 export { ReadingEnhancements, readingEnhancementsScript } from "./components.js"
 
@@ -61,6 +64,10 @@ function sourcePathPart(src) {
 function assetLookup(ctx) {
   const byOutputPath = new Map()
   const bySourcePath = new Map()
+  const occupiedOutputPaths = (ctx?.allFiles ?? []).map((filePath) =>
+    slugifyFilePath(String(filePath)),
+  )
+  const resolveResponsivePath = createResponsivePathResolver(occupiedOutputPaths)
   for (const filePath of ctx?.allFiles ?? []) {
     const sourcePath = String(filePath)
     if (!responsiveImageExtensions.has(path.posix.extname(sourcePath).toLowerCase())) continue
@@ -72,7 +79,7 @@ function assetLookup(ctx) {
     bySourcePath.set(path.posix.normalize(sourcePath), asset)
     byOutputPath.set(path.posix.normalize(asset.outputPath), asset)
   }
-  return { byOutputPath, bySourcePath }
+  return { byOutputPath, bySourcePath, resolveResponsivePath }
 }
 
 function removeBasePath(pathname, basePath) {
@@ -171,6 +178,7 @@ export async function addLazyLoadingToImages(tree, file = {}, ctx = {}, options 
         sourcePath,
         outputPath: asset.outputPath,
         cacheDir: options.cacheDir,
+        resolveOutputPath: lookup.resolveResponsivePath,
       })
       addNaturalDimensions(node.properties, generated.metadata)
 

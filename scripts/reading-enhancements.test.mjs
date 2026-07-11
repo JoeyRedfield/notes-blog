@@ -8,7 +8,8 @@ import { h } from "preact"
 import { render } from "preact-render-to-string"
 import sharp from "sharp"
 import YAML from "yaml"
-import { normalizeHastElement } from "@quartz-community/utils"
+import { normalizeHastElement, slugifyFilePath } from "@quartz-community/utils"
+import { responsivePath } from "../quartz/plugins/emitters/responsive-images.js"
 
 import plugin, {
   ReadingEnhancements,
@@ -109,6 +110,18 @@ describe("responsive article images", () => {
     })
       .webp()
       .toFile(path.join(contentDir, "知识", "图片 目录", "小 图.webp"))
+    await Promise.all([
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#226688" },
+      })
+        .png()
+        .toFile(path.join(contentDir, "知识", "图片 目录", "冲突 图.PNG")),
+      sharp({
+        create: { width: 600, height: 300, channels: 3, background: "#882266" },
+      })
+        .webp()
+        .toFile(path.join(contentDir, "知识", "图片 目录", "冲突-图.PNG.w720.webp")),
+    ])
     await writeFile(path.join(contentDir, "知识", "图片 目录", "损坏.jpg"), "not an image")
     await writeFile(
       path.join(contentDir, "知识", "图片 目录", "vector.svg"),
@@ -130,6 +143,8 @@ describe("responsive article images", () => {
         "知识/图片 目录/封面 图.PNG",
         "知识/图片 目录/动画.GIF",
         "知识/图片 目录/小 图.webp",
+        "知识/图片 目录/冲突 图.PNG",
+        "知识/图片 目录/冲突-图.PNG.w720.webp",
         "知识/图片 目录/损坏.jpg",
         "知识/图片 目录/vector.svg",
       ],
@@ -233,6 +248,31 @@ describe("responsive article images", () => {
       `${rootAsset}.w720.webp 720w, ${rootAsset}.w1440.webp 1440w`,
     )
     assert.doesNotMatch(image.properties.srcSet, /\/notes-blog\//)
+  })
+
+  test("matches the Assets collision-free path when a legal source occupies the preferred URL", async () => {
+    const tree = {
+      type: "root",
+      children: [
+        {
+          type: "element",
+          tagName: "img",
+          properties: { src: encodeURI("./图片-目录/冲突-图.PNG") },
+          children: [],
+        },
+      ],
+    }
+    const occupied = ctx.allFiles.map((fp) => slugifyFilePath(fp))
+    const outputPath = "知识/图片-目录/冲突-图.PNG"
+    const expectedVariant = responsivePath(outputPath, 720, occupied)
+
+    await addLazyLoadingToImages(tree, pageFile, ctx, { cacheDir })
+
+    assert.notEqual(expectedVariant, `${outputPath}.w720.webp`)
+    assert.equal(
+      tree.children[0].properties.srcSet,
+      `${encodeURI(`/notes-blog/${expectedVariant}`)} 720w`,
+    )
   })
 
   test("skips unsupported sources and keeps local fallbacks when no variant is usable", async () => {

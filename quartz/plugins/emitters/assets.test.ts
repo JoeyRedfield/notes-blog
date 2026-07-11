@@ -82,6 +82,22 @@ describe("responsive image helpers", () => {
       "assets/photo.final.PNG.w1440.webp",
     )
   })
+
+  test("avoids preferred names already occupied by legal source files", () => {
+    const source = "assets/photo.png"
+    const hash = createHash("sha256").update(source).digest("hex").slice(0, 12)
+    const occupied = new Set([
+      source,
+      "assets/photo.png.w720.webp",
+      `assets/photo.png.${hash}.w720.webp`,
+    ])
+    const variant = responsivePath(source, 720, occupied)
+
+    assert.notEqual(variant, "assets/photo.png.w720.webp")
+    assert.equal(variant, `assets/photo.png.${hash}-1.w720.webp`)
+    assert.equal(variant, responsivePath(source, 720, occupied))
+    assert.equal(occupied.has(variant), false)
+  })
 })
 
 describe("image metadata", () => {
@@ -447,6 +463,104 @@ describe("Assets emitter", () => {
 
       await assert.rejects(fs.access(path.join(outputDir, "assets/collision.png.w720.webp")))
       await fs.access(path.join(outputDir, "assets/collision.jpg.w720.webp"))
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
+
+  test("full and partial emit preserve a legal source at the preferred variant path", async () => {
+    const source = path.join(contentDir, "Assets", "Reserved.png")
+    const reservedSource = path.join(contentDir, "Assets", "Reserved.png.w720.webp")
+    await Promise.all([
+      sharp({
+        create: { width: 1000, height: 500, channels: 3, background: "#116688" },
+      })
+        .png()
+        .toFile(source),
+      sharp({
+        create: { width: 600, height: 300, channels: 3, background: "#881166" },
+      })
+        .webp()
+        .toFile(reservedSource),
+    ])
+
+    process.chdir(root)
+    try {
+      const emitter = Assets()
+      const ctx = {
+        argv: {
+          directory: contentDir,
+          output: outputDir,
+          verbose: false,
+          serve: false,
+          watch: true,
+          port: 8080,
+          wsPort: 3001,
+        },
+        cfg: {
+          configuration: { ignorePatterns: [] },
+          plugins: { pageTypes: [] },
+        },
+        allFiles: ["Assets/Reserved.png", "Assets/Reserved.png.w720.webp"],
+      }
+      const occupied = new Set(["assets/reserved.png", "assets/reserved.png.w720.webp"])
+      const derivedPath = responsivePath("assets/reserved.png", 720, occupied)
+      const outputs = await emittedFiles(emitter.emit(ctx as never, [], {} as never))
+      const reservedOutputs = outputs
+        .map((fp) => path.relative(outputDir, fp))
+        .filter((fp) => fp.startsWith("assets/reserved.png"))
+
+      assert.equal(new Set(reservedOutputs).size, reservedOutputs.length)
+      assert.ok(reservedOutputs.includes("assets/reserved.png.w720.webp"))
+      assert.ok(reservedOutputs.includes(derivedPath))
+      assert.equal(
+        Buffer.compare(
+          await fs.readFile(reservedSource),
+          await fs.readFile(path.join(outputDir, "assets/reserved.png.w720.webp")),
+        ),
+        0,
+      )
+
+      const partialEmit = emitter.partialEmit
+      assert.equal(typeof partialEmit, "function")
+      ctx.allFiles = ["Assets/Reserved.png"]
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "delete", path: "Assets/Reserved.png.w720.webp" as never },
+        ]) as never,
+      )
+
+      assert.equal(
+        (await sharp(path.join(outputDir, "assets/reserved.png.w720.webp")).metadata()).width,
+        720,
+      )
+      await assert.rejects(fs.access(path.join(outputDir, derivedPath)))
+
+      ctx.allFiles = ["Assets/Reserved.png", "Assets/Reserved.png.w720.webp"]
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "add", path: "Assets/Reserved.png.w720.webp" as never },
+        ]) as never,
+      )
+
+      assert.equal(
+        Buffer.compare(
+          await fs.readFile(reservedSource),
+          await fs.readFile(path.join(outputDir, "assets/reserved.png.w720.webp")),
+        ),
+        0,
+      )
+      await fs.access(path.join(outputDir, derivedPath))
+
+      ctx.allFiles = ["Assets/Reserved.png.w720.webp"]
+      await emittedFiles(
+        partialEmit!(ctx as never, [], {} as never, [
+          { type: "delete", path: "Assets/Reserved.png" as never },
+        ]) as never,
+      )
+
+      await fs.access(path.join(outputDir, "assets/reserved.png.w720.webp"))
+      await assert.rejects(fs.access(path.join(outputDir, derivedPath)))
     } finally {
       process.chdir(originalCwd)
     }

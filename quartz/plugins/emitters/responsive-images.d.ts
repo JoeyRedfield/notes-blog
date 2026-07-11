@@ -18,10 +18,15 @@ export interface EnsureResponsiveVariantsOptions {
   outputPath: string
   cacheDir?: string
   warn?: (message: string) => void
+  resolveOutputPath?: (fp: string, width: number) => string
 }
 
 export function responsiveWidths(sourceWidth: number): number[]
-export function responsivePath(fp: string, width: number): string
+export function isResponsiveImagePath(fp: string): boolean
+export function createResponsivePathResolver(
+  occupiedPaths?: Iterable<string>,
+): (fp: string, width: number) => string
+export function responsivePath(fp: string, width: number, occupiedPaths?: Iterable<string>): string
 export function responsiveCachePath(sourceHash: string, width: number, cacheDir?: string): string
 export function imageMetadata(sourcePath: string): Promise<Metadata>
 export function ensureResponsiveVariants(

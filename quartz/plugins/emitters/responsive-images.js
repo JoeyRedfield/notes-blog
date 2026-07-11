@@ -5,6 +5,7 @@ import sharp from "sharp"
 
 const CANDIDATE_WIDTHS = [720, 1440]
 const RESPONSIVE_IMAGE_VERSION = "v1"
+const RESPONSIVE_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"])
 
 export const defaultResponsiveCacheDir = path.join(".quartz-cache", "responsive-images")
 
@@ -12,8 +13,56 @@ export function responsiveWidths(sourceWidth) {
   return CANDIDATE_WIDTHS.filter((width) => width < sourceWidth)
 }
 
-export function responsivePath(fp, width) {
-  return `${fp}.w${width}.webp`
+export function isResponsiveImagePath(fp) {
+  return RESPONSIVE_IMAGE_EXTENSIONS.has(path.posix.extname(fp).toLowerCase())
+}
+
+function assignmentKey(fp, width) {
+  return `${fp}\0${width}`
+}
+
+function collisionKey(fp) {
+  return fp.toLowerCase()
+}
+
+function availableResponsivePath(fp, width, occupied) {
+  const preferred = `${fp}.w${width}.webp`
+  if (!occupied.has(collisionKey(preferred))) return preferred
+
+  const hash = createHash("sha256").update(fp).digest("hex").slice(0, 12)
+  let attempt = 0
+  while (true) {
+    const suffix = attempt === 0 ? hash : `${hash}-${attempt}`
+    const candidate = `${fp}.${suffix}.w${width}.webp`
+    if (!occupied.has(collisionKey(candidate))) return candidate
+    attempt += 1
+  }
+}
+
+export function createResponsivePathResolver(occupiedPaths = []) {
+  const sourcePaths = [...new Set(Array.from(occupiedPaths, String))]
+  const occupied = new Set(sourcePaths.map(collisionKey))
+  const assignments = new Map()
+
+  for (const sourcePath of sourcePaths.filter(isResponsiveImagePath).sort()) {
+    for (const width of CANDIDATE_WIDTHS) {
+      const candidate = availableResponsivePath(sourcePath, width, occupied)
+      occupied.add(collisionKey(candidate))
+      assignments.set(assignmentKey(sourcePath, width), candidate)
+    }
+  }
+
+  return (fp, width) => {
+    const assigned = assignments.get(assignmentKey(fp, width))
+    if (assigned !== undefined) return assigned
+    return availableResponsivePath(fp, width, occupied)
+  }
+}
+
+export function responsivePath(fp, width, occupiedPaths = []) {
+  const paths = new Set(occupiedPaths)
+  paths.add(fp)
+  return createResponsivePathResolver(paths)(fp, width)
 }
 
 export function responsiveCachePath(sourceHash, width, cacheDir = defaultResponsiveCacheDir) {
@@ -66,6 +115,7 @@ export async function ensureResponsiveVariants({
   outputPath,
   cacheDir = defaultResponsiveCacheDir,
   warn = console.warn,
+  resolveOutputPath = responsivePath,
 }) {
   let input
   let metadata
@@ -103,7 +153,7 @@ export async function ensureResponsiveVariants({
         variants.push({
           width,
           cachePath,
-          outputPath: responsivePath(outputPath, width),
+          outputPath: resolveOutputPath(outputPath, width),
         })
       }
     } catch (error) {

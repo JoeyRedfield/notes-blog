@@ -5,17 +5,21 @@ import fs from "fs"
 import { glob } from "../../util/glob"
 import { Argv, BuildCtx } from "../../util/ctx"
 import { QuartzConfig } from "../../cfg"
-import { ensureResponsiveVariants, responsivePath } from "./responsive-images.js"
+import {
+  createResponsivePathResolver,
+  ensureResponsiveVariants,
+  isResponsiveImagePath,
+} from "./responsive-images.js"
 
 export {
   imageMetadata,
+  createResponsivePathResolver,
+  isResponsiveImagePath,
   responsiveCachePath,
   responsivePath,
   responsiveWidths,
 } from "./responsive-images.js"
 export { ensureResponsiveVariants }
-
-const RESPONSIVE_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"])
 
 function getPageTypeExtensions(ctx: BuildCtx): Set<string> {
   const extensions = new Set<string>()
@@ -51,12 +55,22 @@ const copyFile = async (argv: Argv, fp: FilePath) => {
   return dest
 }
 
-const copyResponsiveVariants = async function* (argv: Argv, fp: FilePath) {
-  if (!RESPONSIVE_IMAGE_EXTENSIONS.has(path.extname(fp).toLowerCase())) return
+type ResponsivePathResolver = (fp: string, width: number) => string
+
+const copyResponsiveVariants = async function* (
+  argv: Argv,
+  fp: FilePath,
+  resolveOutputPath: ResponsivePathResolver,
+) {
+  if (!isResponsiveImagePath(fp)) return
 
   const src = joinSegments(argv.directory, fp) as FilePath
   const outputPath = slugifyFilePath(fp)
-  const { variants } = await ensureResponsiveVariants({ sourcePath: src, outputPath })
+  const { variants } = await ensureResponsiveVariants({
+    sourcePath: src,
+    outputPath,
+    resolveOutputPath,
+  })
   for (const variant of variants) {
     const dest = joinSegments(argv.output, variant.outputPath) as FilePath
     await fs.promises.mkdir(path.dirname(dest), { recursive: true })
@@ -65,12 +79,16 @@ const copyResponsiveVariants = async function* (argv: Argv, fp: FilePath) {
   }
 }
 
-const deleteResponsiveOutputs = async (argv: Argv, fp: FilePath) => {
-  if (!RESPONSIVE_IMAGE_EXTENSIONS.has(path.extname(fp).toLowerCase())) return
+const deleteResponsiveOutputs = async (
+  argv: Argv,
+  fp: FilePath,
+  resolveOutputPath: ResponsivePathResolver,
+) => {
+  if (!isResponsiveImagePath(fp)) return
 
   const outputPath = slugifyFilePath(fp)
   for (const width of [720, 1440]) {
-    const dest = joinSegments(argv.output, responsivePath(outputPath, width)) as FilePath
+    const dest = joinSegments(argv.output, resolveOutputPath(outputPath, width)) as FilePath
     await fs.promises.unlink(dest).catch((error: NodeJS.ErrnoException) => {
       if (error.code !== "ENOENT") throw error
     })
@@ -83,26 +101,83 @@ export const Assets: QuartzEmitterPlugin = () => {
     async *emit(ctx) {
       const excludeExtensions = getPageTypeExtensions(ctx)
       const fps = await filesToCopy(ctx.argv, ctx.cfg, excludeExtensions)
+      const occupiedPaths = new Set(
+        [...(ctx.allFiles ?? []), ...fps].map((fp) => slugifyFilePath(fp)),
+      )
+      const resolveOutputPath = createResponsivePathResolver(occupiedPaths)
       for (const fp of fps) {
         yield copyFile(ctx.argv, fp)
-        yield* copyResponsiveVariants(ctx.argv, fp)
+        yield* copyResponsiveVariants(ctx.argv, fp, resolveOutputPath)
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       const excludeExtensions = getPageTypeExtensions(ctx)
+      const currentFiles = new Set(ctx.allFiles ?? [])
+      for (const event of changeEvents) {
+        if (event.type === "delete") currentFiles.delete(event.path)
+        else currentFiles.add(event.path)
+      }
+
+      const previousFiles = new Set(currentFiles)
+      for (const event of changeEvents) {
+        if (event.type === "add") previousFiles.delete(event.path)
+        else if (event.type === "delete") previousFiles.add(event.path)
+      }
+
+      const currentResolver = createResponsivePathResolver(
+        [...currentFiles].map((fp) => slugifyFilePath(fp)),
+      )
+      const previousResolver = createResponsivePathResolver(
+        [...previousFiles].map((fp) => slugifyFilePath(fp)),
+      )
+      const directlyChanged = new Set(changeEvents.map((event) => event.path))
+      const affectedImages = new Set<FilePath>()
+      const allImagePaths = new Set(
+        [...previousFiles, ...currentFiles].filter(isResponsiveImagePath),
+      )
+      for (const fp of allImagePaths) {
+        const outputPath = slugifyFilePath(fp)
+        const mappingChanged = [720, 1440].some(
+          (width) => previousResolver(outputPath, width) !== currentResolver(outputPath, width),
+        )
+        if (directlyChanged.has(fp) || mappingChanged) affectedImages.add(fp as FilePath)
+      }
+
+      for (const fp of [...affectedImages].sort()) {
+        if (previousFiles.has(fp)) {
+          await deleteResponsiveOutputs(ctx.argv, fp, previousResolver)
+        }
+      }
+
+      const regeneratedImages = new Set<FilePath>()
       for (const changeEvent of changeEvents) {
         const ext = path.extname(changeEvent.path)
         if (ext === ".md" || excludeExtensions.has(ext)) continue
+        if (isResponsiveImagePath(changeEvent.path)) {
+          if (changeEvent.type === "delete") {
+            const name = slugifyFilePath(changeEvent.path)
+            const dest = joinSegments(ctx.argv.output, name) as FilePath
+            await fs.promises.unlink(dest)
+          } else {
+            yield copyFile(ctx.argv, changeEvent.path)
+            yield* copyResponsiveVariants(ctx.argv, changeEvent.path, currentResolver)
+            regeneratedImages.add(changeEvent.path)
+          }
+          continue
+        }
 
         if (changeEvent.type === "add" || changeEvent.type === "change") {
-          await deleteResponsiveOutputs(ctx.argv, changeEvent.path)
           yield copyFile(ctx.argv, changeEvent.path)
-          yield* copyResponsiveVariants(ctx.argv, changeEvent.path)
         } else if (changeEvent.type === "delete") {
           const name = slugifyFilePath(changeEvent.path)
           const dest = joinSegments(ctx.argv.output, name) as FilePath
           await fs.promises.unlink(dest)
-          await deleteResponsiveOutputs(ctx.argv, changeEvent.path)
+        }
+      }
+
+      for (const fp of [...affectedImages].sort()) {
+        if (currentFiles.has(fp) && !regeneratedImages.has(fp)) {
+          yield* copyResponsiveVariants(ctx.argv, fp, currentResolver)
         }
       }
     },
