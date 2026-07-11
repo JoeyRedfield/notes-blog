@@ -19,6 +19,8 @@ function page(
     text?: string
     description?: string
     unlisted?: boolean
+    dates?: Record<string, string>
+    defaultDateType?: string
   } = {},
 ): TestContent {
   const title = options.title ?? slug
@@ -47,6 +49,10 @@ function page(
         text: options.text ?? "",
         description: options.description ?? `${title} description`,
         ...(options.unlisted === undefined ? {} : { unlisted: options.unlisted }),
+        ...(options.dates === undefined ? {} : { dates: options.dates }),
+        ...(options.defaultDateType === undefined
+          ? {}
+          : { defaultDateType: options.defaultDateType }),
       },
     },
   ]
@@ -143,6 +149,62 @@ describe("buildIndexes", () => {
 
     assert.deepStrictEqual(Object.keys(metadataIndex), ["notes/full"])
     assert.deepStrictEqual(Object.keys(searchIndex), ["notes/full"])
+  })
+
+  test("preserves dangerous real and virtual slugs through JSON serialization", () => {
+    const realIndexes = buildIndexes([
+      page("__proto__", {
+        filePath: "/tmp/content/proto.md",
+        relativePath: "proto.md",
+        text: "real prototype content",
+      }),
+    ])
+    const virtualIndexes = buildIndexes([
+      page("__proto__", {
+        relativePath: "tags/proto.md",
+        text: "virtual prototype content",
+      }),
+    ])
+
+    const realMetadata = JSON.parse(JSON.stringify(realIndexes.metadataIndex))
+    const realSearch = JSON.parse(JSON.stringify(realIndexes.searchIndex))
+    const virtualMetadata = JSON.parse(JSON.stringify(virtualIndexes.metadataIndex))
+
+    assert.ok(Object.hasOwn(realMetadata, "__proto__"))
+    assert.ok(Object.hasOwn(realSearch, "__proto__"))
+    assert.ok(Object.hasOwn(virtualMetadata, "__proto__"))
+    assert.equal(realMetadata.__proto__.slug, "__proto__")
+    assert.equal(realSearch.__proto__.content, "real prototype content")
+    assert.equal(virtualMetadata.__proto__.filePath, "tags/proto.md")
+  })
+
+  test("uses defaultDateType before the fallback date order", () => {
+    const dates = {
+      modified: "2026-03-01T00:00:00.000Z",
+      published: "2026-02-01T00:00:00.000Z",
+      created: "2026-01-01T00:00:00.000Z",
+    }
+    const preferred = buildIndexes([
+      page("notes/preferred-date", {
+        filePath: "/tmp/content/notes/preferred-date.md",
+        relativePath: "notes/preferred-date.md",
+        text: "body",
+        dates,
+        defaultDateType: "created",
+      }),
+    ])
+    const fallback = buildIndexes([
+      page("notes/fallback-date", {
+        filePath: "/tmp/content/notes/fallback-date.md",
+        relativePath: "notes/fallback-date.md",
+        text: "body",
+        dates: { modified: dates.modified, created: dates.created },
+        defaultDateType: "published",
+      }),
+    ])
+
+    assert.equal(preferred.fullIndex.get("notes/preferred-date").date.toISOString(), dates.created)
+    assert.equal(fallback.fullIndex.get("notes/fallback-date").date.toISOString(), dates.modified)
   })
 })
 

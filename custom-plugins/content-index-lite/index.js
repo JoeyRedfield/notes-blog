@@ -91,7 +91,15 @@ function asStringArray(value) {
 function contentDate(data) {
   const frontmatter = data.frontmatter ?? {}
   const dates = data.dates ?? {}
-  const candidates = [dates.modified, dates.published, dates.created, frontmatter.date]
+  const preferredDate =
+    typeof data.defaultDateType === "string" ? dates[data.defaultDateType] : undefined
+  const candidates = [
+    preferredDate,
+    dates.modified,
+    dates.published,
+    dates.created,
+    frontmatter.date,
+  ]
 
   for (const candidate of candidates) {
     if (candidate instanceof Date && !Number.isNaN(candidate.getTime())) return new Date(candidate)
@@ -107,8 +115,8 @@ function contentDate(data) {
 export function buildIndexes(content, opts = {}) {
   const options = { ...defaultOptions, ...opts }
   const fullIndex = new Map()
-  const metadataIndex = {}
-  const searchIndex = {}
+  const metadataEntries = []
+  const searchEntries = []
 
   for (const [tree, file] of content) {
     const data = file?.data ?? {}
@@ -142,23 +150,31 @@ export function buildIndexes(content, opts = {}) {
     }
 
     fullIndex.set(slug, fullDetails)
-    metadataIndex[slug] = {
+    metadataEntries.push([
       slug,
-      filePath,
-      title,
-      links: [...links],
-      tags: [...tags],
-    }
+      {
+        slug,
+        filePath,
+        title,
+        links: [...links],
+        tags: [...tags],
+      },
+    ])
 
     if (isRealFile) {
-      searchIndex[slug] = {
-        title,
-        tags: [...tags],
-        content: text,
-      }
+      searchEntries.push([
+        slug,
+        {
+          title,
+          tags: [...tags],
+          content: text,
+        },
+      ])
     }
   }
 
+  const metadataIndex = Object.fromEntries(metadataEntries)
+  const searchIndex = Object.fromEntries(searchEntries)
   return { fullIndex, metadataIndex, searchIndex }
 }
 
