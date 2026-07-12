@@ -505,6 +505,7 @@ test("custom styles include accessible motion and focus affordances", () => {
   assert.match(css, /footer a:focus-visible/)
   assert.match(css, /ul\.toc-content\.overflow > li > a:focus-visible/)
   assert.match(css, /\.breadcrumb-container p/)
+  assert.match(css, /article\s+img\s*\{[^}]*height:\s*auto/s)
   assert.doesNotMatch(css, /font-variation-settings/)
   assert.doesNotMatch(css, /font-optical-sizing/)
 })

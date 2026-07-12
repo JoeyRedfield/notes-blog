@@ -884,6 +884,10 @@ iframe.pdf {
   box-shadow: var(--shadow-near);
 }
 
+article img {
+  height: auto;
+}
+
 hr {
   height: 1px;
   background: linear-gradient(
