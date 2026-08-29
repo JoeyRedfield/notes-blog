@@ -24,6 +24,7 @@ AI 编码工作流、方法论与实战记录。
 - [[Codex Superpowers 插件与 brainstorming skill 的关系]] — `[实验观察]` 解释 Codex `superpowers` 插件、`brainstorming` skill 与当前会话技能暴露层之间的真实关系
 - [[AI编码全流程工作流——Matt Pocock 工作坊]] — `[社区快照]` Matt Pocock 的完整 AI 编码六阶段流程
 - [[软件基础在AI时代更重要——Matt Pocock]] — `[社区快照]` AI 时代软件基础更重要、五大失败模式
+- [[软件基础与Agent工程——Uncle Bob谈AI时代的软件开发]] — `[社区快照]` Uncle Bob 论确定性质量门、模块设计、多 Agent 流水线与战略编程
 - [[AI编码能力提升路线]] — `[实验观察]` 基于当前技术背景梳理的六大 AI 编码提升方向
 - [[三角循环——AI编码核心概念内化记录]] — `[实验观察]` 交互式 Review 的心智模型内化记录
 - [[inbound-order-PRD]] — `[实验观察]` 入库单管理系统 PRD

@@ -52,10 +52,10 @@ Obsidian Agentic RAG Assistant
 
 学习内容：
 
-- [[lienjack/AI/2.Rag/01.整体步骤|RAG 整体流程：从资料入库到检索增强回答的完整链路]]
-- [[lienjack/AI/2.Rag/02.数据导入|RAG 数据导入：不是把文件上传进去，而是把证据整理出来]]
-- [[lienjack/AI/2.Rag/03.分块技术|RAG 分块技术：不是把长文档切碎，而是把知识切成能被找到的证据]]
-- [[lienjack/AI/2.Rag/04.向量嵌入与向量数据库|向量嵌入与向量数据库]]
+- [RAG 整体流程：从资料入库到检索增强回答的完整链路](https://github.com/LienJack/learn-agent)
+- [RAG 数据导入：不是把文件上传进去，而是把证据整理出来](https://github.com/LienJack/learn-agent)
+- [RAG 分块技术：不是把长文档切碎，而是把知识切成能被找到的证据](https://github.com/LienJack/learn-agent)
+- [向量嵌入与向量数据库](https://github.com/LienJack/learn-agent)
 
 产出：
 
@@ -83,10 +83,10 @@ Codex 任务提示：
 
 学习内容：
 
-- [[lienjack/AI/2.Rag/05.检索前置处理|检索前置处理]]
-- [[lienjack/AI/2.Rag/06.索引优化|索引优化]]
-- [[lienjack/AI/2.Rag/07.检索后处理|检索后处理]]
-- [[lienjack/AI/2.Rag/08.检验召回质量|检验召回质量]]
+- [检索前置处理](https://github.com/LienJack/learn-agent)
+- [索引优化](https://github.com/LienJack/learn-agent)
+- [检索后处理](https://github.com/LienJack/learn-agent)
+- [检验召回质量](https://github.com/LienJack/learn-agent)
 
 产出：
 
@@ -107,9 +107,9 @@ Codex 任务提示：
 
 学习内容：
 
-- [[lienjack/AI/1.概念介绍/03.从对话到干活-Agent|从对话到干活-Agent]]
-- [[lienjack/AI/1.概念介绍/04.如何让Agent更好干活-Harness|如何让 Agent 更好干活-Harness]]
-- [[lienjack/AI/build-harness/build-harness|build-harness 系列总览]]，重点读 `00-01` 到 `00-10`
+- [从对话到干活-Agent](https://github.com/LienJack/learn-agent)
+- [如何让 Agent 更好干活-Harness](https://github.com/LienJack/learn-agent)
+- [build-harness 系列总览](https://github.com/LienJack/learn-agent)，重点读 `00-01` 到 `00-10`
 
 产出：
 
@@ -129,14 +129,14 @@ Codex 任务提示：
 
 学习内容：
 
-- [[lienjack/AI/3.ClaudeCode源码解析/02.核心机制-ReAct|核心机制-ReAct]]
-- [[lienjack/AI/3.ClaudeCode源码解析/03.核心机制-Prompt编写|核心机制-Prompt 编写]]
-- [[lienjack/AI/3.ClaudeCode源码解析/04.1核心机制-Context管理|核心机制-Context 管理]]
-- [[lienjack/AI/3.ClaudeCode源码解析/05.0核心机制-Tools|核心机制-Tools]]
-- [[lienjack/AI/3.ClaudeCode源码解析/06.MCP|MCP]]
-- [[lienjack/AI/3.ClaudeCode源码解析/07.Skill|Skill]]
-- [[lienjack/AI/3.ClaudeCode源码解析/08.1Agent协作|Agent 协作]]
-- [[lienjack/AI/3.ClaudeCode源码解析/09.1Plan|Plan]]
+- [核心机制-ReAct](https://github.com/LienJack/learn-agent)
+- [核心机制-Prompt 编写](https://github.com/LienJack/learn-agent)
+- [核心机制-Context 管理](https://github.com/LienJack/learn-agent)
+- [核心机制-Tools](https://github.com/LienJack/learn-agent)
+- [MCP](https://github.com/LienJack/learn-agent)
+- [Skill](https://github.com/LienJack/learn-agent)
+- [Agent 协作](https://github.com/LienJack/learn-agent)
+- [Plan](https://github.com/LienJack/learn-agent)
 
 产出：
 

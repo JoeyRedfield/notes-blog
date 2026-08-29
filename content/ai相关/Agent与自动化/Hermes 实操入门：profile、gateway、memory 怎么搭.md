@@ -648,5 +648,5 @@ hermes --profile <name> config path
 ## 相关笔记
 
 - [[Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系]]
-- [[lienjack/AI/1.概念介绍/05.OpenClaw、Hermes和Harness关系|OpenClaw、Hermes 和 Harness：它们到底是什么关系]]
+- [[外部知识库/README|learn-agent 外部知识库]]（相关主题：OpenClaw、Hermes 和 Harness）
 - [[Agent与自动化/AI Agent 自动化任务方案对比|AI Agent 自动化任务方案对比]]

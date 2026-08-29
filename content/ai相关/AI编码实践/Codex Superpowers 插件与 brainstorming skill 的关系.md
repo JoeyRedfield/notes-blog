@@ -27,11 +27,11 @@ source_type: experimental-observation
 
 完整版：
 
-![[diagram/codex-superpowers-relationship/codex-superpowers-relationship.svg]]
+![[codex-superpowers-relationship.svg]]
 
 极简版：
 
-![[diagram/codex-superpowers-relationship/codex-superpowers-relationship-minimal.svg]]
+![[codex-superpowers-relationship-minimal.svg]]
 
 如果某些环境对 SVG 预览不稳定，也可以直接查看 PNG 预览：
 

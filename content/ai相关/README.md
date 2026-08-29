@@ -53,6 +53,10 @@ tags: [index]
 - [[Claude Code/把一本书做成 AI Skill 方法论]] — `[社区快照]` 六步把一本书做成可调用 AI skill 的实操方法
 - [[Claude Code/Claude Code 记忆系统——与 CLAUDE.md 的区别及构建方法]] — `[官方机制]` 跨会话记忆、CLAUDE.md 与 auto memory 的边界
 
+### PI Agent
+
+- [[PI Agent 学习/README|PI Agent 学习]] — `[官方机制 + 实验观察]` pi 0.84.2 的自动重试、provider 模型配置、上下文占用诊断与扩展设计
+
 ### Agent 与自动化
 
 - [[Agent与自动化/AI Harness（驾驭层）知识手册]] — `[官方机制]` Agent 工程第三波范式：定义、架构、演进与各大玩家实践
@@ -107,7 +111,7 @@ tags: [index]
 
 来自 [LienJack/learn-agent](https://github.com/LienJack/learn-agent) 的系统化技术博客，覆盖 AI Agent、Claude Code 源码解析、Agent 设计范式、Build Harness 教程和 Learn LLM。
 
-- [[lienjack/README|learn-agent 索引]] — 已同步到 `lienjack/` 目录的完整入口
+- [[外部知识库/README|learn-agent 外部知识库]] — LienJack/learn-agent 公开博客链接
 
 ### AI 伦理与人权
 
@@ -121,4 +125,4 @@ tags: [index]
 - [[llm-from-scratch/README|LLM 从零实现]] — 深度学习底层原理
 - [[兴趣阅读/README|兴趣阅读]] — AI 相关读书笔记
 
-> 最后更新: 2026-06-29
+> 最后更新: 2026-08-17

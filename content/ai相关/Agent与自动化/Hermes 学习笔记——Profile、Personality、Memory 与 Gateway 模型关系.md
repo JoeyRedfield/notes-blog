@@ -387,6 +387,6 @@ Hermes gateway 存在会话级模型 override（例如通过 `/model` 对某个�
 
 ## 相关笔记
 
-- [[lienjack/AI/1.概念介绍/05.OpenClaw、Hermes和Harness关系|OpenClaw、Hermes 和 Harness：它们到底是什么关系]]
+- [[外部知识库/README|learn-agent 外部知识库]]（相关主题：OpenClaw、Hermes 和 Harness）
 - [[Agent与自动化/AI Agent 自动化任务方案对比|AI Agent 自动化任务方案对比]]
 - [[Agent与自动化/Agentic Engineering 实战技巧集（2026年6月）]]
