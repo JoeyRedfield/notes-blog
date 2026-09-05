@@ -56,6 +56,8 @@ title: "HenryWu's Blog"
 - [[ai相关/AI编码实践/AI编码全流程工作流——Matt Pocock 工作坊|AI编码全流程工作流——Matt Pocock 工作坊]]
 - [[ai相关/AI编码实践/Codex 沙盒与权限设置|Codex 沙盒与权限设置]]
 - [[ai相关/AI编码实践/Codex Superpowers 插件与 brainstorming skill 的关系|Codex Superpowers 插件与 brainstorming skill 的关系]]
+- [[ai相关/AI编码实践/Generative-Software-Engineering-NJU/01-生成式软件工程开篇——欢迎来到未来（NJU）|01-生成式软件工程开篇——欢迎来到未来（NJU）]]
+- [[ai相关/AI编码实践/Generative-Software-Engineering-NJU/02-提示词工程（NJU）——固定材料回归新版|02-提示词工程（NJU）——固定材料回归新版]]
 - [[ai相关/AI编码实践/inbound-order-实战记录|inbound-order-实战记录]]
 - [[ai相关/AI编码实践/inbound-order-PRD|inbound-order-PRD]]
 - [[ai相关/AI伦理/生成式AI的人权代价——国际特赦组织2026报告|生成式AI的人权代价——国际特赦组织2026报告]]
