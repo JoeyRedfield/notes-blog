@@ -1,20 +1,18 @@
 version: 2
+
+# 版本更新 PR 已停用（open-pull-requests-limit: 0）。
+# 本仓库的依赖跟随 upstream quartz 升级：每周自动开的成组升级 PR 没人验证，
+# 而大版本跳（如 @clack/prompts 0.11→1.7、@napi-rs/simple-git 0.1→1.1）会通过
+# npm ci 但破坏插件的运行时（peer dependency 耦合）。
+# Dependabot 的安全告警与安全更新 PR 不受此设置影响，仍然开启。
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    groups:
-      production-dependencies:
-        applies-to: "version-updates"
-        patterns:
-          - "*"
+    open-pull-requests-limit: 0
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    groups:
-      ci-dependencies:
-        applies-to: "version-updates"
-        patterns:
-          - "*"
+    open-pull-requests-limit: 0
