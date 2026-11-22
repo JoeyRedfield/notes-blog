@@ -1,0 +1,95 @@
+---
+title: "HenryWu's Blog"
+---
+
+# HenryWu's Blog
+
+其实这是一个人机，里面全是乱写的笔记。
+
+阅读提示：如果页面字体看着偏小或偏大，可以直接用浏览器缩放；macOS 按 `Command (⌘)` + `+` 放大、`Command (⌘)` + `-` 缩小、`Command (⌘)` + `0` 还原，Windows/Linux 按 `Ctrl` + `+`、`Ctrl` + `-`、`Ctrl` + `0`。
+
+## 联系我 / Contact
+
+> [!info] 找我聊聊
+>
+> - **GitHub** — [JoeyRedfield](https://github.com/JoeyRedfield)
+> - **Email** — [cszywu@qq.com](mailto:cszywu@qq.com)
+> - **WeChat** — `***`（暂时不放上来了）
+
+## ai相关
+
+- [[ai相关/2026年技术求职路线图与AI技能选择——Meta工程师视角|2026年技术求职路线图与AI技能选择——Meta工程师视角]]
+- [[ai相关/2026年学编程路线与Agentic Engineering|2026年学编程路线与Agentic Engineering]]
+- [[ai相关/工具与发布/MarkItDown 文档转 Markdown 工具|MarkItDown 文档转 Markdown 工具]]
+- [[ai相关/工具与发布/MemPalace 学习笔记|MemPalace 学习笔记]]
+- [[ai相关/工具与发布/Quartz GitHub Pages 博客发布工作流|Quartz GitHub Pages 博客发布工作流]]
+- [[ai相关/工具与发布/Quartz GitHub Pages 子路径跳转问题排查记录|Quartz GitHub Pages 子路径跳转问题排查记录]]
+- [[ai相关/技术面试的终结与人才评估的未来|技术面试的终结与人才评估的未来]]
+- [[ai相关/斯坦福法学院研究：AI法律推理超越教授|斯坦福法学院研究：AI法律推理超越教授]]
+- [[ai相关/Agent与自动化/“人工智能+消费”政策对职业方向的含义|“人工智能+消费”政策对职业方向的含义]]
+- [[ai相关/Agent与自动化/国家“人工智能+消费”与上海AI智能体政策对照|国家“人工智能+消费”与上海AI智能体政策对照]]
+- [[ai相关/Agent与自动化/商务部等8部门“人工智能+消费”实施意见解读|商务部等8部门“人工智能+消费”实施意见解读]]
+- [[ai相关/Agent与自动化/上海十五五规划-AI智能体政策解读|上海十五五规划-AI智能体政策解读]]
+- [[ai相关/Agent与自动化/项目目录里 Codex 计划 + Claude Code CLI 开发工作流模板|项目目录里 Codex 计划 + Claude Code CLI 开发工作流模板]]
+- [[ai相关/Agent与自动化/政策信号到行动清单：学什么、做什么项目|政策信号到行动清单：学什么、做什么项目]]
+- [[ai相关/Agent与自动化/Agent方向12周学习计划：从lienjack到作品集|Agent方向12周学习计划：从lienjack到作品集]]
+- [[ai相关/Agent与自动化/Agentic Engineering 实战技巧集（2026年6月）|Agentic Engineering 实战技巧集（2026年6月）]]
+- [[ai相关/Agent与自动化/AI Agent 自动化任务方案对比|AI Agent 自动化任务方案对比]]
+- [[ai相关/Agent与自动化/AI Harness（驾驭层）知识手册|AI Harness（驾驭层）知识手册]]
+- [[ai相关/Agent与自动化/AI时代软件开发职业方向|AI时代软件开发职业方向]]
+- [[ai相关/Agent与自动化/Claude Code Dynamic Workflows 动态工作流|Claude Code Dynamic Workflows 动态工作流]]
+- [[ai相关/Agent与自动化/Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议|Codex 写计划、Claude Code CLI 写代码：模型与成本选型建议]]
+- [[ai相关/Agent与自动化/Harness Engineering 腾讯实践案例——从 AI 写得快到干得稳|Harness Engineering 腾讯实践案例——从 AI 写得快到干得稳]]
+- [[ai相关/Agent与自动化/Harness Engineering——人类掌舵 Agent 执行|Harness Engineering——人类掌舵 Agent 执行]]
+- [[ai相关/Agent与自动化/Harness Eval——把工作流评测变成一场考试|Harness Eval——把工作流评测变成一场考试]]
+- [[ai相关/Agent与自动化/Hermes 排错手册：profile、gateway、memory、model 为什么没按预期工作|Hermes 排错手册：profile、gateway、memory、model 为什么没按预期工作]]
+- [[ai相关/Agent与自动化/Hermes 实操入门：profile、gateway、memory 怎么搭|Hermes 实操入门：profile、gateway、memory 怎么搭]]
+- [[ai相关/Agent与自动化/Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系|Hermes 学习笔记——Profile、Personality、Memory 与 Gateway 模型关系]]
+- [[ai相关/Agent与自动化/Is it agentic enough——如何评测 Agent 是否真会用你的工具|Is it agentic enough——如何评测 Agent 是否真会用你的工具]]
+- [[ai相关/Agent与自动化/Loop Engineering|Loop Engineering]]
+- [[ai相关/Agentic Coding 与专业知识的持久回报|Agentic Coding 与专业知识的持久回报]]
+- [[ai相关/AI 工具与注意力管理——从 ADHD 放大器到自律工具|AI 工具与注意力管理——从 ADHD 放大器到自律工具]]
+- [[ai相关/AI编码实践/软件基础与Agent工程——Uncle Bob谈AI时代的软件开发|软件基础与Agent工程——Uncle Bob谈AI时代的软件开发]]
+- [[ai相关/AI编码实践/软件基础在AI时代更重要——Matt Pocock|软件基础在AI时代更重要——Matt Pocock]]
+- [[ai相关/AI编码实践/三角循环——AI编码核心概念内化记录|三角循环——AI编码核心概念内化记录]]
+- [[ai相关/AI编码实践/AI编码能力提升路线|AI编码能力提升路线]]
+- [[ai相关/AI编码实践/AI编码全流程工作流——Matt Pocock 工作坊|AI编码全流程工作流——Matt Pocock 工作坊]]
+- [[ai相关/AI编码实践/Codex 沙盒与权限设置|Codex 沙盒与权限设置]]
+- [[ai相关/AI编码实践/Codex Superpowers 插件与 brainstorming skill 的关系|Codex Superpowers 插件与 brainstorming skill 的关系]]
+- [[ai相关/AI编码实践/Generative-Software-Engineering-NJU/01-生成式软件工程开篇——欢迎来到未来（NJU）|01-生成式软件工程开篇——欢迎来到未来（NJU）]]
+- [[ai相关/AI编码实践/Generative-Software-Engineering-NJU/02-提示词工程（NJU）——固定材料回归新版|02-提示词工程（NJU）——固定材料回归新版]]
+- [[ai相关/AI编码实践/inbound-order-实战记录|inbound-order-实战记录]]
+- [[ai相关/AI编码实践/inbound-order-PRD|inbound-order-PRD]]
+- [[ai相关/AI伦理/生成式AI的人权代价——国际特赦组织2026报告|生成式AI的人权代价——国际特赦组织2026报告]]
+- [[ai相关/AI伦理/生成式AI人权风险——案例、数据与公司回应|生成式AI人权风险——案例、数据与公司回应]]
+- [[ai相关/AI伦理/生成式AI与国际人权法——法律框架分析|生成式AI与国际人权法——法律框架分析]]
+- [[ai相关/ai应用开发路线参考|ai应用开发路线参考]]
+- [[ai相关/AI原生工程团队运作实践|AI原生工程团队运作实践]]
+- [[ai相关/Claude Code/把一本书做成 AI Skill 方法论|把一本书做成 AI Skill 方法论]]
+- [[ai相关/Claude Code/Claude Code 记忆系统——与 CLAUDE.md 的区别及构建方法|Claude Code 记忆系统——与 CLAUDE.md 的区别及构建方法]]
+- [[ai相关/Claude Code/Claude Code 接入 DeepSeek 完整配置|Claude Code 接入 DeepSeek 完整配置]]
+- [[ai相关/Claude Code/Claude Code 切换 API、Resume 与缓存命中学习笔记|Claude Code 切换 API、Resume 与缓存命中学习笔记]]
+- [[ai相关/Claude Code/Claude Code 源码未文档化功能挖掘|Claude Code 源码未文档化功能挖掘]]
+- [[ai相关/Claude Code/Claude Code CLI 新会话检查清单|Claude Code CLI 新会话检查清单]]
+- [[ai相关/Claude Code/Claude Code Skills 官方实践指南——Anthropic 内部经验|Claude Code Skills 官方实践指南——Anthropic 内部经验]]
+- [[ai相关/Claude Code/Claude Code Skills 与 MCP 精华笔记|Claude Code Skills 与 MCP 精华笔记]]
+- [[ai相关/Claude Code/ECC（Everything Claude Code）知识手册|ECC（Everything Claude Code）知识手册]]
+- [[ai相关/PI Agent 学习/PI Agent 模型上下文窗口配置|PI Agent 模型上下文窗口配置]]
+- [[ai相关/PI Agent 学习/PI Agent 上下文归因插件设计|PI Agent 上下文归因插件设计]]
+- [[ai相关/PI Agent 学习/PI Agent 上下文占用计算与诊断|PI Agent 上下文占用计算与诊断]]
+- [[ai相关/PI Agent 学习/PI Agent 自动重试与网络中断恢复|PI Agent 自动重试与网络中断恢复]]
+
+## gzhu
+
+- [[gzhu/GZHU-计算机-毕业论文与材料|GZHU-计算机-毕业论文与材料]]
+
+## llm-from-scratch
+
+- [[llm-from-scratch/GPT-Transformer里的残差网络|GPT-Transformer里的残差网络]]
+- [[llm-from-scratch/LLM-from-scratch Appendix 9 笔记|LLM-from-scratch Appendix 9 笔记]]
+- [[llm-from-scratch/LLM-from-scratch ch02|LLM-from-scratch ch02]]
+- [[llm-from-scratch/LLM-from-scratch ch03|LLM-from-scratch ch03]]
+- [[llm-from-scratch/LLM-from-scratch ch04|LLM-from-scratch ch04]]
+- [[llm-from-scratch/LLM-from-scratch ch05|LLM-from-scratch ch05]]
+- [[llm-from-scratch/LLM-from-scratch ch06|LLM-from-scratch ch06]]
+- [[llm-from-scratch/LLM-from-scratch ch07|LLM-from-scratch ch07]]
